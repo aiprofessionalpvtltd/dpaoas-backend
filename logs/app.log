@@ -1,2 +1,69 @@
 [32m[info]: Nov-01-2023 16:41:48: 	Server Logger has been started Successfully[39m
 [32m[info]: Nov-01-2023 16:47:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 14:13:55: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-08-2023 14:13:55: 	uncaughtException: listen EADDRINUSE: address already in use :::8080[39m
+[31mError: listen EADDRINUSE: address already in use :::8080[39m
+[31m    at Server.setupListenHandle [as _listen2] (node:net:1740:16)[39m
+[31m    at listenInCluster (node:net:1788:12)[39m
+[31m    at Server.listen (node:net:1876:7)[39m
+[31m    at Function.listen (D:\dpaoas\node_modules\express\lib\application.js:635:24)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:27:5)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[32m[info]: Nov-08-2023 14:14:53: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-08-2023 14:14:53: 	uncaughtException: listen EADDRINUSE: address already in use :::8080[39m
+[31mError: listen EADDRINUSE: address already in use :::8080[39m
+[31m    at Server.setupListenHandle [as _listen2] (node:net:1740:16)[39m
+[31m    at listenInCluster (node:net:1788:12)[39m
+[31m    at Server.listen (node:net:1876:7)[39m
+[31m    at Function.listen (D:\dpaoas\node_modules\express\lib\application.js:635:24)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:27:5)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[32m[info]: Nov-08-2023 14:15:20: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-08-2023 14:15:20: 	uncaughtException: listen EADDRINUSE: address already in use :::8080[39m
+[31mError: listen EADDRINUSE: address already in use :::8080[39m
+[31m    at Server.setupListenHandle [as _listen2] (node:net:1740:16)[39m
+[31m    at listenInCluster (node:net:1788:12)[39m
+[31m    at Server.listen (node:net:1876:7)[39m
+[31m    at Function.listen (D:\dpaoas\node_modules\express\lib\application.js:635:24)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:27:5)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[32m[info]: Nov-08-2023 14:15:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 14:15:42: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-08-2023 14:15:43: 	uncaughtException: listen EADDRINUSE: address already in use :::5000[39m
+[31mError: listen EADDRINUSE: address already in use :::5000[39m
+[31m    at Server.setupListenHandle [as _listen2] (node:net:1740:16)[39m
+[31m    at listenInCluster (node:net:1788:12)[39m
+[31m    at Server.listen (node:net:1876:7)[39m
+[31m    at Function.listen (D:\dpaoas\node_modules\express\lib\application.js:635:24)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:27:5)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[32m[info]: Nov-08-2023 14:19:33: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-08-2023 14:19:33: 	uncaughtException: listen EADDRINUSE: address already in use :::5000[39m
+[31mError: listen EADDRINUSE: address already in use :::5000[39m
+[31m    at Server.setupListenHandle [as _listen2] (node:net:1740:16)[39m
+[31m    at listenInCluster (node:net:1788:12)[39m
+[31m    at Server.listen (node:net:1876:7)[39m
+[31m    at Function.listen (D:\dpaoas\node_modules\express\lib\application.js:635:24)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:27:5)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[32m[info]: Nov-08-2023 14:31:06: 	Server Logger has been started Successfully[39m

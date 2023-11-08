@@ -5,7 +5,7 @@ const RolesUsers = db.userRoles;
 const UserSession = db.userSession;
 const Op = db.Sequelize.Op;
 const bcrypt = require('bcrypt');
-const logger = require('../Common/winston.js');
+const logger = require('../common/winston');
 
 // Create and Save a new User
 exports.create = async (req, res) => {

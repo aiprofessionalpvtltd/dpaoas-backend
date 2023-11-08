@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const ModulesPermissions = sequelize.define("modules_permissions", {
+    const ModulesPermissions = sequelize.define("modulesPermissions", {
   
         module_id: {
             type: Sequelize.INTEGER,
