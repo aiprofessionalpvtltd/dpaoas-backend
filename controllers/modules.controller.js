@@ -1,42 +1,27 @@
-const db = require("../models");
-const Modules = db.modules;
-const Op = db.Sequelize.Op;
+const modulesService = require('../services/modules.service')
 
-// Create and Save a new Tutorial
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Content can not be empty!"
-    });
-    return;
+const modulesController = {
+  // Create a Module
+createModule: async (req, res) => {
+
+  try{
+    const module = await modulesService.createModule(req.body);
+    res.status(201).send(module);
+  } catch (error) {
+    res.status(400).send({ message: error.message });
   }
+  
+},
 
-  // Create a Permission
-  let inputData = req.body
+// Retrieve All Modules
+findAllModules: async (req, res) => {
+  try {
+    const modules = await modulesService.findAllModules();
+    res.send(modules);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+},
+}
 
-  // Save Permission in the database
-  Modules.create(inputData)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Module."
-      });
-    });
-};
-
-
-exports.findAll = (req, res) => {
-  Modules.findAll()
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving modules."
-      });
-    });
-};
+module.exports = modulesController;

@@ -4,6 +4,8 @@
 /node_modules
 /.env
 /.pnp
+/logs/app.log
+/logs/error.log
 .pnp.js
 
 # testing

@@ -67,3 +67,174 @@
 [31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
 [31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
 [32m[info]: Nov-08-2023 14:31:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 14:31:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 15:35:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 15:47:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 15:47:09: 	User logged in successfully[39m
+[32m[info]: Nov-08-2023 15:49:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 15:49:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 15:50:41: 	User logged in successfully[39m
+[32m[info]: Nov-08-2023 15:54:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 15:54:17: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 15:55:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:01:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:04:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:05:46: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:30:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:33:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:33:41: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:33:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:36:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:36:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:36:46: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:37:54: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:41:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:47:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:47:37: 	User logged in successfully[39m
+[32m[info]: Nov-08-2023 16:47:48: 	User logged in successfully[39m
+[32m[info]: Nov-08-2023 16:57:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:57:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 16:58:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-08-2023 17:00:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-09-2023 12:45:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:16:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:16:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:16:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:24:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:25:13: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:25:18: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:29:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:30:04: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:30:24: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:30:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:33:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:33:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 09:33:59: 	Permission assigned successfully![39m
+[32m[info]: Nov-10-2023 10:12:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:13:07: 	Permission assigned successfully![39m
+[32m[info]: Nov-10-2023 10:15:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:16:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:17:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:18:24: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:18:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:19:03: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-10-2023 10:19:03: 	uncaughtException: Route.post() requires a callback function but got a [object Undefined][39m
+[31mError: Route.post() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\roles.route.js:7:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:20:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-10-2023 10:19:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:19:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:19:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:19:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:20:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:27:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:29:12: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-10-2023 10:29:12: 	uncaughtException: Route.post() requires a callback function but got a [object Undefined][39m
+[31mError: Route.post() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\modules.route.js:7:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:23:34)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-10-2023 10:29:59: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-10-2023 10:29:59: 	uncaughtException: Route.post() requires a callback function but got a [object Undefined][39m
+[31mError: Route.post() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\modules.route.js:7:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:23:34)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-10-2023 10:30:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:31:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:31:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:31:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:32:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:33:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:34:22: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:35:10: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:36:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:37:10: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:37:36: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-10-2023 10:37:37: 	uncaughtException: Route.post() requires a callback function but got a [object Undefined][39m
+[31mError: Route.post() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\permissions.route.js:7:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:22:38)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-10-2023 10:38:34: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-10-2023 10:38:34: 	uncaughtException: Route.post() requires a callback function but got a [object Undefined][39m
+[31mError: Route.post() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\permissions.route.js:7:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:22:38)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-10-2023 10:39:06: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-10-2023 10:39:07: 	uncaughtException: Route.post() requires a callback function but got a [object Undefined][39m
+[31mError: Route.post() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\permissions.route.js:7:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:22:38)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-10-2023 10:39:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:40:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:41:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:42:46: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:43:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:43:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:43:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:43:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:49:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:50:03: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-10-2023 10:50:04: 	uncaughtException: Route.post() requires a callback function but got a [object Undefined][39m
+[31mError: Route.post() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as post] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:7:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-10-2023 10:53:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 10:56:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 11:01:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 14:18:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-10-2023 14:31:32: 	Server Logger has been started Successfully[39m

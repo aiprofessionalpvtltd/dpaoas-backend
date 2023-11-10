@@ -23,7 +23,7 @@ require("./routes/permissions.route")(app);
 require("./routes/modules.route")(app);
 
 // set port, listen for requests
-const PORT = 8080;
+const PORT = process.env.LOCAL_PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
