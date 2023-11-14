@@ -1,27 +1,44 @@
-const db = require("../models");
-const Permissions = db.permissions;
-const Modules = db.modules;
-const ModulesPermissions = db.modulesPermissions
-const Op = db.Sequelize.Op;
-const permissionsService = require('../services/permissions.service')
 
+const permissionsService = require('../services/permissions.service')
+const logger = require('../common/winston')
 const permissionsController = {
 // Create and Save a new Permission
 createPermission: async (req, res) => {  
   try{
     const permission = await permissionsService.createPermission(req.body);
-    res.status(200).send(permission);
+    logger.info('Permission Created Successfully!');
+    return res.status(200).send({
+      success: true,
+      message: "Permission Created Successfully!",
+      data: permission,
+      })
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message
+     
+      })
   }
 },
 
+// Retrieve All Permissions
 findAllPermissions: async(req, res) => {
   try {
     const permissions = await permissionsService.findAllPermissions();
-    res.send(permissions);
+    logger.info('All Permissions Fetched Successfully!');
+    return res.status(200).send({
+      success: true,
+      message: "All Permissions Fetched Successfully!",
+      data: permissions,
+      })
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message
+     
+      })
   }
 },
 
@@ -29,9 +46,19 @@ findAllPermissions: async(req, res) => {
 editPermission: async (req, res) => {
   try {
     const result = await permissionsService.editPermission(req.body);
-    res.send(result);
+    logger.info('Permission Assigned to Module Successfully!');
+    return res.status(200).send({
+      success: true,
+      message: "Permission Assigned to Module Successfully!",
+      data: result,
+      })
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    logger.error(error.message);
+    return res.status(200).send({
+      success: false,
+      message: error.message,
+
+      })
   }
 },
 }

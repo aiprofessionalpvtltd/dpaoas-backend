@@ -6,19 +6,19 @@ const ModulesPermissions = db.modulesPermissions
 const permissionsService = {
 
     // Create A Permission
-    createPermission: async(permissionData) =>
+    createPermission: async(req) =>
     {
         try {
             // Validate request
-            if (!permissionData.name) {
-              throw new Error("Please provide name");
+            if (!req.name) {
+              throw new Error("Please provide name!");
             }
             // Create and Save Module in the database
-            const createdPermission = await Permissions.create(permissionData);
+            const createdPermission = await Permissions.create(req);
             return createdPermission;
          } 
         catch (error) {
-            throw new Error(error.message || "Some error occurred while creating the Permission.");
+            throw new Error("Error Creating Permission!");
         }
     },
 
@@ -30,45 +30,50 @@ const permissionsService = {
             return permissions;
           } 
           catch (error) {
-            throw new Error("Error occurred while retrieving permissions.");
+            throw new Error("Error Fetching All Permissions");
           }
     },
 
     // Assign Permission to Module
-    editPermission: async({module_id, permission_id}) =>
+    editPermission: async(req) =>
     {
-        try {
+       
             // Validate request
-            if (!module_id || !permission_id) {
-              throw new Error("Please provide module_id, and permission_id");
-            }
-        
+            if (!req.moduleId || !req.permissionId) {
+              throw ({ message: 'Please provide moduleId and permissionId!'})
+            }     
+            
+              // Check if the link already exists
+              const existingLink = await ModulesPermissions.findOne({
+                  where: {
+                      moduleId: req.moduleId,
+                      permissionId: req.permissionId,
+                  },
+              });
+
+              if (existingLink) {
+                  throw ({ message: 'Module and Permission Already Exists!' });
+              }
             // Before assigning, let's ensure that the provided IDs actually exist in their respective tables.
             const [module, permission] = await Promise.all([
-              Modules.findByPk(module_id),
-              Permissions.findByPk(permission_id)
+              Modules.findByPk(req.moduleId),
+              Permissions.findByPk(req.permissionId)
             ]);
         
             if (!module) {
-              throw new Error("Module not found!");
+              throw ({ message: 'Module Not Found!'})
             }
-        
             if (!permission) {
-              throw new Error("Permission not found!");
+              throw ({ message : "Permission Not Found!"})
             }
-        
             // All entities exist, let's link them
             const linkData = {
-              module_id: module.id,
-              permission_id: permission.id,
+              moduleId: module.id,
+              permissionId: permission.id,
             };
         
-            await ModulesPermissions.create(linkData);
-        
-            return { message: "Permission assigned successfully!" };
-          } catch (error) {
-            throw new Error(error.message || "Some error occurred while linking the entities.");
-          }
+            const modulesPermissions = await ModulesPermissions.create(linkData);
+            return modulesPermissions;
     }
 }
 

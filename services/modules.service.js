@@ -4,19 +4,20 @@ const Modules = db.modules;
 const modulesService = {
 
     // Create A Module
-    createModule: async (moduleData) =>
+    createModule: async (req) =>
     {
         try {
             // Validate request
-            if (!moduleData.name) {
-              throw new Error("Please provide name");
+            if (!req.name) {
+              throw ({message: "Please provide name!"})
             }
             // Create and Save Module in the database
-            const createdModule = await Modules.create(moduleData);
+            const createdModule = await Modules.create(req);
             return createdModule;
          } 
         catch (error) {
-            throw new Error(error.message || "Some error occurred while creating the Module.");
+          throw ({ message: "Error Creating Module!"})
+           
         }
       
     },
@@ -29,7 +30,8 @@ const modulesService = {
             return modules;
           } 
           catch (error) {
-            throw new Error("Error occurred while retrieving modules.");
+            throw ({message: "Error Fetching All Modules!"})
+            
           }
     }
 }

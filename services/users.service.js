@@ -7,30 +7,27 @@ const bcrypt = require('bcrypt');
 const logger = require('../common/winston');
 const userService = {
     // Create A New User
-    createUser: async (userData) => {
+    createUser: async (req) => {
         // Validate the user data
-        if (!userData.name || !userData.role_id) {
-          throw new Error('Please provide a name and role ID.');
+        if (!req.name || !req.roleId) {
+          throw({ message: 'Please provide name and roleId!' })
+          
         }
-      
         // Check if the specified role exists
-        const role = await Roles.findOne({ where: { id: userData.role_id } });
+        const role = await Roles.findOne({ where: { id: req.roleId } });
         if (!role) {
-          throw new Error('Role not found.');
+          throw({message:'Role Not Found!'})
         }
-      
         // Hash the user's password
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(userData.password, salt);
-        userData.password = hashedPassword;
-      
+        const hashedPassword = await bcrypt.hash(req.password, salt);
+        req.password = hashedPassword;
         // Create the user
-        const user = await Users.create(userData);
-      
+        const user = await Users.create(req);
         // Create an entry in the users_roles table
         const usersRolesInput = {
-          user_id: user.id,
-          role_id: role.id,
+          userId: user.id,
+          roleId: role.id,
         };
       
         await RolesUsers.create(usersRolesInput);
@@ -46,21 +43,18 @@ const userService = {
         return users;
       } 
       catch (error) {
-        throw new Error("Error occurred while retrieving users.");
+        throw({ message:"Error Fetching All Users!" })
       }
       },
 
       // Login's A User
       loginUser: async (email, password, ipAddress) =>{
-        try {
+        
           if (!email || !password) {
-            logger.error('Login failed: Missing email or password');
-            throw new Error('Please provide both email and password.');
+            throw({message:'Please provide both email and password!'})
           }
-      
           // Check if the user exists in the database
           const user = await Users.findOne({ where: { email: email } });
-      
           if (user) {
             // Compare the provided password with the hashed password in the database
             const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -72,26 +66,21 @@ const userService = {
       
               // Generate and return the authentication token on successful login
               const token = await user.generateAuthToken();
-              logger.info('User logged in successfully');
               await UserSession.createSession(user, ipAddress, token, true);
-              return { status: 200, data: { token } };
+              return { token  };
             } else {
               // Handle login attempts and status updates for incorrect password
               user.handleLoginAttempt(false);
-              logger.warn('Login failed: Password invalid');
+        
               await UserSession.createSession(user, ipAddress, null, false);
-              throw new Error('Password invalid');
+              throw({ message: 'Invalid Password!' })
             }
           } else {
             // Handle login attempts and status updates for incorrect email
-            logger.warn('Login failed: Invalid Credentials');
-            throw new Error('Invalid Credentials');
+            throw({ message: 'Invalid Email!' })
+            
           }
-        } catch (error) {
-          logger.error('An error occurred during login', error);
-          throw new Error('Internal server error');
-          // Handle other errors as needed
-        }
+      
       }
 }
 

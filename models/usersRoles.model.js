@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
     const RolesUsers = sequelize.define("usersRoles", {
-        user_id: {
+        userId: {
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {
@@ -8,7 +8,7 @@ module.exports = (sequelize, Sequelize) => {
               key: 'id'
             }
           },
-          role_id: {
+          roleId: {
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {

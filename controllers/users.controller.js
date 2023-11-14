@@ -1,13 +1,23 @@
 const userService = require("../services/users.service")
-
+const logger = require('../common/winston');
 const userController = {
   // Creates A New User
 createUser: async (req, res) => {
   try {
     const user = await userService.createUser(req.body);
-    res.status(201).send(user);
+    logger.info('User Created Successfully!');
+    return res.status(200).send({
+      success: true,
+      message: "User Created Successfully!",
+      data: user,
+      })
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    logger.error(error.message)
+    return res.status(400).send({
+      success: false,
+      message: error.message,
+      
+      })
   }
 },
 
@@ -15,9 +25,19 @@ createUser: async (req, res) => {
 findAllUsers: async (req, res) => {
   try {
     const users = await userService.findAllUsers();
-    res.send(users);
+    logger.info("All Users Fetched Successfully!")
+    return res.status(200).send({
+      success: true,
+      message: "All Users Fetched Successfully!",
+      data: users,
+      })
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    logger.error(error.message)
+    return res.status(400).send({
+      success: false,
+      message: error.message,
+     
+      })
   }
 },
 
@@ -28,9 +48,19 @@ loginUser: async (req, res) => {
 
   try {
     const result = await userService.loginUser(email, password, ipAddress);
-    res.status(result.status).json(result.data);
+    logger.info("User Logged In Successfully!")
+    return res.status(200).send({
+      success: true,
+      message: "User Logged In Successfully!",
+      data: result,
+      })
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    logger.error(error.message)
+    return res.status(400).send({
+      success: false,
+      message: error.message
+     
+      })
   }
 },
 }

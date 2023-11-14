@@ -1,14 +1,24 @@
 const modulesService = require('../services/modules.service')
-
+const logger = require('../common/winston')
 const modulesController = {
   // Create a Module
 createModule: async (req, res) => {
 
   try{
     const module = await modulesService.createModule(req.body);
-    res.status(201).send(module);
+    logger.info('Module Created Successfully!');
+    return res.status(200).send({
+      success: true,
+      message: "Module Created Successfully!",
+      data: module,
+      })
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message
+     
+      })
   }
   
 },
@@ -17,9 +27,19 @@ createModule: async (req, res) => {
 findAllModules: async (req, res) => {
   try {
     const modules = await modulesService.findAllModules();
-    res.send(modules);
+    logger.info('All Modules Fetched Successfully!');
+    return res.status(200).send({
+      success: true,
+      message: "All Modules Fetched Successfully!",
+      data: modules,
+      })
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message
+     
+      })
   }
 },
 }
