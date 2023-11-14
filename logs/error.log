@@ -1,0 +1,33 @@
+[31m[error]: Nov-10-2023 15:28:58: 	An error occurred during login Password invalid[39m
+[31m[error]: Nov-10-2023 15:30:43: 	An error occurred during login Password invalid[39m
+[31m[error]: Nov-13-2023 09:33:32: 	Error Logging User![39m
+[31m[error]: Nov-13-2023 09:44:03: 	Error Logging User: Internal server error[39m
+[31m[error]: Nov-13-2023 09:44:41: 	Error Logging User: Internal server error[39m
+[31m[error]: Nov-13-2023 09:45:46: 	Error Logging User: Internal server error[39m
+[31m[error]: Nov-13-2023 09:46:23: 	Internal server error[39m
+[31m[error]: Nov-13-2023 09:46:38: 	Internal server error[39m
+[31m[error]: Nov-13-2023 09:47:22: 	Internal server error[39m
+[31m[error]: Nov-13-2023 09:48:32: 	Invalid Credentials[39m
+[31m[error]: Nov-13-2023 09:48:33: 	Invalid Credentials[39m
+[31m[error]: Nov-13-2023 09:49:43: 	Password invalid[39m
+[31m[error]: Nov-13-2023 10:01:37: 	Password invalid[39m
+[31m[error]: Nov-13-2023 10:02:22: 	E-mail address does not exist.[39m
+[31m[error]: Nov-13-2023 10:07:18: 	Invalid Password[39m
+[31m[error]: Nov-13-2023 10:08:20: 	Please provide both email and password.[39m
+[31m[error]: Nov-13-2023 10:08:26: 	Invalid Password[39m
+[31m[error]: Nov-13-2023 10:08:31: 	Invalid Email[39m
+[31m[error]: Nov-13-2023 10:12:42: 	userData is not defined[39m
+[31m[error]: Nov-13-2023 10:13:33: 	[object Object][39m
+[31m[error]: Nov-13-2023 10:15:02: 	[object Object][39m
+[31m[error]: Nov-13-2023 10:15:11: 	[object Object][39m
+[31m[error]: Nov-13-2023 10:15:19: 	[object Object][39m
+[31m[error]: Nov-13-2023 10:17:52: 	Invalid Email[39m
+[31m[error]: Nov-13-2023 10:21:35: 	Please provide a name and role ID.[39m
+[31m[error]: Nov-13-2023 10:21:48: 	Role not found![39m
+[31m[error]: Nov-13-2023 10:22:35: 	[object Object][39m
+[31m[error]: Nov-13-2023 11:11:05: 	Error Assigning Permission to Role![39m
+[31m[error]: Nov-13-2023 11:12:21: 	Error Assigning Permission to Role![39m
+[31m[error]: Nov-13-2023 11:12:39: 	Error Assigning Permission to Role![39m
+[31m[error]: Nov-13-2023 11:15:13: 	Permission Not Found![39m
+[31m[error]: Nov-13-2023 11:15:18: 	Link already exists![39m
+[31m[error]: Nov-13-2023 11:16:52: 	Module and Permission Already Exists![39m

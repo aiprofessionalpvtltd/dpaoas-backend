@@ -4,11 +4,12 @@ module.exports = app => {
     var router = require("express").Router();
   
     // Create a new Role
-    router.post("/create", Roles.create);
+    router.post("/create", Roles.createRole);
   
     // Retrieve all Roles
-     router.get("/", Roles.findAll);
+     router.get("/", Roles.findAllRoles);
 
+     // Assign a permssion to a role
      router.put("/edit",Roles.editRole);
   
     // // Retrieve all published Tutorials

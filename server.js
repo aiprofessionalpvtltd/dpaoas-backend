@@ -17,13 +17,13 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-require("./Routes/roles.route")(app);
-require("./Routes/users.route")(app);
-require("./Routes/permissions.route")(app);
-require("./Routes/modules.route")(app);
+require("./routes/roles.route")(app);
+require("./routes/users.route")(app);
+require("./routes/permissions.route")(app);
+require("./routes/modules.route")(app);
 
 // set port, listen for requests
-const PORT = 8080;
+const PORT = process.env.LOCAL_PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });

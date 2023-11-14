@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
-    const ModulesPermissions = sequelize.define("modules_permissions", {
+    const ModulesPermissions = sequelize.define("modulesPermissions", {
   
-        module_id: {
+        moduleId: {
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {
@@ -9,7 +9,7 @@ module.exports = (sequelize, Sequelize) => {
               key: 'id'
             }
           },
-          permission_id: {
+          permissionId: {
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {

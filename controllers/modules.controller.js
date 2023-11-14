@@ -1,42 +1,47 @@
-const db = require("../models");
-const Modules = db.modules;
-const Op = db.Sequelize.Op;
+const modulesService = require('../services/modules.service')
+const logger = require('../common/winston')
+const modulesController = {
+  // Create a Module
+createModule: async (req, res) => {
 
-// Create and Save a new Tutorial
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Content can not be empty!"
-    });
-    return;
+  try{
+    const module = await modulesService.createModule(req.body);
+    logger.info('Module Created Successfully!');
+    return res.status(200).send({
+      success: true,
+      message: "Module Created Successfully!",
+      data: module,
+      })
+  } catch (error) {
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message
+     
+      })
   }
+  
+},
 
-  // Create a Permission
-  let inputData = req.body
+// Retrieve All Modules
+findAllModules: async (req, res) => {
+  try {
+    const modules = await modulesService.findAllModules();
+    logger.info('All Modules Fetched Successfully!');
+    return res.status(200).send({
+      success: true,
+      message: "All Modules Fetched Successfully!",
+      data: modules,
+      })
+  } catch (error) {
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message
+     
+      })
+  }
+},
+}
 
-  // Save Permission in the database
-  Modules.create(inputData)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Module."
-      });
-    });
-};
-
-
-exports.findAll = (req, res) => {
-  Modules.findAll()
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving modules."
-      });
-    });
-};
+module.exports = modulesController;

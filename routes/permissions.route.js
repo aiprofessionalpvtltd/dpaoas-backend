@@ -3,12 +3,13 @@ module.exports = app => {
   
     var router = require("express").Router();
   
-    // Create a new Role
-    router.post("/create", Permissions.create);
+    // Create a New Permission
+    router.post("/create", Permissions.createPermission);
   
-    // Retrieve all Roles
-     router.get("/", Permissions.findAll);
+    // Retrieve All Permissions
+     router.get("/", Permissions.findAllPermissions);
 
+     // Assign Permission to Module
      router.put('/edit', Permissions.editPermission)
 
      app.use("/api/permissions", router);
