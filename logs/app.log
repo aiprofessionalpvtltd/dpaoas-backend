@@ -425,3 +425,151 @@
 [32m[info]: Nov-13-2023 11:15:42: 	Server Logger has been started Successfully[39m
 [32m[info]: Nov-13-2023 11:16:40: 	Server Logger has been started Successfully[39m
 [31m[error]: Nov-13-2023 11:16:52: 	Module and Permission Already Exists![39m
+[32m[info]: Nov-15-2023 12:18:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:19:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:20:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:22:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:23:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:26:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:27:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:28:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:28:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:29:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:43:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 13:46:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 13:51:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 13:54:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:02:19: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:02:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:06:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:09:41: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:14:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:15:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:17:40: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:17:41: 	uncaughtException: invalid input value for enum "enum_requestLeaves_requestStatus": ""[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:18:43: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:18:44: 	uncaughtException: relation "leaveType" does not exist[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:23:00: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:23:01: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:23:09: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:23:10: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:23:48: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:23:49: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:24:33: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:24:35: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:27:45: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:27:46: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:27:56: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:27:58: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:30:22: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:30:24: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:31:34: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:31:35: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:32:20: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:32:21: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:32:28: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:32:29: 	uncaughtException: foreign key constraint "requestLeaves_RequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:34:12: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:34:13: 	uncaughtException: invalid input value for enum "enum_requestLeaves_requestStatus": ""[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:34:41: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:34:42: 	uncaughtException: invalid input value for enum "enum_requestLeaves_requestStatus": ""[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:34:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:35:23: 	Server Logger has been started Successfully[39m
