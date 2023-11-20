@@ -7,7 +7,7 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
+    fullName: {
       type: Sequelize.STRING,
       allowNull: false,
     },
@@ -16,30 +16,36 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
     },
     gender: {
-      type: Sequelize.STRING,
+      type: Sequelize.ENUM("male", "female"),
       allowNull: false
     },
     email: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
     password: {
       type: Sequelize.STRING,
       allowNull: false,
     },
- 
-    status: {
+    userStatus: {
       type: Sequelize.ENUM("active", "inactive", "locked"),
-      defaultValue: 'active'
+      defaultValue: 'active',
+      allowNull: false
     },
     loginAttempts: {
       type: Sequelize.INTEGER,
       defaultValue: 3, // Set the number of login attempts
     },
-    // tokens: {
-    //   type: Sequelize.ARRAY(Sequelize.JSONB),
-    //   allowNull: true,
-    // },
+    fileNumber: {
+      type: Sequelize.INTEGER,
+      allowNull: false      
+    },
+    profileImage:{
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });

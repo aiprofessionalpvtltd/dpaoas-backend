@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Roles = sequelize.define("roles", {
+    const Departments = sequelize.define("departments", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -13,7 +13,11 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull:true
       },
-      roleStatus : {
+      departmentDate: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      departmentStatus : {
         type: Sequelize.ENUM("active", "inactive"),
         defaultValue: 'active'
       },
@@ -21,5 +25,5 @@ module.exports = (sequelize, Sequelize) => {
       updatedAt: Sequelize.DATE,
     });
   
-    return Roles;
+    return Departments;
   };

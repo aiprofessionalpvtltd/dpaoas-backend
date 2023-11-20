@@ -1,16 +1,16 @@
 module.exports = app => {
-    const Permissions = require("../controllers/permissions.controller");
+    const permissions = require("../controllers/permissions.controller");
   
     var router = require("express").Router();
   
     // Create a New Permission
-    router.post("/create", Permissions.createPermission);
+    router.post("/create", permissions.createPermission);
   
     // Retrieve All Permissions
-     router.get("/", Permissions.findAllPermissions);
+     router.get("/", permissions.findAllPermissions);
 
      // Assign Permission to Module
-     router.put('/edit', Permissions.editPermission)
+     router.put('/edit', permissions.editPermission)
 
      app.use("/api/permissions", router);
     };

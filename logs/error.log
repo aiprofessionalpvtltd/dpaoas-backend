@@ -31,3 +31,59 @@
 [31m[error]: Nov-13-2023 11:15:13: 	Permission Not Found![39m
 [31m[error]: Nov-13-2023 11:15:18: 	Link already exists![39m
 [31m[error]: Nov-13-2023 11:16:52: 	Module and Permission Already Exists![39m
+[31m[error]: Nov-16-2023 10:37:18: 	Invalid Email![39m
+[31m[error]: Nov-16-2023 10:37:24: 	Invalid Email![39m
+[31m[error]: Nov-16-2023 10:37:36: 	Invalid Password![39m
+[31m[error]: Nov-16-2023 10:50:53: 	Invalid Token:[39m
+[31m[error]: Nov-16-2023 10:50:59: 	Please Provide Token![39m
+[31m[error]: Nov-16-2023 10:51:33: 	Invalid Token:[39m
+[31m[error]: Nov-16-2023 10:53:10: 	Invalid Token[39m
+[31m[error]: Nov-16-2023 11:16:37: 	Error during role permission verification:[39m
+[31m[error]: Nov-16-2023 12:37:54: 	Please Provide Token![39m
+[31m[error]: Nov-16-2023 14:52:07: 	Please Provide Token![39m
+[31m[error]: Nov-16-2023 16:49:27: 	Error updating user: Cannot read properties of undefined (reading 'id')[39m
+[31m[error]: Nov-16-2023 16:51:16: 	Error updating user: Cannot read properties of undefined (reading 'id')[39m
+[31m[error]: Nov-16-2023 17:21:26: 	Error updating user: Please provide name and roleId in the request body![39m
+[31m[error]: Nov-16-2023 17:26:14: 	Error updating user: Role Not Found![39m
+[31m[error]: Nov-16-2023 17:27:15: 	Error updating user: password is not defined[39m
+[31m[error]: Nov-16-2023 17:27:54: 	Error updating user: password is not defined[39m
+[31m[error]: Nov-17-2023 09:18:44: 	Error updating user: Please provide name and roleId in the request body![39m
+[31m[error]: Nov-17-2023 09:29:53: 	Invalid Email![39m
+[31m[error]: Nov-17-2023 09:30:19: 	Invalid Password![39m
+[31m[error]: Nov-17-2023 09:38:19: 	roles is not associated to users![39m
+[31m[error]: Nov-17-2023 09:47:47: 	WHERE parameter "name" has invalid "undefined" value[39m
+[31m[error]: Nov-17-2023 12:04:48: 	Error Deleting User![39m
+[31m[error]: Nov-17-2023 12:27:06: 	departmentsService.c is not a function[39m
+[31m[error]: Nov-17-2023 12:27:25: 	Error Creating Department![39m
+[31m[error]: Nov-17-2023 12:28:27: 	Error Creating Department![39m
+[31m[error]: Nov-17-2023 12:28:42: 	Error Creating Department![39m
+[31m[error]: Nov-17-2023 12:39:02: 	Please provide full name, roleID, departmentID and designationID![39m
+[31m[error]: Nov-17-2023 12:39:12: 	column "roleStatus" does not exist[39m
+[31m[error]: Nov-17-2023 12:41:36: 	column "roleStatus" does not exist[39m
+[31m[error]: Nov-17-2023 12:43:43: 	Error Creating Role![39m
+[31m[error]: Nov-17-2023 13:32:09: 	res is not defined[39m
+[31m[error]: Nov-17-2023 14:31:50: 	undefined[39m
+[31m[error]: Nov-17-2023 14:33:12: 	undefined[39m
+[31m[error]: Nov-17-2023 14:34:26: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:35:19: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:35:45: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:39:12: 	Error Fetching Single Department[39m
+[31m[error]: Nov-17-2023 14:39:39: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:40:06: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:42:13: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:42:16: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:43:17: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:44:01: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:44:56: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:45:40: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:53:46: 	Department Not Found![39m
+[31m[error]: Nov-17-2023 15:04:08: 	Designation Not Found![39m
+[31m[error]: Nov-17-2023 15:04:15: 	Designation Not Found![39m
+[31m[error]: Nov-17-2023 15:04:25: 	Designation Not Found![39m
+[31m[error]: Nov-17-2023 15:59:27: 	Cannot read properties of undefined (reading 'params')[39m
+[31m[error]: Nov-17-2023 16:11:10: 	Cannot read properties of undefined (reading 'query')[39m
+[31m[error]: Nov-17-2023 16:22:40: 	Invalid Email![39m
+[31m[error]: Nov-17-2023 16:23:52: 	Cannot access 'departmentId' before initialization[39m
+[31m[error]: Nov-20-2023 10:03:28: 	error is not defined[39m
+[31m[error]: Nov-20-2023 10:05:21: 	error is not defined[39m
+[31m[error]: Nov-20-2023 10:05:42: 	error is not defined[39m

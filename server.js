@@ -21,6 +21,9 @@ require("./routes/roles.route")(app);
 require("./routes/users.route")(app);
 require("./routes/permissions.route")(app);
 require("./routes/modules.route")(app);
+require("./routes/departments.route")(app);
+require("./routes/designations.route")(app);
+
 
 // set port, listen for requests
 const PORT = process.env.LOCAL_PORT;

@@ -41,6 +41,26 @@ findAllUsers: async (req, res) => {
   }
 },
 
+// Retrieve Single User
+findSingleUser: async (req, res) =>
+{
+  try {
+    const user = await userService.findSingleUser(req);
+    logger.info(" User Fetched Successfully!")
+    return res.status(200).send({
+      success: true,
+      message: "User Fetched Successfully!",
+      data: user,
+      })
+  } catch (error) {
+    logger.error(error.message)
+    return res.status(400).send({
+      success: false,
+      message: error.message,
+     
+      })
+  } 
+},
 // Login's User
 loginUser: async (req, res) => {
   const { email, password } = req.body;
@@ -63,6 +83,46 @@ loginUser: async (req, res) => {
       })
   }
 },
+
+  // Edits The User
+  editUser: async (req, res) => {
+    try {
+      const user = await userService.editUser(req);
+      logger.info("User Updated Successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "User Updated Successfully!",
+        data: user,
+        })
+    } catch (error) {
+      logger.error(error.message)
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+        
+        })
+    }
+  },
+
+  // Suspends/Deletes The User
+  suspendUser: async (req, res) => {
+    try {
+      const user = await userService.suspendUser(req);
+      logger.info("User Suspended/Deleted Successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "User Suspended/Deleted Successfully!",
+        data: user,
+        })
+    } catch (error) {
+      logger.error(error.message)
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+        
+        })
+    }
+  },
 }
 module.exports = userController;
 

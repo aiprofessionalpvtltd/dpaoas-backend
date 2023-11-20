@@ -32,6 +32,10 @@ db.modules = require('./module.model')(sequelize, SequelizeMain);
 db.leaveTypes = require('./leaveType.model')(sequelize,SequelizeMain);
 db.requestLeaves = require('./requestLeave.model')(sequelize,SequelizeMain);
 db.leaveComments = require('./leaveComments.model')(sequelize,SequelizeMain);
+db.departments = require('./departments.model')(sequelize,SequelizeMain);
+db.designations = require('./designations.model')(sequelize,SequelizeMain);
+db.userDespartments= require('./usersDepartments.model')(sequelize,SequelizeMain);
+db.userDesignations = require('./usersDesignations.model')(sequelize,SequelizeMain)
 sequelize.sync();
 
 module.exports = db;
