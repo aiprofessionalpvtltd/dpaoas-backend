@@ -1,19 +1,18 @@
 module.exports = (sequelize, Sequelize) => {
-    const RolesPermissions = sequelize.define("rolesPermissions", {
-  
-        roleId: {
+    const UsersDesignations = sequelize.define("usersDesignations", {
+        userId: {
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {
-              model: 'roles', 
+              model: 'users',
               key: 'id'
             }
           },
-          permissionId: {
+          designationId: {
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {
-              model: 'permissions', 
+              model: 'designations',
               key: 'id'
             }
           },
@@ -21,5 +20,5 @@ module.exports = (sequelize, Sequelize) => {
           updatedAt: Sequelize.DATE,
         });
   
-    return RolesPermissions;
+    return UsersDesignations;
   };

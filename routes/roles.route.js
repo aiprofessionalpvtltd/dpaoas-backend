@@ -1,16 +1,16 @@
 module.exports = app => {
-    const Roles = require("../controllers/roles.controller");
+    const roles = require("../controllers/roles.controller");
   
     var router = require("express").Router();
   
     // Create a new Role
-    router.post("/create", Roles.createRole);
+    router.post("/create", roles.createRole);
   
     // Retrieve all Roles
-     router.get("/", Roles.findAllRoles);
+     router.get("/", roles.findAllRoles);
 
      // Assign a permssion to a role
-     router.put("/edit",Roles.editRole);
+     router.put("/edit", roles.editRole);
   
     // // Retrieve all published Tutorials
     // router.get("/published", tutorials.findAllPublished);

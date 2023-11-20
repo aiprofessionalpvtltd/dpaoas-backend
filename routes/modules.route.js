@@ -1,13 +1,13 @@
 module.exports = app => {
-    const Modules = require("../controllers/modules.controller");
+    const modules = require("../controllers/modules.controller");
   
     var router = require("express").Router();
   
     // Create a new Role
-    router.post("/create", Modules.createModule);
+    router.post("/create", modules.createModule);
   
     // Retrieve all Roles
-     router.get("/", Modules.findAllModules);
+     router.get("/", modules.findAllModules);
 
      app.use("/api/modules", router);
     };

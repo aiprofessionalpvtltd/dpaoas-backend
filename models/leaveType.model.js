@@ -1,25 +1,36 @@
 module.exports = (sequelize, Sequelize) => {
-    const Roles = sequelize.define("roles", {
+    const LeaveType = sequelize.define("leaveTypes", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      name: {
+      leaveType: {
         type: Sequelize.STRING,
         allowNull:false
       },
-      description: {
+
+      fkRoleId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'roles', 
+          key: 'id'
+        }
+      },
+    
+      leavesCount: {
         type: Sequelize.STRING,
         allowNull:true
-      },
-      roleStatus : {
+      }, 
+      leaveStatus :{
         type: Sequelize.ENUM("active", "inactive"),
-        defaultValue: 'active'
+        defaultValue: 'inactive'
       },
+     
       createdAt: Sequelize.DATE, 
       updatedAt: Sequelize.DATE,
     });
   
-    return Roles;
+    return LeaveType;
   };

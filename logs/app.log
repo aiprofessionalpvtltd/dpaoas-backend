@@ -425,3 +425,1014 @@
 [32m[info]: Nov-13-2023 11:15:42: 	Server Logger has been started Successfully[39m
 [32m[info]: Nov-13-2023 11:16:40: 	Server Logger has been started Successfully[39m
 [31m[error]: Nov-13-2023 11:16:52: 	Module and Permission Already Exists![39m
+[32m[info]: Nov-15-2023 12:18:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:19:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:20:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:22:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:23:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:26:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:27:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:28:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:28:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:29:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 12:43:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 13:46:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 13:51:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 13:54:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:02:19: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:02:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:06:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:09:41: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:14:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:15:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:17:40: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:17:41: 	uncaughtException: invalid input value for enum "enum_requestLeaves_requestStatus": ""[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:18:43: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:18:44: 	uncaughtException: relation "leaveType" does not exist[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:23:00: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:23:01: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:23:09: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:23:10: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:23:48: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:23:49: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeave.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:24:33: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:24:35: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:27:45: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:27:46: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:27:56: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:27:58: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:30:22: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:30:24: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:31:34: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:31:35: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:32:20: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:32:21: 	uncaughtException: foreign key constraint "requestLeaves_fkRequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:32:28: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:32:29: 	uncaughtException: foreign key constraint "requestLeaves_RequestTypeId_fkey" cannot be implemented[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:34:12: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:34:13: 	uncaughtException: invalid input value for enum "enum_requestLeaves_requestStatus": ""[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:34:41: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-15-2023 14:34:42: 	uncaughtException: invalid input value for enum "enum_requestLeaves_requestStatus": ""[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async requestLeaves.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-15-2023 14:34:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-15-2023 14:35:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 10:33:50: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 10:33:54: 	uncaughtException: Route.get() requires a callback function but got a [object Object][39m
+[31mError: Route.get() requires a callback function but got a [object Object][39m
+[31m    at Route.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:14:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-16-2023 10:34:51: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 10:34:51: 	uncaughtException: Route.get() requires a callback function but got a [object Object][39m
+[31mError: Route.get() requires a callback function but got a [object Object][39m
+[31m    at Route.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:14:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-16-2023 10:35:05: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 10:35:05: 	uncaughtException: Route.get() requires a callback function but got a [object Object][39m
+[31mError: Route.get() requires a callback function but got a [object Object][39m
+[31m    at Route.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:14:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-16-2023 10:35:18: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 10:35:19: 	uncaughtException: Route.get() requires a callback function but got a [object Object][39m
+[31mError: Route.get() requires a callback function but got a [object Object][39m
+[31m    at Route.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:14:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-16-2023 10:35:31: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 10:35:31: 	uncaughtException: Route.get() requires a callback function but got a [object Object][39m
+[31mError: Route.get() requires a callback function but got a [object Object][39m
+[31m    at Route.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:14:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-16-2023 10:37:03: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 10:37:18: 	Invalid Email![39m
+[31m[error]: Nov-16-2023 10:37:24: 	Invalid Email![39m
+[31m[error]: Nov-16-2023 10:37:36: 	Invalid Password![39m
+[32m[info]: Nov-16-2023 10:37:57: 	User Logged In Successfully![39m
+[32m[info]: Nov-16-2023 10:39:32: 	All Users Fetched Successfully![39m
+[32m[info]: Nov-16-2023 10:41:17: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 10:49:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 10:50:30: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 10:50:53: 	Invalid Token:[39m
+[31m[error]: Nov-16-2023 10:50:59: 	Please Provide Token![39m
+[32m[info]: Nov-16-2023 10:51:15: 	All Users Fetched Successfully![39m
+[31m[error]: Nov-16-2023 10:51:33: 	Invalid Token:[39m
+[32m[info]: Nov-16-2023 10:52:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 10:53:04: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 10:53:10: 	Invalid Token[39m
+[32m[info]: Nov-16-2023 10:54:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:03:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:04:41: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:08:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:10:54: 	Permission Created Successfully![39m
+[32m[info]: Nov-16-2023 11:11:07: 	Permission Assigned to Role Successfully![39m
+[32m[info]: Nov-16-2023 11:11:32: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 11:12:31: 	uncaughtException: Cannot read properties of undefined (reading 'call')[39m
+[31mTypeError: Cannot read properties of undefined (reading 'call')[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\model.js:598:30[39m
+[31m    at Array.forEach (<anonymous>)[39m
+[31m    at String._expandIncludeAll (D:\dpaoas\node_modules\sequelize\lib\model.js:597:14)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\model.js:598:30[39m
+[31m    at Array.forEach (<anonymous>)[39m
+[31m    at rolesPermissions._expandIncludeAll (D:\dpaoas\node_modules\sequelize\lib\model.js:597:14)[39m
+[31m    at rolesPermissions.findAll (D:\dpaoas\node_modules\sequelize\lib\model.js:1117:10)[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async D:\dpaoas\middleware\auth.js:65:27[39m
+[32m[info]: Nov-16-2023 11:12:53: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 11:13:06: 	uncaughtException: Cannot read properties of undefined (reading 'call')[39m
+[31mTypeError: Cannot read properties of undefined (reading 'call')[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\model.js:598:30[39m
+[31m    at Array.forEach (<anonymous>)[39m
+[31m    at String._expandIncludeAll (D:\dpaoas\node_modules\sequelize\lib\model.js:597:14)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\model.js:598:30[39m
+[31m    at Array.forEach (<anonymous>)[39m
+[31m    at rolesPermissions._expandIncludeAll (D:\dpaoas\node_modules\sequelize\lib\model.js:597:14)[39m
+[31m    at rolesPermissions.findAll (D:\dpaoas\node_modules\sequelize\lib\model.js:1117:10)[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async D:\dpaoas\middleware\auth.js:65:27[39m
+[32m[info]: Nov-16-2023 11:16:36: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 11:16:37: 	uncaughtException: Route.get() requires a callback function but got a [object Promise][39m
+[31mError: Route.get() requires a callback function but got a [object Promise][39m
+[31m    at Route.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as get] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:14:12)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[31m[error]: Nov-16-2023 11:16:37: 	Error during role permission verification:[39m
+[31m[error]: Nov-16-2023 11:16:37: 	uncaughtException: Cannot read properties of undefined (reading 'status')[39m
+[31mTypeError: Cannot read properties of undefined (reading 'status')[39m
+[31m    at Object.rolePermissionVerification (D:\dpaoas\middleware\auth.js:91:11)[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[32m[info]: Nov-16-2023 11:28:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:28:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:29:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:29:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:34:33: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 11:34:33: 	uncaughtException: Unexpected token ';'[39m
+[31mD:\dpaoas\middleware\auth.js:97[39m
+[31m};[39m
+[31m ^[39m
+
+[31mSyntaxError: Unexpected token ';'[39m
+[31m    at internalCompileFunction (node:internal/vm:73:18)[39m
+[31m    at wrapSafe (node:internal/modules/cjs/loader:1166:20)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1210:27)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:3:23)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[32m[info]: Nov-16-2023 11:34:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:34:55: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:36:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:51:10: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:51:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:52:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:54:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:54:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:54:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:54:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 11:55:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:26:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:30:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:30:41: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:31:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:33:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:34:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:35:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:36:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:37:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:37:33: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 12:37:54: 	Please Provide Token![39m
+[32m[info]: Nov-16-2023 12:38:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:40:05: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:40:25: 	User Created Successfully![39m
+[32m[info]: Nov-16-2023 12:40:36: 	User Logged In Successfully![39m
+[32m[info]: Nov-16-2023 12:41:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:46:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:47:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:47:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:48:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:50:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:52:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:52:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 12:53:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:16:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:17:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:17:49: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:18:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:18:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:19:30: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:20:17: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:20:29: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:20:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:22:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:22:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:23:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:27:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:28:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:28:34: 	All Users Fetched Successfully![39m
+[32m[info]: Nov-16-2023 14:28:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:29:54: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:29:59: 	All Users Fetched Successfully![39m
+[32m[info]: Nov-16-2023 14:41:10: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 14:41:11: 	uncaughtException: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31mError: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31m    at Module._resolveFilename (node:internal/modules/cjs/loader:1060:15)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:905:27)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:3:23)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[32m[info]: Nov-16-2023 14:41:35: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 14:41:36: 	uncaughtException: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31mError: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31m    at Module._resolveFilename (node:internal/modules/cjs/loader:1060:15)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:905:27)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:3:23)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[32m[info]: Nov-16-2023 14:41:53: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 14:41:53: 	uncaughtException: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31mError: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31m    at Module._resolveFilename (node:internal/modules/cjs/loader:1060:15)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:905:27)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:3:23)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[32m[info]: Nov-16-2023 14:43:51: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 14:43:51: 	uncaughtException: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31mError: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31m    at Module._resolveFilename (node:internal/modules/cjs/loader:1060:15)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:905:27)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:3:23)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[32m[info]: Nov-16-2023 14:44:06: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 14:44:06: 	uncaughtException: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31mError: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31m    at Module._resolveFilename (node:internal/modules/cjs/loader:1060:15)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:905:27)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:3:23)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[32m[info]: Nov-16-2023 14:45:14: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 14:45:15: 	uncaughtException: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31mError: Cannot find module '../middleware/auth'[39m
+[31mRequire stack:[39m
+[31m- D:\dpaoas\routes\users.route.js[39m
+[31m- D:\dpaoas\server.js[39m
+[31m    at Module._resolveFilename (node:internal/modules/cjs/loader:1060:15)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:905:27)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:3:23)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[32m[info]: Nov-16-2023 14:45:22: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:45:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:45:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:45:46: 	All Users Fetched Successfully![39m
+[32m[info]: Nov-16-2023 14:45:54: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:49:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:51:47: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 14:52:07: 	Please Provide Token![39m
+[32m[info]: Nov-16-2023 14:53:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:53:30: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:59:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 14:59:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 15:00:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 16:47:53: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 16:49:27: 	Error updating user: Cannot read properties of undefined (reading 'id')[39m
+[32m[info]: Nov-16-2023 16:50:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 16:51:09: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 16:51:16: 	Error updating user: Cannot read properties of undefined (reading 'id')[39m
+[32m[info]: Nov-16-2023 17:21:12: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 17:21:26: 	Error updating user: Please provide name and roleId in the request body![39m
+[32m[info]: Nov-16-2023 17:25:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 17:25:55: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 17:26:10: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 17:26:14: 	Error updating user: Role Not Found![39m
+[32m[info]: Nov-16-2023 17:26:51: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 17:26:51: 	uncaughtException: Unexpected token '.'[39m
+[31mD:\dpaoas\services\users.service.js:118[39m
+[31m          const updatedUserData = { req.body };[39m
+[31m                                       ^[39m
+
+[31mSyntaxError: Unexpected token '.'[39m
+[31m    at internalCompileFunction (node:internal/vm:73:18)[39m
+[31m    at wrapSafe (node:internal/modules/cjs/loader:1166:20)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1210:27)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\controllers\users.controller.js:1:21)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[32m[info]: Nov-16-2023 17:27:08: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 17:27:15: 	Error updating user: password is not defined[39m
+[32m[info]: Nov-16-2023 17:27:48: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-16-2023 17:27:54: 	Error updating user: password is not defined[39m
+[32m[info]: Nov-16-2023 17:28:22: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 17:28:29: 	User Updated Successfully![39m
+[32m[info]: Nov-16-2023 17:29:29: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 17:29:41: 	User Updated Successfully![39m
+[32m[info]: Nov-16-2023 17:30:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 17:31:29: 	User Updated Successfully![39m
+[32m[info]: Nov-16-2023 17:32:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-16-2023 17:32:24: 	User Updated Successfully![39m
+[32m[info]: Nov-16-2023 17:33:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:14:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:14:57: 	User Updated Successfully![39m
+[32m[info]: Nov-17-2023 09:15:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:15:49: 	User Updated Successfully![39m
+[32m[info]: Nov-17-2023 09:16:29: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:17:11: 	Role Created Successfully![39m
+[32m[info]: Nov-17-2023 09:17:22: 	Role Created Successfully![39m
+[31m[error]: Nov-17-2023 09:18:44: 	Error updating user: Please provide name and roleId in the request body![39m
+[32m[info]: Nov-17-2023 09:19:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:19:10: 	User Updated Successfully![39m
+[32m[info]: Nov-17-2023 09:19:38: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:20:01: 	User Updated Successfully![39m
+[32m[info]: Nov-17-2023 09:22:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:23:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:24:12: 	User Updated Successfully![39m
+[32m[info]: Nov-17-2023 09:25:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:26:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:28:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:28:39: 	User Updated Successfully![39m
+[32m[info]: Nov-17-2023 09:29:33: 	User Updated Successfully![39m
+[31m[error]: Nov-17-2023 09:29:53: 	Invalid Email![39m
+[31m[error]: Nov-17-2023 09:30:19: 	Invalid Password![39m
+[32m[info]: Nov-17-2023 09:30:23: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:31:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:31:17: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:31:20: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:37:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:38:14: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 09:38:19: 	roles is not associated to users![39m
+[32m[info]: Nov-17-2023 09:40:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:40:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:41:01: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:41:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:41:29: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:41:34: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:42:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:42:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:42:50: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:43:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:43:30: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:43:34: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:44:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:47:05: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:47:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:47:17: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:47:40: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 09:47:47: 	WHERE parameter "name" has invalid "undefined" value[39m
+[32m[info]: Nov-17-2023 09:51:16: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 09:51:16: 	uncaughtException: Unexpected token '.'[39m
+[31mD:\dpaoas\services\users.service.js:97[39m
+[31m              return { token, user , roles. permissions  };[39m
+[31m                                          ^[39m
+
+[31mSyntaxError: Unexpected token '.'[39m
+[31m    at internalCompileFunction (node:internal/vm:73:18)[39m
+[31m    at wrapSafe (node:internal/modules/cjs/loader:1166:20)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1210:27)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\controllers\users.controller.js:1:21)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[32m[info]: Nov-17-2023 09:51:19: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:51:23: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:55:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:56:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:56:10: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:56:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 09:57:13: 	Permission Created Successfully![39m
+[32m[info]: Nov-17-2023 09:57:20: 	Permission Created Successfully![39m
+[32m[info]: Nov-17-2023 09:58:04: 	Permission Assigned to Role Successfully![39m
+[32m[info]: Nov-17-2023 09:58:09: 	Permission Assigned to Role Successfully![39m
+[32m[info]: Nov-17-2023 09:58:15: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 09:59:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 10:03:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 10:06:05: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 10:06:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 10:09:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 10:09:41: 	User Deleted Successfully![39m
+[32m[info]: Nov-17-2023 10:10:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 10:13:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 10:13:19: 	User Deleted Successfully![39m
+[32m[info]: Nov-17-2023 10:13:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 10:13:46: 	User Deleted Successfully![39m
+[32m[info]: Nov-17-2023 10:13:49: 	User Deleted Successfully![39m
+[32m[info]: Nov-17-2023 11:28:04: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:28:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:29:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:30:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:30:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:32:55: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:33:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:37:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:37:38: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:37:54: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:38:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:38:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:39:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:40:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:41:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:41:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 11:42:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:00:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:03:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:03:38: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 12:04:48: 	Error Deleting User![39m
+[32m[info]: Nov-17-2023 12:09:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:09:50: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 12:09:51: 	uncaughtException: invalid input value for enum enum_users_gender: ""[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async users.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-17-2023 12:10:59: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 12:11:00: 	uncaughtException: invalid input value for enum enum_users_gender: ""[39m
+[31mError[39m
+[31m    at Query.run (D:\dpaoas\node_modules\sequelize\lib\dialects\postgres\query.js:50:25)[39m
+[31m    at D:\dpaoas\node_modules\sequelize\lib\sequelize.js:315:28[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[31m    at async PostgresQueryInterface.createTable (D:\dpaoas\node_modules\sequelize\lib\dialects\abstract\query-interface.js:98:12)[39m
+[31m    at async users.sync (D:\dpaoas\node_modules\sequelize\lib\model.js:942:7)[39m
+[31m    at async Sequelize.sync (D:\dpaoas\node_modules\sequelize\lib\sequelize.js:377:9)[39m
+[32m[info]: Nov-17-2023 12:12:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:15:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:15:29: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:15:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:15:54: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:16:04: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:16:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:16:30: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:18:05: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:18:29: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:22:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:22:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:23:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:23:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:24:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:25:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:25:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:25:34: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 12:27:06: 	departmentsService.c is not a function[39m
+[32m[info]: Nov-17-2023 12:27:24: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 12:27:25: 	Error Creating Department![39m
+[32m[info]: Nov-17-2023 12:28:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:28:22: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 12:28:27: 	Error Creating Department![39m
+[31m[error]: Nov-17-2023 12:28:42: 	Error Creating Department![39m
+[32m[info]: Nov-17-2023 12:30:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:30:19: 	Department Created Successfully![39m
+[32m[info]: Nov-17-2023 12:32:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:33:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:35:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:35:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:36:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:38:09: 	Designation Created Successfully![39m
+[31m[error]: Nov-17-2023 12:39:02: 	Please provide full name, roleID, departmentID and designationID![39m
+[31m[error]: Nov-17-2023 12:39:12: 	column "roleStatus" does not exist[39m
+[32m[info]: Nov-17-2023 12:41:20: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 12:41:36: 	column "roleStatus" does not exist[39m
+[31m[error]: Nov-17-2023 12:43:43: 	Error Creating Role![39m
+[32m[info]: Nov-17-2023 12:44:17: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:44:24: 	Role Created Successfully![39m
+[32m[info]: Nov-17-2023 12:44:38: 	User Created Successfully![39m
+[32m[info]: Nov-17-2023 12:46:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:46:49: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:47:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:47:39: 	Department Created Successfully![39m
+[32m[info]: Nov-17-2023 12:47:59: 	Designation Created Successfully![39m
+[32m[info]: Nov-17-2023 12:48:09: 	User Created Successfully![39m
+[32m[info]: Nov-17-2023 12:51:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:51:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:51:19: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 12:51:29: 	Department Created Successfully![39m
+[32m[info]: Nov-17-2023 12:51:35: 	Designation Created Successfully![39m
+[32m[info]: Nov-17-2023 12:51:41: 	User Created Successfully![39m
+[32m[info]: Nov-17-2023 13:27:19: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 13:28:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 13:30:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 13:31:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 13:32:09: 	Single Department Fetched Successfully![39m
+[31m[error]: Nov-17-2023 13:32:09: 	res is not defined[39m
+[31m[error]: Nov-17-2023 13:32:09: 	uncaughtException: res is not defined[39m
+[31mReferenceError: res is not defined[39m
+[31m    at findSinlgeDepartment (D:\dpaoas\controllers\departments.controller.js:55:13)[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[32m[info]: Nov-17-2023 13:32:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 13:32:36: 	Single Department Fetched Successfully![39m
+[32m[info]: Nov-17-2023 13:32:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 13:33:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:19:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:19:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:25:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:26:05: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:28:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:29:35: 	Single Department Updated Successfully![39m
+[32m[info]: Nov-17-2023 14:30:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:31:45: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:31:50: 	undefined[39m
+[32m[info]: Nov-17-2023 14:32:19: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:32:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:33:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:33:09: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:33:12: 	undefined[39m
+[32m[info]: Nov-17-2023 14:33:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:34:13: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:34:26: 	Error Updating Department[39m
+[32m[info]: Nov-17-2023 14:35:13: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:35:19: 	Error Updating Department[39m
+[32m[info]: Nov-17-2023 14:35:38: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:35:45: 	Error Updating Department[39m
+[32m[info]: Nov-17-2023 14:36:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:38:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:38:45: 	Single Department Updated Successfully![39m
+[31m[error]: Nov-17-2023 14:39:12: 	Error Fetching Single Department[39m
+[32m[info]: Nov-17-2023 14:39:35: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:39:39: 	Error Updating Department[39m
+[32m[info]: Nov-17-2023 14:40:02: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:40:06: 	Error Updating Department[39m
+[32m[info]: Nov-17-2023 14:41:59: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:42:13: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:42:16: 	Error Updating Department[39m
+[32m[info]: Nov-17-2023 14:43:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:43:12: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:43:17: 	Error Updating Department[39m
+[32m[info]: Nov-17-2023 14:43:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:43:40: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:44:01: 	Error Updating Department[39m
+[32m[info]: Nov-17-2023 14:44:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:44:36: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:44:56: 	Error Updating Department[39m
+[32m[info]: Nov-17-2023 14:45:34: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:45:40: 	Error Updating Department[39m
+[31m[error]: Nov-17-2023 14:45:40: 	uncaughtException: message is not defined[39m
+[31mReferenceError: message is not defined[39m
+[31m    at updateDepartment (D:\dpaoas\controllers\departments.controller.js:77:24)[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[32m[info]: Nov-17-2023 14:46:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:50:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:51:19: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:52:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:52:20: 	Single Department Suspend/Deleted Successfully![39m
+[32m[info]: Nov-17-2023 14:53:24: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 14:53:46: 	Department Not Found![39m
+[32m[info]: Nov-17-2023 14:54:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:54:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:57:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:58:13: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 14:58:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:00:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:00:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:02:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:02:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:02:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:03:03: 	All Designations Fetched Successfully![39m
+[32m[info]: Nov-17-2023 15:03:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:04:00: 	Designation Updated Successfully![39m
+[31m[error]: Nov-17-2023 15:04:08: 	Designation Not Found![39m
+[31m[error]: Nov-17-2023 15:04:15: 	Designation Not Found![39m
+[31m[error]: Nov-17-2023 15:04:25: 	Designation Not Found![39m
+[32m[info]: Nov-17-2023 15:04:27: 	Designation Suspend/Deleted Successfully![39m
+[32m[info]: Nov-17-2023 15:08:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:11:08: 	Single Department Fetched Successfully![39m
+[32m[info]: Nov-17-2023 15:11:19: 	Single Department Updated Successfully![39m
+[32m[info]: Nov-17-2023 15:11:33: 	Single Department Suspend/Deleted Successfully![39m
+[32m[info]: Nov-17-2023 15:12:58: 	Single Department Updated Successfully![39m
+[32m[info]: Nov-17-2023 15:16:16: 	Single Department Updated Successfully![39m
+[32m[info]: Nov-17-2023 15:17:00: 	Single Department Fetched Successfully![39m
+[32m[info]: Nov-17-2023 15:19:18: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:19:41: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:20:01: 	Single Department Suspend/Deleted Successfully![39m
+[32m[info]: Nov-17-2023 15:21:18: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:21:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:21:47: 	Single Department Updated Successfully![39m
+[32m[info]: Nov-17-2023 15:26:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:27:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:27:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:27:50: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 15:27:50: 	uncaughtException: Route.delete() requires a callback function but got a [object Undefined][39m
+[31mError: Route.delete() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as delete] (D:\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at proto.<computed> [as delete] (D:\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:22:18)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-17-2023 15:27:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:28:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:28:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:28:49: 	User Deleted Successfully![39m
+[32m[info]: Nov-17-2023 15:29:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:37:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:38:13: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:38:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:38:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:41:22: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 15:41:23: 	uncaughtException: Unexpected identifier 'loginUser'[39m
+[31mD:\dpaoas\services\users.service.js:112[39m
+[31m      loginUser: async (email, password, ipAddress) =>{[39m
+[31m      ^^^^^^^^^[39m
+
+[31mSyntaxError: Unexpected identifier 'loginUser'[39m
+[31m    at internalCompileFunction (node:internal/vm:73:18)[39m
+[31m    at wrapSafe (node:internal/modules/cjs/loader:1166:20)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1210:27)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\controllers\users.controller.js:1:21)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[32m[info]: Nov-17-2023 15:41:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:42:32: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 15:42:32: 	uncaughtException: Unexpected identifier 'loginUser'[39m
+[31mD:\dpaoas\controllers\users.controller.js:65[39m
+[31mloginUser: async (req, res) => {[39m
+[31m^^^^^^^^^[39m
+
+[31mSyntaxError: Unexpected identifier 'loginUser'[39m
+[31m    at internalCompileFunction (node:internal/vm:73:18)[39m
+[31m    at wrapSafe (node:internal/modules/cjs/loader:1166:20)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1210:27)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:2:19)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[32m[info]: Nov-17-2023 15:43:01: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 15:43:01: 	uncaughtException: Unexpected identifier 'loginUser'[39m
+[31mD:\dpaoas\controllers\users.controller.js:65[39m
+[31mloginUser: async (req, res) => {[39m
+[31m^^^^^^^^^[39m
+
+[31mSyntaxError: Unexpected identifier 'loginUser'[39m
+[31m    at internalCompileFunction (node:internal/vm:73:18)[39m
+[31m    at wrapSafe (node:internal/modules/cjs/loader:1166:20)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1210:27)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:2:19)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[32m[info]: Nov-17-2023 15:59:06: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 15:59:06: 	uncaughtException: Unexpected identifier 'loginUser'[39m
+[31mD:\dpaoas\controllers\users.controller.js:65[39m
+[31mloginUser: async (req, res) => {[39m
+[31m^^^^^^^^^[39m
+
+[31mSyntaxError: Unexpected identifier 'loginUser'[39m
+[31m    at internalCompileFunction (node:internal/vm:73:18)[39m
+[31m    at wrapSafe (node:internal/modules/cjs/loader:1166:20)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1210:27)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:2:19)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[32m[info]: Nov-17-2023 15:59:10: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:59:18: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 15:59:27: 	Cannot read properties of undefined (reading 'params')[39m
+[32m[info]: Nov-17-2023 15:59:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 15:59:47: 	 User Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:03:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:03:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:03:47: 	All Departments Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:04:15: 	All Departments Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:04:29: 	All Departments Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:04:44: 	All Departments Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:05:07: 	Department Created Successfully![39m
+[32m[info]: Nov-17-2023 16:05:15: 	All Departments Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:05:23: 	All Departments Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:08:49: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:09:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:09:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:09:36: 	Searched Successfully[39m
+[32m[info]: Nov-17-2023 16:09:43: 	All Departments Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:09:50: 	Searched Successfully[39m
+[32m[info]: Nov-17-2023 16:09:57: 	Searched Successfully[39m
+[32m[info]: Nov-17-2023 16:10:03: 	All Departments Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:10:56: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 16:11:10: 	Cannot read properties of undefined (reading 'query')[39m
+[32m[info]: Nov-17-2023 16:12:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:12:12: 	All Designations Fetched Successfully![39m
+[32m[info]: Nov-17-2023 16:12:30: 	Searched Successfully[39m
+[32m[info]: Nov-17-2023 16:12:34: 	Searched Successfully[39m
+[32m[info]: Nov-17-2023 16:12:35: 	Searched Successfully[39m
+[32m[info]: Nov-17-2023 16:22:30: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-17-2023 16:22:40: 	Invalid Email![39m
+[31m[error]: Nov-17-2023 16:23:52: 	Cannot access 'departmentId' before initialization[39m
+[32m[info]: Nov-17-2023 16:25:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:28:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:28:55: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 16:31:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:31:30: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 16:32:35: 	User Logged In Successfully![39m
+[32m[info]: Nov-17-2023 16:41:04: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:41:22: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-17-2023 16:41:25: 	User Logged In Successfully![39m
+[32m[info]: Nov-18-2023 14:33:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:39:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:40:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:40:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:47:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:48:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:48:55: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-18-2023 14:48:57: 	uncaughtException: Joi.object.keys is not a function[39m
+[31mTypeError: Joi.object.keys is not a function[39m
+[31m    at Object.<anonymous> (D:\dpaoas\validation\userValidation.js:3:40)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:6:32)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[32m[info]: Nov-18-2023 14:49:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:53:17: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:53:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:54:55: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:55:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:56:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:56:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:56:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:59:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:59:24: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-18-2023 14:59:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 09:38:19: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-20-2023 09:38:24: 	uncaughtException: Joi.email is not a function[39m
+[31mTypeError: Joi.email is not a function[39m
+[31m    at Object.<anonymous> (D:\dpaoas\validation\userValidation.js:5:14)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1127:19)[39m
+[31m    at require (node:internal/modules/helpers:112:18)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\validation\index.js:1:30)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[32m[info]: Nov-20-2023 09:41:22: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-20-2023 09:41:22: 	uncaughtException: Users is not defined[39m
+[31mReferenceError: Users is not defined[39m
+[31m    at module.exports (D:\dpaoas\routes\users.route.js:11:66)[39m
+[31m    at Object.<anonymous> (D:\dpaoas\server.js:21:32)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1246:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1300:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1103:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:942:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)[39m
+[31m    at node:internal/main/run_main_module:23:47[39m
+[32m[info]: Nov-20-2023 09:41:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 09:59:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:00:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:01:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:02:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:02:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:03:23: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-20-2023 10:03:28: 	error is not defined[39m
+[31m[error]: Nov-20-2023 10:05:21: 	error is not defined[39m
+[31m[error]: Nov-20-2023 10:05:42: 	error is not defined[39m
+[32m[info]: Nov-20-2023 10:06:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:07:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:07:30: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:07:32: 	User Created Successfully![39m
+[32m[info]: Nov-20-2023 10:07:38: 	User Created Successfully![39m
+[32m[info]: Nov-20-2023 10:07:41: 	User Created Successfully![39m
+[32m[info]: Nov-20-2023 10:10:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:46:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 10:53:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 11:30:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 11:37:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 11:38:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 11:38:55: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 11:39:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-20-2023 11:40:07: 	Server Logger has been started Successfully[39m
