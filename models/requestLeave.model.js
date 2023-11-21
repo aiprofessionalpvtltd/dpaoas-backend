@@ -1,78 +1,76 @@
 module.exports = (sequelize, Sequelize) => {
-    const RequestLeave = sequelize.define("requestLeaves", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
+  const RequestLeave = sequelize.define("requestLeaves", {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    fkRequestTypeId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'leaveTypes',
+        key: 'id'
+      }
+    },
+    fkUserId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
+    },
+    requestStartDate: {
+      type: Sequelize.DATE,
+      allowNull: false
+    },
+    requestEndDate: {
+      type: Sequelize.DATE,
+      allowNull: false
 
-      fkRequestTypeId: {
-        type: Sequelize.INTEGER,
-        allowNull:true,
-        references: {
-            model: 'leaveTypes', 
-            key: 'id'
-          }
-      },
+    },
+    requestStatus: {
+      type: Sequelize.ENUM("pending", "approved", "disapproved", "marked"),
+      defaultValue: 'pending'
+    },
 
-      fkUserId: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'users', 
-          key: 'id'
-        }
-      },
-      requestStartDate: {
-        type: Sequelize.DATE,
-        allowNull:true
-      },
-      requstEndDate: {
-        type: Sequelize.DATE,
-        allowNull:true
+    requestLeaveSubType: {
+      type: Sequelize.ENUM("preApproved", "postApproved", "telephonicInformed"),
+      defaultValue: 'postApproved'
+    },
 
-      },
-      requestStatus :{
-        type: Sequelize.ENUM("pending", "approved", "disapproved", "marked"),
-        defaultValue: 'pending'
-      },
+    requestLeaveReason: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    requestNumberOfDays: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    requestStationLeave: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false
+    },
+    requestLeaveAttachment: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    requestLeaveSubmittedTo: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    requestLeaveApplyOnBehalf: {
+      type: Sequelize.BOOLEAN,
+      allowNull: true
+    },
+    requestLeaveForwarder: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    createdAt: Sequelize.DATE,
+    updatedAt: Sequelize.DATE,
+  });
 
-      requestLeaveSubType : {
-        type: Sequelize.ENUM("preApproved", "postApproved","telephonicInformed"),
-        defaultValue: 'postApproved'
-      },
-
-      requestLeaveReason: {
-        type: Sequelize.STRING,
-        allowNull:true
-      },
-      requestNumberOfDays: {
-        type: Sequelize.STRING,
-        allowNull:true
-      },
-      requestStationLeave: {
-        type: Sequelize.BOOLEAN,
-        allowNull: true
-      },
-      requestLeaveAttachment: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      requestLeaveSubmittedTo: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      requestLeaveApplyOnBehalf: {
-        type: Sequelize.BOOLEAN,
-        allowNull: true
-      },
-      requestLeaveForwarder: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      createdAt: Sequelize.DATE, 
-      updatedAt: Sequelize.DATE,
-    });
-  
-    return RequestLeave;
-  };
+  return RequestLeave;
+};

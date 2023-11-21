@@ -87,3 +87,23 @@
 [31m[error]: Nov-20-2023 10:03:28: 	error is not defined[39m
 [31m[error]: Nov-20-2023 10:05:21: 	error is not defined[39m
 [31m[error]: Nov-20-2023 10:05:42: 	error is not defined[39m
+[31m[error]: Nov-20-2023 17:24:26: 	Please Provide Token![39m
+[31m[error]: Nov-20-2023 17:24:44: 	validationResult is not defined[39m
+[31m[error]: Nov-20-2023 17:25:03: 	winston is not defined[39m
+[31m[error]: Nov-20-2023 17:25:31: 	Cannot destructure property 'fkRequestTypeId' of 'req.body' as it is undefined.[39m
+[31m[error]: Nov-20-2023 17:26:38: 	Cannot destructure property 'fkRequestTypeId' of 'req.body' as it is undefined.[39m
+[31m[error]: Nov-20-2023 17:27:17: 	invalid input syntax for type timestamp with time zone: "Invalid date"[39m
+[31m[error]: Nov-20-2023 17:28:12: 	invalid input syntax for type timestamp with time zone: "Invalid date"[39m
+[31m[error]: Nov-20-2023 17:28:25: 	invalid input syntax for type timestamp with time zone: "Invalid date"[39m
+[31m[error]: Nov-20-2023 17:30:22: 	invalid input syntax for type date: "Invalid date"[39m
+[31m[error]: Nov-20-2023 17:30:40: 	invalid input syntax for type date: "Invalid date"[39m
+[31m[error]: Nov-20-2023 19:34:33: 	validationResult is not defined[39m
+[31m[error]: Nov-20-2023 19:38:53: 	invalid input value for enum "enum_requestLeaves_requestLeaveSubType": "Vacation"[39m
+[31m[error]: Nov-20-2023 19:39:33: 	insert or update on table "requestLeaves" violates foreign key constraint "requestLeaves_fkRequestTypeId_fkey"[39m
+[31m[error]: Nov-20-2023 19:39:46: 	insert or update on table "requestLeaves" violates foreign key constraint "requestLeaves_fkRequestTypeId_fkey"[39m
+[31m[error]: Nov-20-2023 19:51:39: 	insert or update on table "requestLeaves" violates foreign key constraint "requestLeaves_fkUserId_fkey"[39m
+[31m[error]: Nov-20-2023 19:54:34: 	insert or update on table "requestLeaves" violates foreign key constraint "requestLeaves_fkUserId_fkey"[39m
+[31m[error]: Nov-20-2023 19:54:50: 	insert or update on table "requestLeaves" violates foreign key constraint "requestLeaves_fkUserId_fkey"[39m
+[31m[error]: Nov-20-2023 20:50:39: 	winston is not defined[39m
+[31m[error]: Nov-20-2023 23:07:55: 	Cannot read properties of undefined (reading 'insertId')[39m
+[31m[error]: Nov-21-2023 09:49:05: 	validationResult is not defined[39m
