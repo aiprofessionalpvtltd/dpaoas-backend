@@ -107,3 +107,10 @@
 [31m[error]: Nov-20-2023 20:50:39: 	winston is not defined[39m
 [31m[error]: Nov-20-2023 23:07:55: 	Cannot read properties of undefined (reading 'insertId')[39m
 [31m[error]: Nov-21-2023 09:49:05: 	validationResult is not defined[39m
+[31m[error]: Nov-21-2023 10:04:03: 	error is not defined[39m
+[31m[error]: Nov-21-2023 10:05:29: 	No rows were updated. Check if the record with the provided ID exists[39m
+[31m[error]: Nov-21-2023 10:05:29: 	Cannot read properties of undefined (reading 'insertId')[39m
+[31m[error]: Nov-21-2023 10:05:53: 	No rows were updated. Check if the record with the provided ID exists[39m
+[31m[error]: Nov-21-2023 10:06:20: 	No rows were updated. Check if the record with the provided ID exists[39m
+[31m[error]: Nov-21-2023 12:24:54: 	invalid input syntax for type boolean: ""[39m
+[31m[error]: Nov-21-2023 12:26:05: 	invalid input syntax for type boolean: ""[39m

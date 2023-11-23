@@ -1,17 +1,17 @@
 const jwt = require('jsonwebtoken');
-
+const db = require("../models");
 module.exports = (sequelize, Sequelize) => {
-  const Users = sequelize.define('users', {
+  const users = sequelize.define('users', {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    fullName: {
+    name: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    phoneNo :{
+    phoneNo: {
       type: Sequelize.STRING,
       allowNull: false,
     },
@@ -28,7 +28,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    userStatus: {
+    status: {
       type: Sequelize.ENUM("active", "inactive", "locked"),
       defaultValue: 'active',
       allowNull: false
@@ -37,53 +37,17 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       defaultValue: 3, // Set the number of login attempts
     },
-    fileNumber: {
-      type: Sequelize.INTEGER,
-      allowNull: false      
-    },
-    profileImage:{
-      type: Sequelize.STRING,
-      allowNull: true
-    },
-
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });
 
-  // Define the method on the model prototype
-  Users.prototype.generateAuthToken = async function () {
-    try {
-      const tokenLogin = jwt.sign({ _id: this.id }, process.env.JWT_SECRET, {expiresIn: '24h'});
-      if(!this.tokens) {
-        this.tokens = [];
-      }
-      //this.tokens = this.tokens.concat(tokenLogin);
-      // Push a new object with the token to the array
-      //this.tokens.push({ token: tokenLogin });
-      //await this.save();
-      return tokenLogin;
-    } catch (err) {
-      console.log(err);
-    }
+  users.associate = function (models) {
+    // Associations to link applicant with form data collected during sign up
+    users.hasMany(models.requestLeaves, { foreignKey: 'fkUserId', as: 'requestLeaves' });
+    users.hasMany(models.leaveComments, { foreignKey: 'commentedBy', as: 'leaveComments' });
+
+    // users.hasMany(models.requestLeaves, { foreignKey: 'fkUserId', as: 'requestLeaves' });
   };
 
-  // Add a method to handle login attempts and status updates
-  Users.prototype.handleLoginAttempt = async function () {
-  
-      // Failed login attempt
-      if (this.loginAttempts > 0) {
-        this.loginAttempts--;
-        console.log(this.loginAttempts);
-      }
-  
-      if (this.loginAttempts === 0) {
-        // Lock the account if there are no more attempts
-        this.status = 'locked';
-      }
-    
-  
-    await this.save();
-  };
-
-  return Users;
+  return users;
 };

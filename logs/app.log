@@ -6093,3 +6093,545 @@
 [32m[info]: Nov-21-2023 09:49:22: 	Server Logger has been started Successfully[39m
 [32m[info]: Nov-21-2023 09:49:25: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
 [32m[info]: Nov-21-2023 09:49:25: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 09:57:18: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 09:57:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 09:58:00: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 09:58:00: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 09:58:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 09:58:36: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 09:58:36: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 09:59:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 09:59:32: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 09:59:32: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 09:59:46: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 09:59:56: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 09:59:56: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 10:00:06: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 10:00:06: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 10:01:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:01:06: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 10:01:06: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 10:02:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:02:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:02:08: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 10:02:08: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 10:02:38: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:04:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:04:03: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[31m[error]: Nov-21-2023 10:04:03: 	error is not defined[39m
+[32m[info]: Nov-21-2023 10:04:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:05:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:05:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:05:29: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[31m[error]: Nov-21-2023 10:05:29: 	No rows were updated. Check if the record with the provided ID exists[39m
+[32m[info]: Nov-21-2023 10:05:29: 	Leave Request Updated Successfully![39m
+[31m[error]: Nov-21-2023 10:05:29: 	Cannot read properties of undefined (reading 'insertId')[39m
+[32m[info]: Nov-21-2023 10:05:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:05:53: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[31m[error]: Nov-21-2023 10:05:53: 	No rows were updated. Check if the record with the provided ID exists[39m
+[32m[info]: Nov-21-2023 10:05:53: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 10:06:20: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[31m[error]: Nov-21-2023 10:06:20: 	No rows were updated. Check if the record with the provided ID exists[39m
+[32m[info]: Nov-21-2023 10:06:20: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 10:08:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:08:19: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 10:08:19: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 10:09:41: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:09:49: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:09:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:10:04: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 10:11:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:11:41: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 10:16:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:17:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:17:15: 	LeaveController: updateLeaveRequest id 130 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a breaks from Pakistans","requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 10:17:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:17:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:18:05: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:18:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:19:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:21:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:21:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 10:48:30: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:34:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:38:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:39:04: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:39:24: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:39:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:42:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:47:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:48:24: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:48:50: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-21-2023 11:48:50: 	uncaughtException: Route.put() requires a callback function but got a [object Undefined][39m
+[31mError: Route.put() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as put] (D:\senate\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at Function.proto.<computed> [as put] (D:\senate\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at Object.<anonymous> (D:\senate\dpaoas\routes\leave.route.js:11:8)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1101:14)[39m
+[31m    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1153:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:981:32)[39m
+[31m    at Function.Module._load (node:internal/modules/cjs/loader:822:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1005:19)[39m
+[31m    at require (node:internal/modules/cjs/helpers:102:18)[39m
+[31m    at Object.<anonymous> (D:\senate\dpaoas\server.js:12:21)[39m
+[32m[info]: Nov-21-2023 11:49:44: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-21-2023 11:49:45: 	uncaughtException: Route.put() requires a callback function but got a [object Undefined][39m
+[31mError: Route.put() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as put] (D:\senate\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at Function.proto.<computed> [as put] (D:\senate\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at Object.<anonymous> (D:\senate\dpaoas\routes\leave.route.js:11:8)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1101:14)[39m
+[31m    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1153:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:981:32)[39m
+[31m    at Function.Module._load (node:internal/modules/cjs/loader:822:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1005:19)[39m
+[31m    at require (node:internal/modules/cjs/helpers:102:18)[39m
+[31m    at Object.<anonymous> (D:\senate\dpaoas\server.js:12:21)[39m
+[32m[info]: Nov-21-2023 11:50:38: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-21-2023 11:50:39: 	uncaughtException: Route.put() requires a callback function but got a [object Undefined][39m
+[31mError: Route.put() requires a callback function but got a [object Undefined][39m
+[31m    at Route.<computed> [as put] (D:\senate\dpaoas\node_modules\express\lib\router\route.js:211:15)[39m
+[31m    at Function.proto.<computed> [as put] (D:\senate\dpaoas\node_modules\express\lib\router\index.js:521:19)[39m
+[31m    at Object.<anonymous> (D:\senate\dpaoas\routes\leave.route.js:11:8)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1101:14)[39m
+[31m    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1153:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:981:32)[39m
+[31m    at Function.Module._load (node:internal/modules/cjs/loader:822:12)[39m
+[31m    at Module.require (node:internal/modules/cjs/loader:1005:19)[39m
+[31m    at require (node:internal/modules/cjs/helpers:102:18)[39m
+[31m    at Object.<anonymous> (D:\senate\dpaoas\server.js:12:21)[39m
+[32m[info]: Nov-21-2023 11:52:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:52:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:54:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:55:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:59:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 11:59:20: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a break from Pakistanis","requestStationLeave":true,"leaveComment":"Approved","commentedBy":1}[39m
+[32m[info]: Nov-21-2023 12:00:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:01:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:01:10: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a break from Pakistanis","requestStationLeave":true,"leaveComment":"Approved","commentedBy":1}[39m
+[32m[info]: Nov-21-2023 12:01:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:01:39: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:03:04: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:03:05: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a break from Pakistanis","requestStationLeave":true,"leaveComment":"Approved","commentedBy":1}[39m
+[32m[info]: Nov-21-2023 12:04:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:04:12: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a break from Pakistanis","requestStationLeave":true,"leaveComment":"Approved","commentedBy":1}[39m
+[32m[info]: Nov-21-2023 12:11:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:12:27: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a break from Pakistanis","requestStationLeave":true,"leaveComment":"Approved","commentedBy":1}[39m
+[32m[info]: Nov-21-2023 12:14:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:15:03: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a break from Pakistanis","requestStationLeave":true,"leaveComment":"Approved","commentedBy":1}[39m
+[32m[info]: Nov-21-2023 12:15:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:15:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:15:59: 	LeaveController: updateLeaveRequest id 13 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Need a break from Pakistanis","requestStationLeave":true,"leaveComment":"Approved","commentedBy":1}[39m
+[32m[info]: Nov-21-2023 12:15:59: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 12:20:38: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:22:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:22:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:23:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:23:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:23:46: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:23:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:24:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:24:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:24:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:24:54: 	LeaveController: createleave body {"fkRequestTypeId":1,"fkUserId":1,"requestStatus":"pending","requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Adding New Leave","requestNumberOfDays":"5","requestLeaveSubmittedTo":"1","requestLeaveApplyOnBehalf":"","requestLeaveForwarder":"","requestStationLeave":true}[39m
+[31m[error]: Nov-21-2023 12:24:54: 	invalid input syntax for type boolean: ""[39m
+[32m[info]: Nov-21-2023 12:25:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:26:05: 	LeaveController: createleave body {"fkRequestTypeId":1,"fkUserId":1,"requestStatus":"pending","requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Adding New Leave","requestNumberOfDays":"5","requestLeaveSubmittedTo":"1","requestLeaveApplyOnBehalf":"","requestLeaveForwarder":"","requestStationLeave":true}[39m
+[31m[error]: Nov-21-2023 12:26:05: 	invalid input syntax for type boolean: ""[39m
+[32m[info]: Nov-21-2023 12:27:02: 	LeaveController: createleave body {"fkRequestTypeId":1,"fkUserId":1,"requestStatus":"pending","requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Adding New Leave","requestNumberOfDays":"5","requestLeaveSubmittedTo":"1","requestLeaveApplyOnBehalf":null,"requestLeaveForwarder":null,"requestStationLeave":true}[39m
+[32m[info]: Nov-21-2023 12:27:02: 	Leave Request submitted Successfully![39m
+[32m[info]: Nov-21-2023 12:30:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:30:04: 	LeaveController: updateLeaveRequest id 15 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStatus":"pending","requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Adding New Leave","requestNumberOfDays":"5","requestLeaveSubmittedTo":"1","requestLeaveApplyOnBehalf":"","requestLeaveForwarder":"","requestStationLeave":true,"leaveComment":"Marked To DG","commentedBy":1}[39m
+[32m[info]: Nov-21-2023 12:30:37: 	LeaveController: updateLeaveRequest id 15 and body {"fkRequestTypeId":1,"fkUserId":1,"requestStatus":"pending","requestStartDate":"2023-11-10T00:00:00.000Z","requestEndDate":"2023-11-15T00:00:00.000Z","requestLeaveSubType":"preApproved","requestLeaveReason":"Adding New Leave","requestNumberOfDays":"5","requestLeaveSubmittedTo":"1","requestLeaveApplyOnBehalf":null,"requestLeaveForwarder":null,"requestStationLeave":true,"leaveComment":"Marked To DG","commentedBy":1}[39m
+[32m[info]: Nov-21-2023 12:30:37: 	Leave Request Updated Successfully![39m
+[32m[info]: Nov-21-2023 12:35:46: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:36:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:41:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:42:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 12:50:17: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:16:55: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:17:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:19:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:20:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:21:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:21:18: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:22:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:23:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:24:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:25:18: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:25:22: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:27:46: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:28:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:31:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:32:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:32:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:32:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:33:22: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:33:43: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-21-2023 14:34:20: 	uncaughtException: query is not defined[39m
+[31mReferenceError: query is not defined[39m
+[31m    at getAllLeaves (D:\senate\dpaoas\controllers\leave.controller.js:14:75)[39m
+[31m    at Layer.handle [as handle_request] (D:\senate\dpaoas\node_modules\express\lib\router\layer.js:95:5)[39m
+[31m    at next (D:\senate\dpaoas\node_modules\express\lib\router\route.js:144:13)[39m
+[31m    at Route.dispatch (D:\senate\dpaoas\node_modules\express\lib\router\route.js:114:3)[39m
+[31m    at Layer.handle [as handle_request] (D:\senate\dpaoas\node_modules\express\lib\router\layer.js:95:5)[39m
+[31m    at D:\senate\dpaoas\node_modules\express\lib\router\index.js:284:15[39m
+[31m    at Function.process_params (D:\senate\dpaoas\node_modules\express\lib\router\index.js:346:12)[39m
+[31m    at next (D:\senate\dpaoas\node_modules\express\lib\router\index.js:280:10)[39m
+[31m    at Function.handle (D:\senate\dpaoas\node_modules\express\lib\router\index.js:175:3)[39m
+[31m    at router (D:\senate\dpaoas\node_modules\express\lib\router\index.js:47:12)[39m
+[32m[info]: Nov-21-2023 14:34:43: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-21-2023 14:34:47: 	uncaughtException: Converting circular structure to JSON[39m
+[31m    --> starting at object with constructor 'Socket'[39m
+[31m    |     property 'parser' -> object with constructor 'HTTPParser'[39m
+[31m    --- property 'socket' closes the circle[39m
+[31mTypeError: Converting circular structure to JSON[39m
+[31m    --> starting at object with constructor 'Socket'[39m
+[31m    |     property 'parser' -> object with constructor 'HTTPParser'[39m
+[31m    --- property 'socket' closes the circle[39m
+[31m    at JSON.stringify (<anonymous>)[39m
+[31m    at getAllLeaves (D:\senate\dpaoas\controllers\leave.controller.js:14:65)[39m
+[31m    at Layer.handle [as handle_request] (D:\senate\dpaoas\node_modules\express\lib\router\layer.js:95:5)[39m
+[31m    at next (D:\senate\dpaoas\node_modules\express\lib\router\route.js:144:13)[39m
+[31m    at Route.dispatch (D:\senate\dpaoas\node_modules\express\lib\router\route.js:114:3)[39m
+[31m    at Layer.handle [as handle_request] (D:\senate\dpaoas\node_modules\express\lib\router\layer.js:95:5)[39m
+[31m    at D:\senate\dpaoas\node_modules\express\lib\router\index.js:284:15[39m
+[31m    at Function.process_params (D:\senate\dpaoas\node_modules\express\lib\router\index.js:346:12)[39m
+[31m    at next (D:\senate\dpaoas\node_modules\express\lib\router\index.js:280:10)[39m
+[31m    at Function.handle (D:\senate\dpaoas\node_modules\express\lib\router\index.js:175:3)[39m
+[32m[info]: Nov-21-2023 14:36:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:37:19: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-21-2023 14:37:28: 	uncaughtException: Cannot access 'page' before initialization[39m
+[31mReferenceError: Cannot access 'page' before initialization[39m
+[31m    at getAllLeaves (D:\senate\dpaoas\controllers\leave.controller.js:14:24)[39m
+[31m    at Layer.handle [as handle_request] (D:\senate\dpaoas\node_modules\express\lib\router\layer.js:95:5)[39m
+[31m    at next (D:\senate\dpaoas\node_modules\express\lib\router\route.js:144:13)[39m
+[31m    at Route.dispatch (D:\senate\dpaoas\node_modules\express\lib\router\route.js:114:3)[39m
+[31m    at Layer.handle [as handle_request] (D:\senate\dpaoas\node_modules\express\lib\router\layer.js:95:5)[39m
+[31m    at D:\senate\dpaoas\node_modules\express\lib\router\index.js:284:15[39m
+[31m    at Function.process_params (D:\senate\dpaoas\node_modules\express\lib\router\index.js:346:12)[39m
+[31m    at next (D:\senate\dpaoas\node_modules\express\lib\router\index.js:280:10)[39m
+[31m    at Function.handle (D:\senate\dpaoas\node_modules\express\lib\router\index.js:175:3)[39m
+[31m    at router (D:\senate\dpaoas\node_modules\express\lib\router\index.js:47:12)[39m
+[32m[info]: Nov-21-2023 14:37:54: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:37:58: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[31m[error]: Nov-21-2023 14:37:58: 	uncaughtException: rows is not defined[39m
+[31mReferenceError: rows is not defined[39m
+[31m    at getAllLeaves (D:\senate\dpaoas\controllers\leave.controller.js:30:21)[39m
+[31m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+[32m[info]: Nov-21-2023 14:38:18: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:38:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:38:48: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 14:39:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:39:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:39:54: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 14:40:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:41:02: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 14:43:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:44:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:44:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:44:26: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 14:47:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:47:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:47:35: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 14:48:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:49:10: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:49:55: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:50:10: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:50:15: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 14:50:41: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:52:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:59:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 14:59:33: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:02:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:03:39: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:03:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:03:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:04:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:04:14: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:04:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:05:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:06:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:06:18: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:07:17: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:07:20: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:08:18: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:10:38: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:10:47: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:13:05: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:13:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:13:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:13:35: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:14:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:14:36: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:14:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:15:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:16:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:16:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:16:42: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:18:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:18:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:18:26: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:20:13: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:20:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:20:38: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:21:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:22:07: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:22:12: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:22:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:22:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:22:49: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:23:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:23:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:23:56: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:25:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:25:32: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:27:30: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:28:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:28:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:28:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:28:30: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:28:41: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:28:43: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:29:29: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:30:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:31:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:31:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:31:23: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:31:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:31:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:33:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:33:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:33:54: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:33:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:37:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:37:30: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:37:42: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:37:48: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 15:37:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:38:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:42:54: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 15:42:57: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:29:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:30:14: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:30:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:30:38: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:31:27: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:31:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:31:42: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:31:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:32:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:32:07: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:32:25: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:32:28: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:34:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:36:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:36:39: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:37:59: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:38:05: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:41:49: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:43:10: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:43:13: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:43:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:46:38: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:46:45: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:52:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:52:03: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:53:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:53:02: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:54:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:54:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 16:54:31: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 16:54:35: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 18:54:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:54:28: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 18:54:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:54:54: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 18:55:02: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 18:55:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:55:38: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 18:57:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:57:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:57:37: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 18:58:24: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:58:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:58:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:59:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:59:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:59:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:59:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:59:49: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 18:59:53: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:00:04: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:00:10: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:02:22: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:03:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:03:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:03:52: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:04:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:05:40: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:05:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:05:48: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:06:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:06:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:07:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:07:06: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:07:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:07:41: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:08:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:08:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:08:44: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:09:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:09:23: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:11:19: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:11:39: 	Server Logger has been started Successfully[39m
+[31m[error]: Nov-21-2023 19:12:05: 	uncaughtException: winston is not defined[39m
+[31mReferenceError: winston is not defined[39m
+[31m    at getLeaveById (D:\senate\dpaoas\controllers\leave.controller.js:91:9)[39m
+[31m    at Layer.handle [as handle_request] (D:\senate\dpaoas\node_modules\express\lib\router\layer.js:95:5)[39m
+[31m    at next (D:\senate\dpaoas\node_modules\express\lib\router\route.js:144:13)[39m
+[31m    at Route.dispatch (D:\senate\dpaoas\node_modules\express\lib\router\route.js:114:3)[39m
+[31m    at Layer.handle [as handle_request] (D:\senate\dpaoas\node_modules\express\lib\router\layer.js:95:5)[39m
+[31m    at D:\senate\dpaoas\node_modules\express\lib\router\index.js:284:15[39m
+[31m    at param (D:\senate\dpaoas\node_modules\express\lib\router\index.js:365:14)[39m
+[31m    at param (D:\senate\dpaoas\node_modules\express\lib\router\index.js:376:14)[39m
+[31m    at Function.process_params (D:\senate\dpaoas\node_modules\express\lib\router\index.js:421:3)[39m
+[31m    at next (D:\senate\dpaoas\node_modules\express\lib\router\index.js:280:10)[39m
+[32m[info]: Nov-21-2023 19:12:26: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:12:30: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 19:12:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:12:55: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:13:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:13:04: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 19:13:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:13:42: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 19:14:24: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:14:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:16:22: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:16:46: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:16:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:19:12: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:20:10: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:20:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:20:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:21:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:21:12: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:24:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:24:06: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:25:49: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:26:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:26:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:29:10: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:30:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:31:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:31:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:33:32: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:34:08: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:34:15: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:37:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:37:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:37:51: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:38:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:38:40: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:39:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:39:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:40:29: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:40:38: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:41:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:42:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:42:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:42:18: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 19:44:21: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 19:44:48: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:02:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:02:12: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:02:34: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:02:58: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:03:06: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:03:44: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:05:11: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:05:44: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:05:58: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:08:00: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:08:08: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:14:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:41:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:41:52: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:42:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:42:51: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:43:03: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:43:05: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:43:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:44:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:44:51: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:46:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:46:42: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:46:56: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:47:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:48:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:48:35: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:48:57: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:48:59: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:49:33: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:49:36: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:50:43: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:50:45: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:51:04: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:51:08: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:51:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:51:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:51:50: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:52:01: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:52:55: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:52:59: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 20:55:32: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 20:55:35: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 22:56:29: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 22:56:35: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 22:58:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 22:59:52: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:00:05: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 23:03:31: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:03:34: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 23:03:51: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 23:06:02: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:06:05: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 23:07:09: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:07:11: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 23:07:28: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:07:31: 	LeaveController: getAllLeaves query {"page":"0","pageSize":"10"}[39m
+[32m[info]: Nov-21-2023 23:10:53: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:13:12: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:13:35: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:13:45: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:13:49: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:19:49: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:20:15: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:21:17: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:21:26: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:25:04: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:25:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:25:51: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:26:16: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:26:30: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:27:13: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:28:36: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:28:40: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:29:24: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:29:27: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:30:10: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:30:46: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:30:50: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:31:37: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:31:40: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:33:50: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:33:52: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:34:20: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:34:21: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:35:47: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:35:52: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:37:19: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:37:27: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:38:05: 	Server Logger has been started Successfully[39m
+[32m[info]: Nov-21-2023 23:38:11: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Nov-21-2023 23:38:54: 	LeaveController: getLeaveById 15[39m

@@ -24,7 +24,7 @@
     "nodemon": "^3.0.1",
     "pg-promise": "^11.5.4",
     "postgres": "^3.4.0",
-    "sequelize": "^6.34.0",
+    "sequelize": "^5.0.0",
     "winston": "^3.11.0"
   },
   "devDependencies": {
