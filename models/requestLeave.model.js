@@ -1,5 +1,7 @@
+const db = require("../models");
+
 module.exports = (sequelize, Sequelize) => {
-  const RequestLeave = sequelize.define("requestLeaves", {
+  const requestLeaves = sequelize.define("requestLeaves", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -71,6 +73,9 @@ module.exports = (sequelize, Sequelize) => {
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });
-
-  return RequestLeave;
+  requestLeaves.associate = function (models) {
+    requestLeaves.belongsTo(db.users, { foreignKey: 'fkUserId', as: 'users' });
+    requestLeaves.hasMany(models.leaveComments);
+  };
+  return requestLeaves;
 };

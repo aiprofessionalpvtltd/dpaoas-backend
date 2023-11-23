@@ -23,19 +23,25 @@ db.sequelize = sequelize;
 
 db.roles = require("./roles.model.js")(sequelize, SequelizeMain);
 db.users = require("./users.model.js")(sequelize, SequelizeMain);
-db.permissions = require("./permissions.model")(sequelize,SequelizeMain);
+db.permissions = require("./permissions.model")(sequelize, SequelizeMain);
 db.userRoles = require("./usersRoles.model")(sequelize, SequelizeMain);
 db.rolesPermissions = require("./rolesPermissions.model")(sequelize, SequelizeMain);
 db.modulesPermissions = require("./modulesPermissions.model")(sequelize, SequelizeMain);
-db.userSession = require("./userSession.model")(sequelize,SequelizeMain);
+db.userSession = require("./userSession.model")(sequelize, SequelizeMain);
 db.modules = require('./module.model')(sequelize, SequelizeMain);
-db.leaveTypes = require('./leaveType.model')(sequelize,SequelizeMain);
-db.requestLeaves = require('./requestLeave.model')(sequelize,SequelizeMain);
-db.leaveComments = require('./leaveComments.model')(sequelize,SequelizeMain);
-db.departments = require('./departments.model')(sequelize,SequelizeMain);
-db.designations = require('./designations.model')(sequelize,SequelizeMain);
-db.userDespartments= require('./usersDepartments.model')(sequelize,SequelizeMain);
-db.userDesignations = require('./usersDesignations.model')(sequelize,SequelizeMain)
+db.leaveTypes = require('./leaveType.model')(sequelize, SequelizeMain);
+db.requestLeaves = require('./requestLeave.model')(sequelize, SequelizeMain);
+db.leaveComments = require('./leaveComments.model')(sequelize, SequelizeMain);
+db.departments = require('./departments.model')(sequelize, SequelizeMain);
+db.designations = require('./designations.model')(sequelize, SequelizeMain);
+db.userDespartments = require('./usersDepartments.model')(sequelize, SequelizeMain);
+db.userDesignations = require('./usersDesignations.model')(sequelize, SequelizeMain);
+
+db.users.hasMany(db.requestLeaves, { foreignKey: 'fkUserId', as: 'requestLeaves' });
+db.requestLeaves.belongsTo(db.users, { foreignKey: 'fkUserId', as: 'users' });
+db.leaveComments.belongsTo(db.requestLeaves, { foreignKey: 'fkRequestLeaveId', as: 'requestLeaves' });
+db.requestLeaves.hasMany(db.leaveComments, { foreignKey: 'fkRequestLeaveId', as: 'leaveComments' });
+db.leaveComments.belongsTo(db.users, { foreignKey: 'commentedBy', as: 'users' });
 sequelize.sync();
 
 module.exports = db;
