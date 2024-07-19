@@ -514,6 +514,54 @@ const resolutionController = {
         }
     },
 
+    // Annual Report
+    searchResolutionAnnualReport: async (req, res) => {
+        try {
+            if (Object.keys(req.query).length !== 0) {
+                const currentPage = parseInt(req.query.currentPage);
+                const pageSize = parseInt(req.query.pageSize);
+                const { count, totalPages, resolutions } = await resolutionService.searchResolutionAnnualReportService(req.query, currentPage, pageSize);
+                if (resolutions.length > 0) {
+                    logger.info("Searched Successfully!");
+                    return res.status(200).send({
+                        success: true,
+                        message: "Resolution search results!",
+                        data: {
+                            resolutions,
+                            count,
+                            totalPages
+
+                        },
+                    });
+                }
+                else {
+                    logger.info("Data not found!");
+                    return res.status(200).send({
+                        success: true,
+                        message: "Data not found!",
+                        data: { resolutions },
+                    });
+                }
+            }
+            else {
+                logger.info("Data Not Found!");
+                return res.status(200).send({
+                    success: false,
+                    message: "Data not found!",
+                    data: [],
+                });
+            }
+
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+
+            })
+        }
+    },
+
     // Search Inactive Resolution
     searchInactiveResolution: async (req, res) => {
         try {

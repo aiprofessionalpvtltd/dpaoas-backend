@@ -185,6 +185,7 @@ router.delete('/resolutionlists/:id', resolution.deleteResolutionList);
  *         description: A successful response
  */
 router.get("/searchQuery", resolution.searchResolution);
+router.get("/searchQuery/annual-report", resolution.searchResolutionAnnualReport);
 
 router.get("/searchInactiveResoultion", resolution.searchInactiveResolution);
 

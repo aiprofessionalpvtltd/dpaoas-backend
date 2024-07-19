@@ -264,6 +264,21 @@ const resolutionService = {
             if (missingIds.length > 0) {
                 throw { message: `Resolutions not found for IDs: ${missingIds.join(', ')}` };
             }
+            // Fetch the ID of the 'balloting' status
+            const ballotingStatus = await resolutionStatus.findOne({
+                where: { resolutionStatus: 'balloting' },
+                attributes: ['id']
+            });
+
+            if (!ballotingStatus) {
+                throw { message: 'Resolution status "balloting" not found' };
+            }
+
+            // Update the fkResolutionStatus to 'balloting' status ID
+            await resolution.update(
+                { fkResolutionStatus: ballotingStatus.id },
+                { where: { id: resolutionIds } }
+            );
 
             return resolutions;
 
@@ -420,10 +435,6 @@ const resolutionService = {
             throw { message: error.message || "Error Fetching Resolutions by Status!" };
         }
     },
-
-
-
-
 
     // Retrieve All Resolution in Notice
     findAllResolutionInNotice: async (currentPage, pageSize) => {
@@ -827,7 +838,6 @@ const resolutionService = {
             throw error;
         }
     },
-
 
     // // Resolution Lits
     // createResolutionListAndAssociateResolutions: async (payload) => {
@@ -1241,11 +1251,11 @@ const resolutionService = {
         }
     },
 
-    
+
     // get Single Resolution Data
     getSingleResolutionData: async (resolutionListId) => {
         try {
-          
+
             // Fetch the resolution list by ID
             const resolutionList = await db.resolutionLists.findOne({
                 where: { id: resolutionListId },
@@ -1275,7 +1285,7 @@ const resolutionService = {
                 }]
             });
 
-           
+
 
             if (!resolutionList) {
                 throw new Error('Resolution list not found');
@@ -1311,7 +1321,7 @@ const resolutionService = {
                     [db.sequelize.literal(`CASE WHEN "resolutionStatus"."resolutionStatus" = 'Deferred' THEN 1 WHEN "resolutionStatus"."resolutionStatus" = 'Admitted' THEN 2 END`), 'ASC']
                 ]
             });
-    
+
             // Map the resolutions to include member names
             const resolutionsWithMemberNames = resolutions.map(resolution => {
                 const resolutionData = resolution.toJSON();
@@ -1327,21 +1337,20 @@ const resolutionService = {
             });
 
             console.log("resolutionsWithMemberNames", resolutionsWithMemberNames)
-    
+
             // Prepare the response data
             const responseData = {
                 ...resolutionList.toJSON(),
                 resolutions: resolutionsWithMemberNames
             };
-    
-            return responseData;    
+
+            return responseData;
 
         } catch (error) {
             console.error('Error generating resolution list data:', error);
             throw error;
         }
     },
-
 
 
     // Retrieve Resolutions by web_id
@@ -1628,6 +1637,173 @@ const resolutionService = {
             return { count: rows.length, totalPages, resolutions: rows };
 
             //            return resolutionsData;
+        } catch (error) {
+            throw { message: error.message || "Error searching resolutions!" };
+        }
+    },
+
+    // Search Resolution Annual Service
+    searchResolutionAnnualReportService: async (queryParams, currentPage, pageSize) => {
+        try {
+            const offset = currentPage * pageSize; // Adjust offset calculation
+            const limit = pageSize;
+            const currentYear = moment().year(); // Get the current year
+    
+            const {
+                fkSessionNoFrom,
+                fkSessionNoTo,
+                resolutionType,
+                colourResNo,
+                keyword,
+                resolutionId,
+                resolutionDiaryNo,
+                fkResolutionStatus,
+                noticeOfficeDiaryNo,
+                noticeOfficeDiaryDateFrom,
+                noticeOfficeDiaryDateTo,
+                resolutionMovers,
+                resolutionSentStatus,
+                resolutionSentDate,
+                memberPosition
+            } = queryParams;
+    
+            const query = {};
+    
+            // Filter for the current year
+            query.createdAt = {
+                [Op.between]: [
+                    moment().startOf('year').toDate(),
+                    moment().endOf('year').toDate()
+                ]
+            };
+    
+            if (fkSessionNoFrom && fkSessionNoTo) {
+                query.fkSessionNo = { [Op.between]: [fkSessionNoFrom, fkSessionNoTo] };
+            }
+    
+            if (resolutionType) {
+                query.resolutionType = resolutionType;
+            }
+    
+            if (colourResNo) {
+                query.colourResNo = colourResNo;
+            }
+    
+            if (keyword) {
+                query[Op.or] = [
+                    { englishText: { [Op.iLike]: `%${keyword}%` } },
+                    { urduText: { [Op.iLike]: `%${keyword}%` } },
+                ];
+            }
+    
+            if (resolutionId) {
+                query["$resolutionDiaries.resolutionId$"] = resolutionId;
+            }
+    
+            if (resolutionDiaryNo) {
+                query["$resolutionDiaries.resolutionDiaryNo$"] = resolutionDiaryNo;
+            }
+    
+            if (fkResolutionStatus) {
+                query["$resolutionStatus.id$"] = fkResolutionStatus;
+            }
+    
+            if (noticeOfficeDiaryNo) {
+                query["$noticeDiary.noticeOfficeDiaryNo$"] = noticeOfficeDiaryNo;
+            }
+    
+            if (noticeOfficeDiaryDateFrom && noticeOfficeDiaryDateTo) {
+                query["$noticeDiary.noticeOfficeDiaryDate$"] = {
+                    [Op.between]: [noticeOfficeDiaryDateFrom, noticeOfficeDiaryDateTo],
+                };
+            } else if (noticeOfficeDiaryDateFrom) {
+                query["$noticeDiary.noticeOfficeDiaryDate$"] = {
+                    [Op.gte]: noticeOfficeDiaryDateFrom,
+                };
+            }
+    
+            if (resolutionMovers) {
+                query["$resolutionMoversAssociation.fkMemberId$"] = resolutionMovers;
+            }
+            if (resolutionSentStatus) {
+                query["$resolutionSentStatus$"] = resolutionSentStatus;
+            }
+            if (resolutionSentDate) {
+                query["$resolutionSentDate$"] = resolutionSentDate;
+            }
+            if (memberPosition) {
+                query["$memberPosition$"] = memberPosition;
+            }
+    
+            // Construct Sequelize query
+            const { count, rows } = await resolution.findAndCountAll({
+                include: [
+                    {
+                        model: db.sessions,
+                        as: 'session',
+                        attributes: ['id', 'sessionName'],
+                    },
+                    {
+                        model: db.resolutionStatus,
+                        as: 'resolutionStatus',
+                        attributes: ['id', 'resolutionStatus'],
+                    },
+                    {
+                        model: db.resolutionMovers,
+                        as: 'resolutionMoversAssociation',
+                        attributes: ['id', 'fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'memberAssociation',
+                                attributes: ['id', 'memberName'],
+                            },
+                        ],
+                    },
+                    {
+                        model: db.noticeOfficeDairies,
+                        as: 'noticeDiary',
+                        attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
+                    },
+                    {
+                        model: db.resolutionDiaries,
+                        as: 'resolutionDiaries',
+                        attributes: ['id', 'resolutionId', 'resolutionDiaryNo'],
+                    },
+                    {
+                        model: Users,
+                        as: 'createdBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    },
+                    {
+                        model: Users,
+                        as: 'deletedBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    },
+                ],
+                subQuery: false,
+                distinct: true,
+                where: query,
+                offset,
+                limit,
+                order: [
+                    ['id', 'ASC']
+                ],
+            });
+    
+            const totalPages = Math.ceil(count / pageSize);
+            return { count: rows.length, totalPages, resolutions: rows };
+    
         } catch (error) {
             throw { message: error.message || "Error searching resolutions!" };
         }

@@ -10,7 +10,7 @@ const logger = require('../common/winston');
 const seatingPlanService = {
 
     //Assign/UnAssign Member's Seat
-    updateSeatAssignment: async (seatData, seatNumber, existingSeat) => {
+    updateSeatAssignment: async (seatData, seatNumber, existingSeat, isRequest) => {
         try {
             if (existingSeat) {
                 if (seatData.fkMemberId !== null) {
@@ -29,7 +29,8 @@ const seatingPlanService = {
                 await SeatingPlan.update(
                     {
                         fkMemberId: seatData.fkMemberId !== null ? seatData.fkMemberId : null,
-                        assignStatus: seatData.assignStatus
+                        assignStatus: seatData.assignStatus,
+                        isRequest: isRequest === true // Add isRequest to the update
                     },
                     {
                         where: { id: existingSeat.dataValues.id },
@@ -55,7 +56,8 @@ const seatingPlanService = {
                         seatNumber: seatNumber,
                         fkMemberId: seatData.fkMemberId !== null ? seatData.fkMemberId : null,
                         assignStatus: seatData.assignStatus,
-                        rowNumber: seatData.rowNumber
+                        rowNumber: seatData.rowNumber,
+                        isRequest: isRequest === true // Add isRequest to the creation
                     });
                     return newSeat;
                 }
@@ -63,7 +65,7 @@ const seatingPlanService = {
         } catch (error) {
             throw { message: error.message || 'Error assigning/un-assigning seat.' };
         }
-    },
+    },    
 
     swapSeats: async (seatNumber1, seatNumber2) => {
         try {

@@ -21,10 +21,14 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-
         assignStatus: {
             type: Sequelize.BOOLEAN,
             allowNull: false,
+        },
+        isRequest: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
@@ -32,9 +36,7 @@ module.exports = (sequelize, Sequelize) => {
 
     seatingPlans.associate = function (models) {
         seatingPlans.belongsTo(models.members, { foreignKey: 'fkMemberId' });
-
     };
-
 
     return seatingPlans;
 };
