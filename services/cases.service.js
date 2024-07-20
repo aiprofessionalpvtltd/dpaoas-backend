@@ -178,12 +178,12 @@ const casesService = {
                         as: 'cases',
                         required: true,
                         attributes: ['id', 'fkFileId', 'isEditable', 'createdBy', 'createdAt', 'updatedAt'],
-                        ...(fileId ? { where: { fkFileId: fileId } } : {}),
+...(fileId ? { where: { fkFileId: fileId } } : {}),
                         include: [
                             {
                                 model: Files,
                                 as: 'files',
-                            },
+                                                            },
                             {
                                 model: FreshReceipts,
                                 as: 'freshReceipts',
@@ -258,42 +258,42 @@ const casesService = {
                 ],
                 attributes: ['id', 'fkCaseId', 'notingSubject', 'fkCorrespondenceIds', 'createdAt'],
                 order: [['id', 'DESC']],
-            });
-
+                            });
+    
 
             const casesByCaseId = {};
             allRelevantSections.forEach(section => {
                 const caseData = section.cases;
                 const remarks = caseData.casesRemarks || [];
                 const createdBy = parseInt(caseData.createdBy);
-
+    
                 // Determine visibility and isEditable
-                // let isVisible = false;
-                // let isEditable = true;
-
-                // Initial visibility is only for the creator
+                let isVisible = false;
+// let isEditable = true;
+    
+// Initial visibility is only for the creator
                 if (parseInt(userId) === createdBy) {
                     isVisible = true;
-                    // isEditable = remarks.length === 0;  // Creator can edit if no remarks
+// isEditable = remarks.length === 0;  // Creator can edit if no remarks
                 }
-
-                // Check remarks for further visibility and editability
+    
+// Check remarks for further visibility and editability
                 if (remarks.length > 0) {
                     const latestRemark = remarks.reduce((latest, remark) => {
                         return (latest.createdAt > remark.createdAt) ? latest : remark;
                     }, { createdAt: new Date(0), assignedTo: null });
-
-                    // If there is a latest remark, check if the user is the one it's assigned to
+    
+// If there is a latest remark, check if the user is the one it's assigned to
                     if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
                         isVisible = true;  // The assigned user can also see the case
                         //   isEditable = true;  // The assigned user can edit the case
                     } else {
-                        // Ensure the creator retains visibility even when not the latest assigned
+// Ensure the creator retains visibility even when not the latest assigned
                         isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
-                        // isEditable = false;  // Creator cannot edit once assigned to someone else
+// isEditable = false;  // Creator cannot edit once assigned to someone else
                     }
                 }
-
+    
 
 
                 // Ensuring each case is only added once with the full data structure
@@ -304,7 +304,7 @@ const casesService = {
                             fkCaseId: section.fkCaseId,
                             createdAt: caseData.createdAt,
                             createdBy: caseData.createdBy,
-                            //  isEditable: isEditable,
+//  isEditable: isEditable,
                             fileData: section.cases.files,
                             freshReceiptData: section.cases.freshReceipts,
                             fileRemarksData: section.cases.casesRemarks,
@@ -318,11 +318,11 @@ const casesService = {
                     // };
                 }
             });
-
+    
             const aggregatedCases = Object.values(casesByCaseId);
             const paginatedCases = aggregatedCases.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
             const totalPages = Math.ceil(aggregatedCases.length / pageSize);
-
+    
             return {
                 cases: paginatedCases,
                 count: aggregatedCases.length,
@@ -332,6 +332,7 @@ const casesService = {
             throw new Error(error.message || "Error Fetching Cases");
         }
     },
+
     //Get Case History On The Basis of Created User
     getCasesHistory: async (fileId, userId, branchId, currentPage, pageSize) => {
         try {
