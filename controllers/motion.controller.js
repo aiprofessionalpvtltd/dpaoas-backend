@@ -327,7 +327,7 @@ const MotionController = {
         }
         if (memberPosition) {
             whereClause['$memberPosition$'] = memberPosition;
-        }    
+        }
 
 
         options.where = whereClause;
@@ -374,6 +374,156 @@ const MotionController = {
         }
     },
 
+    generateMotionListData: async (req, res) => {
+        try {
+            const payload = req.body;
+            const motionListData = await motionService.generateMotionListData(payload);
+            logger.info("Motion list data generated successfully!")
+            return res.status(200).send({
+                success: true,
+                message: "Motion list data generated successfully!",
+                data: [motionListData]
+            });
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+    // Update Motion List and get all Motion
+    updateMotionListAndAssociations: async (req, res) => {
+        try {
+            const payload = req.body;
+            const updatedMotionListData = await motionService.updateMotionListAndAssociations(payload);
+            logger.info("Motion list updated and Motions associated successfully!");
+            return res.status(200).send({
+                success: true,
+                message: "Motion list updated and Motions associated successfully!",
+                data: [updatedMotionListData]
+            });
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+
+
+    getAllMotionLists: async (req, res) => {
+        try {
+            const currentPage = parseInt(req.query.currentPage);
+            const pageSize = parseInt(req.query.pageSize);
+
+            const { count, totalPages, motionList } = await motionService.getAllMotionLists(currentPage, pageSize);
+
+            if (motionList.length === 0) {
+                logger.info("No data found on this page!")
+                return res.status(200).send({
+                    success: true,
+                    message: 'No data found on this page!',
+                    data: { motionList }
+                });
+            }
+            else {
+                logger.info("All Motion List Fetched Successfully!")
+                return res.status(200).send({
+                    success: true,
+                    message: "All Motion list fetched successfully!",
+                    data: { motionList, totalPages, count }
+                })
+            }
+
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+    // delete Motion List
+    deleteMotionList: async (req, res) => {
+        try {
+            const motionListId = req.params.id
+            const result = await motionService.deleteMotionList(motionListId);
+            logger.info("Motion list deleted successfully!")
+            return res.status(200).send({
+                success: true,
+                message: "Motion list deleted successfully!",
+            })
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+
+
+    getSingleMotionData: async (req, res) => {
+        try {
+            const motionListId = req.params.id
+            const motionListData = await motionService.getSingleMotionData(motionListId);
+            logger.info("Single Motion list data generated successfully!")
+            return res.status(200).send({
+                success: true,
+                message: "Single Motion list data generated successfully!",
+                data: [motionListData]
+            });
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+     // Retrieves Motions by IDs
+     pdfMotionList: async (req, res) => {
+        try {
+
+            const motionIds = req.body;
+
+            if (!Array.isArray(motionIds) || motionIds.length === 0) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Invalid motion IDs array!"
+                });
+            }
+
+            const motions = await motionService.pdfMotionList(motionIds);
+
+            if (motions.length === 0) {
+                logger.info("No data found for the provided motion IDs!")
+                return res.status(200).send({
+                    success: true,
+                    message: 'No data found for the provided motion IDs!',
+                    data: { motions }
+                });
+            } else {
+                logger.info("Motions fetched successfully by IDs!")
+                return res.status(200).send({
+                    success: true,
+                    message: "Motions fetched successfully by IDs!",
+                    data: { motions }
+                });
+            }
+
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
 
 
     getMotionTypes: async (req, res) => {

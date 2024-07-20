@@ -8,6 +8,12 @@ const { uploadFile } = require('../common/upload');
 
 
 router.get('/motionStatuses', motionController.getMotionStatuses);
+router.post("/generateMotionListData", motionController.generateMotionListData);
+router.put('/updateMotionListAndAssociations', motionController.updateMotionListAndAssociations);
+router.get('/motionLists', motionController.getAllMotionLists);
+router.delete('/motionlists/:id', motionController.deleteMotionList);
+router.get('/getSingleMotionData/:id', motionController.getSingleMotionData);
+router.post("/pdfMotionList", motionController.pdfMotionList);
 
 
 /**

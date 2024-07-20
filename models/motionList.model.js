@@ -44,7 +44,7 @@ module.exports = (sequelize, Sequelize) => {
     });
 
     motionLists.associate = function (models) {
-        motionLists.belongsTo(models.sessions, { foreignKey: 'fkSessionId' });
+        motionLists.belongsTo(models.sessions, { foreignKey: 'fkSessionId', as: 'sessionName' });
         motionLists.belongsToMany(models.motions, {
             through: 'motionMotionLists',
             foreignKey: 'fkMotionListId',
