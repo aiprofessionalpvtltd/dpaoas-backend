@@ -636,6 +636,7 @@ db.legislativeBills.belongsTo(db.billStatuses, { foreignKey: 'fkBillStatus', as:
 db.lawAct = require('./LDU/lawAct.model.js')(sequelize, SequelizeMain);
 
 db.resolutionLists.belongsTo(db.sessions, { foreignKey: 'fkSessionId', as: 'sessionName' });
+db.motionLists.belongsTo(db.sessions, { foreignKey: 'fkSessionId', as: 'sessionName' });
 
 
 sequelize.sync();
