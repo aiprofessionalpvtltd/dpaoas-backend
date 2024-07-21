@@ -121,7 +121,6 @@ router.get("/byBranch/:id", mainHeadingFile.findMainHeadingsByBranchId)
 router.get("/byHeading/:id", mainHeadingFile.findHeadingNumberByHeadingId)
 
 
-
 // Update Main Heading
 /**
  * @swagger

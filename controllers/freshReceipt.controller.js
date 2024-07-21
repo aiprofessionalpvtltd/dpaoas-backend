@@ -356,10 +356,6 @@ const freshReceiptController = {
         }
     },
 
-  
-
-
-
 }
 
 module.exports = freshReceiptController

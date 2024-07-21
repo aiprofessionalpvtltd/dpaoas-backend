@@ -29,7 +29,7 @@ const leaveController = {
         console.log("Result", result);
         return res.status(200).send({
             success: true,
-            message: `All leave information fetched successfully`,
+            message: `All Leave Information fetched successfully`,
             data: result,
         })
     },
@@ -76,7 +76,7 @@ const leaveController = {
             logger.info('Leave Request submitted Successfully!');
             return res.status(201).send({
                 success: true,
-                message: `Submitted`,
+                message: `Leave Request submitted successfully`,
                 data: result.dataValues,
             })
         } catch (error) {
@@ -103,7 +103,7 @@ const leaveController = {
                 logger.info('Leave Request Updated Successfully!');
                 return res.status(201).send({
                     success: true,
-                    message: `Leave request updated successfully`,
+                    message: `Leave Request Updated successfully`,
                     data: { ...body },
                 })
             } else {
@@ -135,7 +135,7 @@ const leaveController = {
 
         return res.status(200).send({
             success: true,
-            message: `Leave fetched successfully`,
+            message: `Leave fetched successfully for id ${id}`,
             data: transformedResult,
         })
     },

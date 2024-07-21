@@ -27,9 +27,20 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
+// -----------------------------------------------------------------
+
+
+const isAuthenticated = require("./middleware/authToken");
+
+const swaggerMiddleware = require('./middleware/swagger'); // Path to your swaggerMiddleware file
+app.use('/', swaggerMiddleware);
+
+
+
 // Import routers for each module
 const rolesRouter = require("./routes/roles.route");
 const leaveRouter = require("./routes/leave.route");
+const employeeRouter = require("./routes/employee.route")
 const usersRouter = require("./routes/users.route");
 const permissionsRouter = require("./routes/permissions.route");
 const modulesRouter = require("./routes/modules.route");
@@ -50,9 +61,9 @@ const motionsRouter = require("./routes/motions.route");
 const noticeOfficeReportRouter = require("./routes/noticeOfficeReport.route")
 
 const resolutionRouter = require("./routes/resolution.route");
-const manageSessionRouter = require("./routes/manageSessions.route")
 const rotaListRouter = require('./routes/rotaList.route')
 const newRotaListRouter = require('./routes/newRotaList.route')
+const manageSessionRouter = require("./routes/manageSessions.route");
 const seatingPlanRouter = require("./routes/seatingPlan.route");
 const contactTemplateRouter = require("./routes/contactTemplates.route");
 const contactListRouter = require("./routes/contactLists.route");
@@ -127,19 +138,65 @@ app.use('/assets', express.static('public'),
   serveIndex('public', { icons: true }),
 );
 
-app.use(express.static(appRoot + '/uploads'))
+const passRouter = require("./routes/pass.route")
+const visitorRouter = require("./routes/visitor.route")
 
-app.use(
-  '/assets',
-  express.static('pdfDownload'),
-  serveIndex('pdfDownload', { icons: true }),
-);
+app.use((err, req, res, next) => {
+  console.log("error", err);
+  if (err && err.error && err.error.isJoi) {
+    console.log("errorssss", err);
+    // we had a joi error, let's return a custom 400 json response
+    res.status(400).json({
+      type: err.type, // will be "query" here, but could be "headers", "body", or "params"
+      message: err.error.toString()
+    });
+  } else {
+    // pass on to another error handler
+    next(err);
+  }
+});
+
+  app.use(
+    '/assets',
+    express.static('pdfDownload'),
+    serveIndex('pdfDownload', { icons: true }),
+  )
+
+  app.use(express.static(appRoot + '/uploads'))
+
+
+app.use("/api/roles", isAuthenticated, rolesRouter);
+app.use("/api/employee", isAuthenticated, employeeRouter)
+app.use("/api/users", usersRouter);
+app.use("/api/permissions", permissionsRouter);
+app.use("/api/modules", modulesRouter);
+app.use("/api/departments" , isAuthenticated,departmentsRouter);
+app.use("/api/designations", isAuthenticated, designationsRouter);
+app.use("/api/pass", isAuthenticated, passRouter)
+app.use("/api/visitor", isAuthenticated, visitorRouter)
+
+
+app.use((err, req, res, next) => {
+  console.log("error", err);
+  if (err && err.error && err.error.isJoi) {
+    console.log("errorssss", err);
+    // we had a joi error, let's return a custom 400 json response
+    res.status(400).json({
+      type: err.type, // will be "query" here, but could be "headers", "body", or "params"
+      message: err.error.toString()
+    });
+  } else {
+    // pass on to another error handler
+    next(err);
+  }
+});
+
 
 // app.use('/assets', express.static('public'),
 // serveIndex('public', { icons: true }),
 // );
 
-app.use(express.static(appRoot + '/uploads'))
+
 
 
 // Use routers for each module
@@ -228,6 +285,7 @@ app.use(
   express.static('pdfDownload'),
   serveIndex('pdfDownload', { icons: true }),
 );
+
 
 // Serve static files from the 'public' directory
 app.use('/public', express.static('public'));

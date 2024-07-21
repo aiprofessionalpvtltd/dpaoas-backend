@@ -96,13 +96,52 @@ const casesController = {
             })
         }
     },
+    // Assign And Update Case
+    handleCaseAssignmentAndUpdate: async (req, res) => {
+        try {
+            const fileId = req.params.fileId;
+            const caseId = req.params.caseId;
+
+            let updateOccurred = false;
+            let assignmentOccurred = false;
+
+            await casesService.updateCase(req.body, req.files, fileId, caseId);
+            updateOccurred = true;
+            logger.info("Case Updated Successfully!");
+
+            await casesService.assignCase(fileId, caseId, req.body);
+            assignmentOccurred = true;
+            logger.info("Case Assigned Successfully!");
+
+
+            let responseMessage;
+            if (updateOccurred && assignmentOccurred) {
+                responseMessage = "Case Updated and Assigned Successfully!";
+            } else if (updateOccurred) {
+                responseMessage = "Case Updated Successfully!";
+            } else if (assignmentOccurred) {
+                responseMessage = "Case Assigned Successfully!";
+            }
+
+            return res.status(200).send({
+                success: true,
+                message: responseMessage,
+            });
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+            });
+        }
+    },
 
     // Get Cases On the basis of File Id
     getCasesByFileId: async (req, res) => {
         try {
-            logger.info(`casesController: getCasesByFileId query ${JSON.stringify(req.query)}`)
-            const fileId = req.query.fileId;
-            const userId = req.query.userId
+            logger.info(`casesController: getCasesByFileId id ${JSON.stringify(req.params)} and query ${JSON.stringify(req.query)}`)
+            const fileId = req.params.fileId;
+            const userId = req.params.userId
             const currentPage = req.query.currentPage;
             const pageSize = req.query.pageSize;
             const { count, totalPages, cases } = await casesService.getCasesByFileId(fileId, userId, currentPage, pageSize)

@@ -40,6 +40,8 @@ module.exports = (sequelize, Sequelize) => {
 
   Users.associate = function(models) {
     Users.hasOne(models.employees, { as: 'employee', foreignKey: 'fkUserId' });
+    Users.belongsTo(models.roles, { foreignKey: 'fkRoleId', as: 'role' });
+
 
 };
 

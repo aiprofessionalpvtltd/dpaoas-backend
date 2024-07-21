@@ -292,8 +292,19 @@ const complaintsController = {
                 throw { message: "Complaint Not Found!" };
             }
 
+            // Call the service function to update the complaint
             await complaintsService.resolveComplaint(complaintId, req.body, req.file);
             const updatedComplaint = await Complaints.findOne({ where: { id: complaintId } });
+            // Prepare the update object
+            let updateData = req.body;
+
+            // Check if there's a file to be uploaded
+            if (req.file) {
+                const path = req.file.destination.replace('./public/', '/public/') + '/' + req.file.originalname;
+                updateData.complaintAttachmentFromResolver = path;
+            }
+
+            // Log and respond
             logger.info(`Complaint:${complaintId} resolved Successfully!`);
             return res.status(200).send({
                 success: true,
@@ -490,7 +501,6 @@ const complaintsController = {
                 message: error.message
             });
         }
-
     }
 
 

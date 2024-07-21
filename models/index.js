@@ -3,11 +3,10 @@ const database = require("../database/db.config")
 const SequelizeMain = require("sequelize");
 const sequelize = new SequelizeMain(database.DB, database.USER, database.PASSWORD, {
   host: database.HOST,
-  dialect: database.dialect,
-  port: database.port,
+  dialect: database.DIALECT,
+  port: database.PORT,
   logging: false
 });
-//console.log(sequelize)
 sequelize
   .authenticate()
   .then(() => {
@@ -80,7 +79,23 @@ db.questionSupplementaryLists = require('./questionSupplementaryList.model')(seq
 db.employees.belongsTo(db.users, { as: 'users', foreignKey: 'fkUserId' });
 db.users.hasOne(db.employees, { as: 'employee', foreignKey: 'fkUserId' });
 
-db.groups = require("./groups.model")(sequelize, SequelizeMain)
+db.passes = require("./pass.model")(sequelize, SequelizeMain);
+db.visitors = require("./visitor.model")(sequelize, SequelizeMain);
+db.passVisitors = require("./passVisitor.model")(sequelize, SequelizeMain);
+
+// Roles and Permissions
+db.permissions.belongsToMany(db.roles, { as: 'roles', through: 'rolesPermissions', foreignKey: 'permissionId' });
+db.roles.belongsToMany(db.permissions, { as: 'permissions', through: 'rolesPermissions', foreignKey: 'roleId' });
+db.permissions.belongsTo(db.modules, {as: 'modules', foreignKey: 'fkModuleId'})
+
+// Roles Permissions Association
+db.rolesPermissions.belongsTo(db.roles, { as: 'RolesPermissions', foreignKey: 'roleId' });
+db.rolesPermissions.belongsTo(db.permissions, { as: 'PermissionsRoles', foreignKey: 'permissionId' });
+
+// // Employee Association
+// db.employees.belongsTo(db.departments, { foreignKey: 'fkDepartmentId'});
+// db.employees.belongsTo(db.designations, { foreignKey: 'fkDesignationId'})
+// db.employees.belongsTo(db.users , { foreignKey: 'fkUserId'})
 db.groupsDivisions = require("./groupsDivisions.model")(sequelize, SequelizeMain)
 db.questionDefer = require("./questionDefer.model")(sequelize, SequelizeMain)
 db.questionFile = require("./questionFile.model")(sequelize, SequelizeMain)
@@ -235,7 +250,7 @@ db.files.belongsTo(db.ministries, { foreignKey: 'fkMinistryId', as: 'ministries'
 db.files.belongsTo(db.departments, { foreignKey: 'fkdepartmentId', as: 'departments' });
 db.employees.belongsTo(db.departments, { as: 'departments', foreignKey: 'fkDepartmentId' });
 db.employees.belongsTo(db.designations, { as: 'designations', foreignKey: 'fkDesignationId' });
-db.employees.belongsTo(db.branches, { foreignKey: 'fkBranchId', as: 'branches' })
+db.employees.belongsTo(db.branches , { foreignKey: 'fkBranchId', as: 'branches'})
 
 db.files.belongsTo(db.branches, { foreignKey: 'fkBranchId', as: 'branches' });
 db.files.belongsTo(db.employees, { foreignKey: 'submittedBy', as: 'employees' });
@@ -274,6 +289,8 @@ db.caseNotes.belongsTo(db.cases, { foreignKey: 'fkCaseId', as: 'cases' })
 db.noteParagraphs.belongsTo(db.caseNotes , {foreignKey: 'fkCaseNoteId', as: 'noteParagraphs'})
 // db.employees.belongsTo(db.users, { as: 'users', foreignKey: 'fkUserId' });
 
+
+db.employees.belongsTo(db.users, { as: 'users', foreignKey: 'fkUserId' });
 
 // // Question Management
 // db.tenures = require("./tenures.model")(sequelize, SequelizeMain);
@@ -416,6 +433,7 @@ db.questions.belongsTo(db.users, { foreignKey: 'deletedBy', as: 'questionDeleted
 db.questions.belongsTo(db.users, { foreignKey: 'submittedBy', as: 'questionSubmittedBy' })
 db.questions.hasMany(db.questionQuestionLists, { foreignKey: 'fkQuestionId', as: 'questionQuestionList' })
 db.questions.hasMany(db.questionSupplementaryLists, { foreignKey: 'fkQuestionId', as: 'questionQuestionSuppList' })
+db.questions.belongsTo(db.users, { as: 'createdBy', foreignKey: 'createdByUser' })
 
 db.questionFile.belongsTo(db.questions, { foreignKey: 'fkQuestionId' });
 db.questionRevival.belongsTo(db.questions, { foreignKey: 'fkQuestionId' })
@@ -556,6 +574,8 @@ db.sessionBreakDetails.belongsTo(db.manageSessions, { foreignKey: 'fkSessionSitt
 
 //Employee belongs to User. This will add fkUserId to Employee model.
 
+db.users.hasOne(db.employees, { as: 'employee', foreignKey: 'fkUserId' });
+db.users.belongsTo(db.roles, { foreignKey: 'fkRoleId', as: 'role' });
 db.contactTemplates.belongsTo(db.users, { foreignKey: 'fkUserId', as: 'user' });
 db.contactLists.hasMany(db.contactListUsers, { foreignKey: 'fkListId', as: 'contactMembers' });
 db.members.hasMany(db.contactListUsers, { foreignKey: 'fkMemberId', as: 'contactLists' });

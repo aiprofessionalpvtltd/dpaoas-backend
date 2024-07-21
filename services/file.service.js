@@ -52,7 +52,6 @@ const FileService = {
                 fileClassification: req.fileClassification,
                 fileMovement: req.fileMovement,
             });
-
             return fileCreate;
         } catch (error) {
             throw { message: error.message || "Error Creating File" };

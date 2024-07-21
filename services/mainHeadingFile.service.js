@@ -16,7 +16,6 @@ const mainHeadingFileService = {
             const existingHeadingNumber = await MainHeadingFiles.findOne({
                 where: { mainHeadingNumber: req.mainHeadingNumber }
             });
-
             if (existingHeadingNumber) {
                 throw new Error('Main Heading Number already exists.');
             }

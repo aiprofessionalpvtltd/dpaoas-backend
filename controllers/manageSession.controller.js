@@ -146,7 +146,6 @@ const manageSessionController = {
         }
     },
 
-
     // Retrive Single Session Sitting
     getSingleSessionSitting: async (req, res) => {
         try {
@@ -969,9 +968,6 @@ const manageSessionController = {
             })
         }
     },
-
-
-
 
 }
 
