@@ -299,6 +299,483 @@ const motionService = {
         }
     },
 
+
+    // MotionService.js
+    generateMotionListData: async (payload) => {
+        try {
+            console.log("payload----->>> ", payload);
+            // Retrieve relevant motion records from the motions table
+            const motions = await db.motions.findAll({
+                where: {
+                    fkSessionId: payload.fkSessionId,
+                    motionType: payload.motionType,
+                    motionWeek: payload.motionWeek
+                },
+                include: [
+                    {
+                        model: sessions,
+                        as: 'sessions',
+                        attributes: ['id', 'sessionName']
+                    },
+                    {
+                        model: motionMovers, as: 'motionMovers',
+                        attributes: ['fkMemberId', 'fkMotionId', 'id'],
+                        include: [
+                            {
+                                model: Members,
+                                as: 'members',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: motionMinistries,
+                        as: 'motionMinistries',
+                        attributes: ['fkMinistryId', 'fkMotionId', 'id']
+                    },
+                    {
+                        model: noticeOfficeDairies,
+                        as: 'noticeOfficeDairies',
+                        attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
+                    },
+                    {
+                        model: motionStatuses,
+                        as: 'motionStatuses',
+                        attributes: ['statusName', 'id']
+                    },
+                    {
+                        model: motionStatusHistories,
+                        as: 'motionStatusHistories',
+                        attributes: ['fkMotionId', 'fkMotionStatusId', 'id'],
+                        include: [{
+                            model: motionStatuses,
+                            as: 'motionStatuses',
+                            attributes: ['statusName', 'id']
+                        }],
+                        distinct: true
+                    },
+                ],
+            });
+
+            const sessionDetails = await db.sessions.findOne({
+                where: { id: payload.fkSessionId },
+                attributes: ['id', 'sessionName']
+            });
+
+
+            // Constructing response data
+            const responseData = {
+                //fkSessionId: payload.fkSessionId,
+                listName: payload.listName,
+                listDate: payload.listDate,
+                motionType: payload.motionType,
+                motionWeek: payload.motionWeek,
+                sessionName: sessionDetails,
+                motions: motions
+            };
+
+            return responseData;
+
+        } catch (error) {
+            console.error('Error generating Motion list data:', error);
+            throw error;
+        }
+    },
+
+    // Update Motion List and get all Motions
+    updateMotionListAndAssociations: async (payload) => {
+        try {
+            // Find the existing Motion list by ID
+            const existingMotionList = await db.motionLists.findOne({
+                where: { id: payload.id }
+            });
+
+            if (!existingMotionList) {
+                throw new Error('Motion list not found');
+            }
+
+            // Update the Motion list
+            await existingMotionList.update({
+                fkSessionId: payload.fkSessionId,
+                motionType: payload.motionType,
+                motionWeek: payload.motionWeek,
+                listName: payload.listName,
+                listDate: payload.listDate,
+                motionListStatus: payload.motionListStatus
+            });
+
+            // Retrieve relevant Motion records from the Motion table
+            const motions = await db.motions.findAll({
+                where: {
+                    fkSessionId: payload.fkSessionId,
+                    motionType: payload.motionType,
+                    motionWeek: payload.motionWeek
+                },
+                include: [
+                    {
+                        model: db.motionMovers,
+                        as: 'motionMovers',
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'members',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: motionMinistries,
+                        as: 'motionMinistries',
+                        include: [
+                            {
+                                model: db.ministries,
+                                as: 'ministries',
+                                attributes: ['id', 'ministryName']
+                            }
+                        ]
+                    },
+                    {
+                        model: db.motionStatuses,
+                        as: 'motionStatuses',
+                        attributes: ['statusName']
+                    }
+                ]
+            });
+
+            // Delete existing associations
+            await db.motionMotionLists.destroy({
+                where: { fkMotionListId: payload.id }
+            });
+
+            // Associate each motion with the newly created motion list
+            for (const motion of motions) {
+                await db.motionMotionLists.create({
+                    fkMotionId: motion.id,
+                    fkMotionListId: newMotionList.id
+                });
+            }
+
+            const sessionDetails = await db.sessions.findOne({
+                where: { id: payload.fkSessionId },
+                attributes: ['sessionName']
+            });
+
+            const updatedMotionList = await db.motionLists.findOne({
+                where: { id: payload.id },
+                include: [
+                    {
+                        model: db.motions,
+                        as: 'motions',
+                        through: {
+                            attributes: []
+                        },
+                        include: [
+                            {
+                                model: db.motionMovers,
+                                as: 'motionMovers',
+                                include: [
+                                    {
+                                        model: db.members,
+                                        as: 'members',
+                                        attributes: ['id', 'memberName']
+                                    }
+                                ]
+                            },
+                            {
+                                model: motionMinistries,
+                                as: 'motionMinistries',
+                                include: [
+                                    {
+                                        model: db.ministries,
+                                        as: 'ministries',
+                                        attributes: ['id', 'ministryName']
+                                    }
+                                ]
+                            },
+                            {
+                                model: db.motionStatuses,
+                                as: 'motionStatuses',
+                                attributes: ['statusName']
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            const responseData = {
+                ...updatedMotionList.toJSON(),
+                sessionName: sessionDetails.sessionName
+            };
+
+            return responseData;
+
+        } catch (error) {
+            console.error('Error updating Motion list and associating Motion:', error);
+            throw error;
+        }
+    },
+
+
+    //Get All Motion Lists
+    getAllMotionLists: async (currentPage, pageSize) => {
+        try {
+
+            const offset = currentPage * pageSize;
+            const limit = pageSize;
+
+
+            // Retrieve all motionList lists
+            const { count, rows } = await db.motionLists.findAndCountAll({
+                where: { motionListStatus: "active" },
+                include: [
+                    {
+                        model: sessions,
+                        as: 'sessionName',
+                        attributes: ['id', 'sessionName']
+                    }
+                ],
+                offset,
+                limit,
+                order: [
+                    ['id', 'DESC']
+                ]
+            });
+
+
+            const totalPages = Math.ceil(count / pageSize);
+            return { count, totalPages, motionList: rows };
+        } catch (error) {
+            console.error('Error fetching all motions lists:', error);
+            throw error;
+        }
+    },
+
+    // Update motion list status to inactive (soft delete)
+    deleteMotionList: async (motionListId) => {
+        try {
+            // Find the motion list by id
+            const motionList = await db.motionLists.findByPk(motionListId);
+            if (!motionList) {
+                throw new Error('motion list not found');
+            }
+
+            // Update the status to inactive
+            motionList.motionListStatus = 'inactive';
+            await motionList.save();
+
+            return { message: 'Motion list deleted successfully' };
+        } catch (error) {
+            console.error('Error updating Motion list status:', error);
+            throw error;
+        }
+    },
+
+    // get Single Motion Data
+    getSingleMotionData: async (motionListId) => {
+        try {
+
+            // Fetch the motion list by ID
+            const motionList = await db.motionLists.findOne({
+                where: { id: motionListId },
+                include: [
+                    {
+                        model: db.motions,
+                        as: 'motions',
+                        through: {
+                            attributes: []
+                        },
+                        include: [
+                            {
+                                model: db.motionMovers,
+                                as: 'motionMovers',
+                                include: [
+                                    {
+                                        model: db.members,
+                                        as: 'members',
+                                        attributes: ['id', 'memberName']
+                                    }
+                                ]
+                            },
+                            {
+                                model: motionMinistries,
+                                as: 'motionMinistries',
+                                include: [
+                                    {
+                                        model: db.ministries,
+                                        as: 'ministries',
+                                        attributes: ['id', 'ministryName']
+                                    }
+                                ]
+                            },
+                            {
+                                model: db.motionStatuses,
+                                as: 'motionStatuses',
+                                attributes: ['statusName']
+                            }
+                        ]
+                    }
+                ]
+            });
+
+
+
+            if (!motionList) {
+                throw new Error('Motion list not found');
+            }
+
+            const motions = await db.motions.findAll({
+                where: {
+                    fkSessionId: motionList.fkSessionId,
+                    '$motionStatuses.statusName$': {
+                        [db.Sequelize.Op.in]: ['Deferred', 'Admitted']
+                    }
+                },
+                include: [
+                    {
+                        model: db.motionMovers,
+                        as: 'motionMovers',
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'members',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: motionMinistries,
+                        as: 'motionMinistries',
+                        include: [
+                            {
+                                model: db.ministries,
+                                as: 'ministries',
+                                attributes: ['id', 'ministryName']
+                            }
+                        ]
+                    },
+                    {
+                        model: db.motionStatuses,
+                        as: 'motionStatuses',
+                        attributes: ['statusName']
+                    }
+                ],
+                order: [
+                    [db.sequelize.literal(`CASE WHEN "motionStatuses"."statusName" = 'Deferred' THEN 1 WHEN "motionStatuses"."statusName" = 'Admitted' THEN 2 END`), 'ASC']
+                ]
+            });
+
+
+            // Prepare the response data
+            const responseData = {
+                ...motionList.toJSON(),
+                motions: motions
+            };
+
+            return responseData;
+
+        } catch (error) {
+            console.error('Error generating motion list data:', error);
+            throw error;
+        }
+    },
+
+
+     // Retrieve motions by IDs
+     pdfMotionList: async (motionIds) => {
+        try {
+
+            const orderCases = motionIds.map((id, index) => {
+                return `WHEN motions.id = ${id} THEN ${index}`;
+            }).join(' ');
+
+            const motions = await db.motions.findAll({
+                where: {
+                    id: motionIds
+                },
+                include: [
+                    {
+                        model: sessions,
+                        as: 'sessions',
+                        attributes: ['id', 'sessionName']
+                    },
+                    {
+                        model: motionMovers, as: 'motionMovers',
+                        attributes: ['fkMemberId', 'fkMotionId', 'id'],
+                        include: [
+                            {
+                                model: Members,
+                                as: 'members',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: motionMinistries,
+                        as: 'motionMinistries',
+                        attributes: ['fkMinistryId', 'fkMotionId', 'id']
+                    },
+                    {
+                        model: noticeOfficeDairies,
+                        as: 'noticeOfficeDairies',
+                        attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
+                    },
+                    {
+                        model: motionStatuses,
+                        as: 'motionStatuses',
+                        attributes: ['statusName', 'id']
+                    },
+                    {
+                        model: motionStatusHistories,
+                        as: 'motionStatusHistories',
+                        attributes: ['fkMotionId', 'fkMotionStatusId', 'id'],
+                        include: [{
+                            model: motionStatuses,
+                            as: 'motionStatuses',
+                            attributes: ['statusName', 'id']
+                        }],
+                        distinct: true
+                    },
+                ],
+                order: [
+                    [db.sequelize.literal(`CASE ${orderCases} END`)]
+                ]
+            });
+
+
+            // Check if all requested motionids are present in the fetched motions
+            const fetchedMotionIds = motions.map(res => res.id);
+            const missingIds = motionIds.filter(id => !fetchedMotionIds.includes(id));
+
+
+            if (missingIds.length > 0) {
+                throw { message: `Motions not found for IDs: ${missingIds.join(', ')}` };
+            }
+            // Fetch the ID of the 'balloting' status
+            const ballotingStatus = await db.motionStatuses.findOne({
+                where: { statusName: 'balloting' },
+                attributes: ['id']
+            });
+
+            console.log("balloting status-------", ballotingStatus);
+
+            if (!ballotingStatus) {
+                throw { message: 'Motion status "balloting" not found' };
+            }
+
+            // Update the fkMotionStatus to 'balloting' status ID
+            await db.motions.update(
+                { fkMotionStatus: ballotingStatus.id },
+                { where: { id: motionIds } }
+            );
+
+            return motions;
+
+
+        } catch (error) {
+            throw { message: error.message || "Error Fetching Motions by IDs!" };
+        }
+    },
+
     // Get Motion by web_id
     findAllMotionsByWebId: async (webId) => {
         try {
