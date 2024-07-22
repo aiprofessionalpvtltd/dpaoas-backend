@@ -26,8 +26,9 @@ const BillStatusService = {
             const limit = pageSize;
 
             const { count, rows } = await BillStatuses.findAndCountAll({
-                offset,
-                limit,
+              offset,
+              limit,
+              order: [["id", "DESC"]],
             });
 
             console.log("rows: " + rows)
