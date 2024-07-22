@@ -13,16 +13,19 @@ const app = express();
 const ngrokUrl = 'https://324c-39-33-242-31.ngrok-free.app';
 //app.use(cors({ origin: ngrokUrl }));
 app.use(cors());
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', '*'); // Allow requests from any origin
-//   next();
-// });
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//   next();
-// });
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*"); // Allow requests from any origin
+  next();
+});
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
