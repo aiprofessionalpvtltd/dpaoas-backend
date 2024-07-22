@@ -151,7 +151,9 @@ router.get("/getCase/:fileId/:caseId", cases.getSingleCase);
 
 // Update Case
 //router.put("/updateCase/:fileId/:caseId", uploadFile('case'), cases.updateCase)
+router.put("/updateCase/:caseNoteId", cases.updateCase);
 
+// Update Case Status
 router.put("/updateCaseStatus", cases.updateCaseStatus);
 
 // Get Signature By User Id
