@@ -1,13 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const cases = require('../controllers/cases.controller');
-const { uploadFile } = require('../common/upload');
-const { uploadMultipleFiles } = require('../common/upload');
+const cases = require("../controllers/cases.controller");
+const { uploadFile } = require("../common/upload");
+const { uploadMultipleFiles } = require("../common/upload");
 
 // Create Case
 //router.post("/createCase/:fileId/:createdBy/:fkFreshReceiptId", uploadFile('case'), cases.createCase)
 
-router.post("/createCase/:fileId/:createdBy/:fkFreshReceiptId", cases.createCase)
+router.post(
+  "/createCase/:fileId/:createdBy/:fkFreshReceiptId",
+  cases.createCase
+);
 /**
  * @swagger
  * /api/cases/getCasesByFileId:
@@ -32,7 +35,7 @@ router.post("/createCase/:fileId/:createdBy/:fkFreshReceiptId", cases.createCase
  *         description: Current Page
  *         schema:
  *           type: integer
-*       - in: query
+ *       - in: query
  *         name: pageSize
  *         required: true
  *         description: Page Size
@@ -42,7 +45,7 @@ router.post("/createCase/:fileId/:createdBy/:fkFreshReceiptId", cases.createCase
  *       '200':
  *         description: A successful response
  */
-router.get("/getCasesByFileId", cases.getCasesByFileId)
+router.get("/getCasesByFileId", cases.getCasesByFileId);
 
 /**
  * @swagger
@@ -69,7 +72,7 @@ router.get("/getCasesByFileId", cases.getCasesByFileId)
  *         description: Current Page
  *         schema:
  *           type: integer
-*       - in: query
+ *       - in: query
  *         name: pageSize
  *         required: true
  *         description: Page Size
@@ -79,7 +82,11 @@ router.get("/getCasesByFileId", cases.getCasesByFileId)
  *       '200':
  *         description: A successful response
  */
-router.get("/getCasesHistory/:fileId/:branchId", cases.getCasesHistory)
+router.get("/getCasesHistory/:fileId/:branchId/:userId", cases.getCasesHistory);
+router.get(
+  "/getAllCasesHistory/:fileId/:branchId/:userId",
+  cases.getAllCasesHistory
+);
 
 /**
  * @swagger
@@ -104,7 +111,7 @@ router.get("/getCasesHistory/:fileId/:branchId", cases.getCasesHistory)
  *         description: Current Page
  *         schema:
  *           type: integer
-*       - in: query
+ *       - in: query
  *         name: pageSize
  *         required: true
  *         description: Page Size
@@ -114,7 +121,7 @@ router.get("/getCasesHistory/:fileId/:branchId", cases.getCasesHistory)
  *       '200':
  *         description: A successful response
  */
-router.get("/getApprovedCasesHistory", cases.getApprovedCasesHistory)
+router.get("/getApprovedCasesHistory", cases.getApprovedCasesHistory);
 
 // Get Single Case
 /**
@@ -140,12 +147,12 @@ router.get("/getApprovedCasesHistory", cases.getApprovedCasesHistory)
  *       '200':
  *         description: A successful response
  */
-router.get("/getCase/:fileId/:caseId", cases.getSingleCase)
+router.get("/getCase/:fileId/:caseId", cases.getSingleCase);
 
 // Update Case
 //router.put("/updateCase/:fileId/:caseId", uploadFile('case'), cases.updateCase)
 
-router.put("/updateCase/:caseNoteId", cases.updateCase)
+router.put("/updateCaseStatus", cases.updateCaseStatus);
 
 // Get Signature By User Id
 /**
@@ -165,14 +172,14 @@ router.put("/updateCase/:caseNoteId", cases.updateCase)
  *       '200':
  *         description: A successful response
  */
-router.get("/getSignatureByUserId/:id", cases.getSignatureById)
+router.get("/getSignatureByUserId/:id", cases.getSignatureById);
 
 // Assign Case
 /**
  * @swagger
  * /api/cases/assignCase/{fileId}/{caseId}:
  *   post:
- *     summary: Assign Case 
+ *     summary: Assign Case
  *     tags: [Cases]
  *     parameters:
  *       - in: path
@@ -200,21 +207,25 @@ router.get("/getSignatureByUserId/:id", cases.getSignatureById)
  *                 type: integer
  *               assignedTo:
  *                 type: integer
- *               comment: 
- *                 type: string 
+ *               comment:
+ *                 type: string
  *               CommentStatus:
- *                 type: string       
+ *                 type: string
  *               signature:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
- *                 description: Attachments           
+ *                 description: Attachments
  *     responses:
  *       '200':
  *         description: A successful response
  */
-router.post("/assignCase/:fileId/:caseId", uploadFile('signature'), cases.assignCase);
+router.post(
+  "/assignCase/:fileId/:caseId",
+  uploadFile("signature"),
+  cases.assignCase
+);
 
 // Get Single Case Details
 /**
@@ -240,7 +251,7 @@ router.post("/assignCase/:fileId/:caseId", uploadFile('signature'), cases.assign
  *       '200':
  *         description: A successful response
  */
-router.get("/getCaseDetails/:fileId/:caseId", cases.getSingleCaseDetails)
+router.get("/getCaseDetails/:fileId/:caseId", cases.getSingleCaseDetails);
 
 // Update Case
 // router.put("/updateCase/:fileId/:caseId", uploadFile('case'), cases.updateCase);
@@ -265,7 +276,7 @@ router.get("/getCaseDetails/:fileId/:caseId", cases.getSingleCaseDetails)
  *       '200':
  *         description: A successful response
  */
-router.delete('/deleteAttachment/:id', cases.deleteCaseAttachment)
+router.delete("/deleteAttachment/:id", cases.deleteCaseAttachment);
 
 // Get Employees on Level Level By User's Login
 /**
@@ -285,7 +296,7 @@ router.delete('/deleteAttachment/:id', cases.deleteCaseAttachment)
  *       '200':
  *         description: A successful response
  */
-router.get("/getLLEmployee/:id", cases.getLowerLevelDesignations)
+router.get("/getLLEmployee/:id", cases.getLowerLevelDesignations);
 
 // Get Employees on Higher Level By User's Login
 /**
@@ -305,7 +316,7 @@ router.get("/getLLEmployee/:id", cases.getLowerLevelDesignations)
  *       '200':
  *         description: A successful response
  */
-router.get("/getHLEmployees/:id", cases.getHigherLevelDesignations)
+router.get("/getHLEmployees/:id", cases.getHigherLevelDesignations);
 
 // Get Branches By User's Login
 /**
@@ -325,8 +336,6 @@ router.get("/getHLEmployees/:id", cases.getHigherLevelDesignations)
  *       '200':
  *         description: A successful response
  */
-router.get("/getBranch/:id", cases.getBranchesByUserLogin)
+router.get("/getBranch/:id", cases.getBranchesByUserLogin);
 
-
-
-module.exports = router
+module.exports = router;

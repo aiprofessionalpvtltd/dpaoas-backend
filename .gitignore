@@ -8,6 +8,7 @@
 /logs/error.log
 .pnp.js
 /.package-lock.json
+/.yarn.lock
 
 # testing
 /coverage

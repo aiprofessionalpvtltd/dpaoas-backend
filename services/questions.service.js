@@ -794,7 +794,7 @@ const questionsService = {
             const questionFileData = {
                 fkQuestionId: questionId,
                 questionId: questionId,
-                fkMemberId: question.fkMemberId,
+                fkMemberId: req.fkMemberId,
                 questionCategory: req.questionCategory,
                 memberPosition: req.memberPosition,
                 englishText: req.englishText,
