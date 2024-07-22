@@ -5,53 +5,58 @@ const logger = require('../common/winston');
 
 const departmentsService = {
     // Create A New Department
-    createDepartment : async(req) => {
+    createDepartment: async (req) => {
         try {
-            // Validate the department data
-            if (!req.name) {
-              throw({ message: 'Please Provide Name!'})
-            }
             // Create the department and save it in the database
             const department = await Departments.create(req);
-
             return department;
-          } catch (error) {
+        } catch (error) {
             throw { message: error.message || "Error Creating Department" };
-            
-          }
+
+        }
     },
 
     // Retrieve All Deparments
-    findAllDepartments: async (req) => {
+    findAllDepartments: async (currentPage, pageSize) => {
         try {
-            const searchQuery = req.query.search; // Get search query from request parameters
-            const queryOptions = {};
-    
-            if (searchQuery) {
-                // Add search condition to query options
-                queryOptions.where = {
-                    name: {
-                        [Op.like]: `%${searchQuery}%` // Assuming Sequelize and using the LIKE operator for a partial match
-                    }
-                };
-            }
-    
-            const departments = await Departments.findAll(queryOptions);
-            return departments;
+            const offset = currentPage * pageSize;
+            const limit = pageSize;
+            const { count, rows } = await Departments.findAndCountAll({
+                offset,
+                limit,
+                order: [
+                    ['id', 'DESC']
+                ]
+            });
+            const totalPages = Math.ceil(count / pageSize);
+            return { count, totalPages, departments: rows };
         } catch (error) {
             throw new Error(error.message || "Error Fetching All Departments");
         }
     },
 
+    // Search Departments: 
+    searchDepartments: async (searchQuery, queryOptions) => {
+        try {
+            if (searchQuery) {
+                whereCondition = {
+                    departmentName: { [Op.like]: `%${searchQuery}%` }
+                };
+            }
+            queryOptions.where = whereCondition;
+            const departments = await Departments.findAll(queryOptions);
+            return departments;
+        } catch (error) {
+            throw { message: error.message || "Error Searching Department" };
+        }
+    },
+
     // Retrieve Single Department
-    findSingleDepartment: async (req) =>
-    {
-        try{
-            const departmentId = req.params.id
+    findSingleDepartment: async (departmentId) => {
+        try {
             const department = await Departments.findOne({ where: { id: departmentId } });
-            if (!department)
-            {
-                throw ({message: "Department Not Found!"})
+            if (!department) {
+                throw ({ message: "Department Not Found!" })
             }
             return department;
         }
@@ -61,30 +66,33 @@ const departmentsService = {
     },
 
     // Updates Department
-    updateDepartment: async (req) =>
-    {
+    updateDepartment: async (req, departmentId) => {
         try {
-            const departmentId = req.params.id;
-            const department = await Departments.findByPk(departmentId);
-            if (!department)
-            {
-                throw ({message: "Department Not Found!"});
-            }
-            
+
             await Departments.update(req.body, { where: { id: departmentId } });
-
             // Fetch the updated department after the update
-            const updatedDepartment = await Departments.findOne({ where: { id: departmentId } } , {raw:true});
-    
+            const updatedDepartment = await Departments.findOne({ where: { id: departmentId } }, { raw: true });
             return updatedDepartment;
-
-        }   catch(error) {
+        } catch (error) {
             throw { message: error.message || "Error Updating Department" };
         }
     },
 
     // Deletes/Suspend Department
-    suspendDepartment: async (req) =>
+    deleteDepartment: async (req) => {
+        try {
+            const updatedData = {
+                departmentStatus: "inactive"
+            }
+            await Departments.update(updatedData, { where: { id: req } });
+            // Fetch the updated department after the update
+            const updatedDepartment = await Departments.findByPk(req, { raw: true });
+            return updatedDepartment;
+        } catch (error) {
+            throw { message: error.message || "Error Suspending Department" };
+        }
+    },
+suspendDepartment: async (req) =>
     {
         try {
             const departmentId = req.params.id;

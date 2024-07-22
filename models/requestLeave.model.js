@@ -25,11 +25,11 @@ module.exports = (sequelize, Sequelize) => {
     },
     requestStartDate: {
       type: Sequelize.DATE,
-      allowNull: false
+      allowNull: true
     },
-    requestEndDate: {
+    requstEndDate: {
       type: Sequelize.DATE,
-      allowNull: false
+      allowNull: true
 
     },
     requestStatus: {
@@ -52,7 +52,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     requestStationLeave: {
       type: Sequelize.BOOLEAN,
-      allowNull: false
+      allowNull: true
     },
     requestLeaveAttachment: {
       type: Sequelize.STRING,

@@ -1,28 +1,56 @@
-module.exports = app => {
-    const users = require("../controllers/users.controller");
-    const isAuthenticated = require("../middleware/authToken");
-    const checkPrivileges = require("../middleware/checkPrivilege")
-    const paramsValidate = require('../middleware/validate');
-    const { createUserValidation } = require('../validation');
-    var router = require("express").Router();
+const express = require('express');
+const router = express.Router();
 
-    // Create a new User
-    router.post("/create", isAuthenticated, paramsValidate(createUserValidation), users.createUser);
+const users = require("../controllers/users.controller");
+const isAuthenticated = require("../middleware/authToken");
+const checkPrivileges = require("../middleware/checkPrivilege")
+const paramsValidate = require('../middleware/validate');
+//const createUserValidation = require('../validation/userValidation');
 
-    // Logins a user
-    router.post("/login", users.loginUser);
 
-    // Retrieve all Users
-    router.get("/", users.findAllUsers);
 
-    // Retrieve Single User
-    // router.get("/:id", users.findSingleUser);
+// Create a new User
+// router.post("/create", paramsValidate(validateUser), users.createUser);
 
-    // Updates the user
-    // router.put("/edit/:id", users.editUser)
+// Logins a user
+/**
+ * @swagger
+ * /api/users/login:
+ *   post:
+ *     summary: Logins User
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The email of user
+ *               password:
+ *                 type: string
+ *             required:
+ *               - email
+ *               - password
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
+router.post("/login", users.loginUser);
 
-    // Suspends/Deletes the user
-    // router.put("/delete/:id", users.suspendUser)
+// Retrieve all Users
+// isAuthenticated, checkPrivileges("View Users")
+router.get("/", users.findAllUsers);
 
-    app.use("/api/users",  router);
-};
+// // Retrieve Single User
+// router.get("/:id", isAuthenticated, checkPrivileges(),  users.findSingleUser);
+
+// // Updates the user
+// router.put("/edit/:id", isAuthenticated, checkPrivileges(), users.editUser)
+
+// // Suspends/Deletes the user
+// router.put("/delete/:id", isAuthenticated, checkPrivileges(), users.deleteUser)
+
+module.exports = router;

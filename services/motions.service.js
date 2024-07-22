@@ -78,7 +78,6 @@ const motionService = {
                     fkMotionId: fkMotionId,
                     fkMinistryId: ministerId
                 }));
-
                 await motionMinistries.bulkCreate(ministryAssociations);
             }
             const result = await motions.update(
@@ -96,7 +95,6 @@ const motionService = {
                 fkMotionStatusId: fkMotionStatus,
                 date: db.sequelize.literal('CURRENT_TIMESTAMP')
             });
-
             return MotionRequest;
 
         } catch (error) {

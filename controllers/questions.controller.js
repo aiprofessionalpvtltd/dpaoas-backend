@@ -581,7 +581,6 @@ const questionsController = {
               count,
               totalPages
             },
-
           });
         } else {
           logger.info("Data Not Found!");

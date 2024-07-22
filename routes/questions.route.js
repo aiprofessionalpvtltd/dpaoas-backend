@@ -764,7 +764,6 @@ router.put("/sendToQuestion/:id", questions.sendToQuestion)
 */
 router.get('/getQuestionHistories/:id', questions.getQuestionHistories);
 
-
 // Inactive the Question
 /**
 * @swagger

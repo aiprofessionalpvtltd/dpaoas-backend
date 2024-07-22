@@ -48,7 +48,6 @@ module.exports = (sequelize, Sequelize) => {
         freshReceiptRemarks.belongsTo(models.freshReceipts, { foreignKey: 'fkFreshReceiptId', as: 'freshReceipt' });
 
 
-
     };
     return freshReceiptRemarks;
 

@@ -51,7 +51,6 @@ const questionsService = {
                 businessType: 'Question',
                 businessId: question.dataValues.id
             });
-
             await QuestionStatusHistory.create({
                 fkQuestionId: question.id,
                 fkSessionId: req.fkSessionId,

@@ -128,7 +128,6 @@ router.post("/markAttendanceToLeave", manageSession.markSessionSittingAttendance
 router.get("/getAttendance",manageSession.getAttendanceRecord)
 
 
-
 // Get Attendance Record By Session Sittings
 /**
 * @swagger
@@ -169,7 +168,6 @@ router.get("/getAttendance",manageSession.getAttendanceRecord)
 *         description: A successful response
 */
 router.get("/getAttendanceBySittings",manageSession.getAttendanceRecordByMemberName)
-
 // Weekly Attendance Record
 // /**
 // * @swagger

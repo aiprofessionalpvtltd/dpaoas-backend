@@ -17,7 +17,6 @@ const Op = db.Sequelize.Op;
 
 const logger = require('../common/winston');
 
-
 const complaintsService = {
     // Issue A New Complaint
     issueComplaint: async (req) => {

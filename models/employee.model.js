@@ -42,12 +42,12 @@ module.exports = (sequelize, Sequelize) => {
     },
 
     userType: {
-      type: Sequelize.ENUM("Section User", "Officer"),
+      type: Sequelize.ENUM("Section User", "Section", "Officer"),
       allowNull: true,
     },
 
     reportingTo: {
-      type: Sequelize.ENUM("Director", "Director General","Senior Director General","Secretary","Chairman"),
+      type: Sequelize.ENUM("Director", "Director General", "Senior Director General", "Secretary", "Chairman"),
       allowNull: true,
     },
 
@@ -93,16 +93,16 @@ module.exports = (sequelize, Sequelize) => {
     updatedAt: Sequelize.DATE,
   });
 
-  Employee.associate = function(models) {
+  Employee.associate = function (models) {
     // Employee.belongsTo(models.users, { as: 'user', foreignKey: 'fkUserId' });
     Employee.belongsTo(models.users, { as: 'users', foreignKey: 'fkUserId' });
     // Employee.belongsTo(models.departments , {as: 'employeeDepartment', foreignKey: 'fkDepartmentId'}),
-    Employee.belongsTo(models.designations , { as: 'employeeDesignation' , foreignKey: 'fkDesignationId' })
+    Employee.belongsTo(models.designations, { as: 'employeeDesignation', foreignKey: 'fkDesignationId' })
     Employee.belongsTo(models.departments, { as: 'departments', foreignKey: 'fkDepartmentId' });
-    Employee.belongsTo(models.branches , { foreignKey: 'fkBranchId', as: 'branches'})
+    Employee.belongsTo(models.branches, { foreignKey: 'fkBranchId', as: 'branches' })
 
-};
- 
+  };
+
   return Employee;
 };
 

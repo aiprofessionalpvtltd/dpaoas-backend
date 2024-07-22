@@ -73,7 +73,6 @@ const freshReceiptsStorage = multer.diskStorage({
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
-
         // let referenceNumber
         // console.log("Req Reference No", req.body.referenceNumber);
         // if (req.body?.referenceNumber) referenceNumber = req.body.referenceNumber;
@@ -143,7 +142,6 @@ const casesStorage = multer.diskStorage({
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
-
         // let referenceNumber
         // console.log("Req Reference No", req.body.referenceNumber);
         // if (req.body?.referenceNumber) referenceNumber = req.body.referenceNumber;
