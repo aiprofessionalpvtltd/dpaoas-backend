@@ -10,7 +10,7 @@ const logger = require('../common/winston');
 const seatingPlanService = {
 
     //Assign/UnAssign Member's Seat
-    updateSeatAssignment: async (seatData, seatNumber, existingSeat, isRequest) => {
+    updateSeatAssignment: async (seatData, seatNumber, existingSeat) => {
         try {
             if (existingSeat) {
                 if (seatData.fkMemberId !== null) {
@@ -30,7 +30,7 @@ const seatingPlanService = {
                     {
                         fkMemberId: seatData.fkMemberId !== null ? seatData.fkMemberId : null,
                         assignStatus: seatData.assignStatus,
-                        isRequest: isRequest === true // Add isRequest to the update
+                        isRequest: seatData?.isRequest === true // Add isRequest to the update
                     },
                     {
                         where: { id: existingSeat.dataValues.id },
@@ -57,7 +57,7 @@ const seatingPlanService = {
                         fkMemberId: seatData.fkMemberId !== null ? seatData.fkMemberId : null,
                         assignStatus: seatData.assignStatus,
                         rowNumber: seatData.rowNumber,
-                        isRequest: isRequest === true // Add isRequest to the creation
+                        isRequest: seatData?.isRequest === true // Add isRequest to the creation
                     });
                     return newSeat;
                 }
@@ -131,7 +131,7 @@ const seatingPlanService = {
                 include: [
                     {
                         model: Members,
-                        attributes: ['id', 'memberName', 'memberUrduName', 'governmentType']
+                        attributes: ['id', 'memberName', 'memberUrduName', 'governmentType', 'isMinister']
                     }
                 ],
             });
@@ -140,7 +140,7 @@ const seatingPlanService = {
             const rows = ['A', 'B', 'C', 'D', 'E', 'F'];
             const seatsPerRow = 18;
             const seatStructure = {};
-        
+    
             rows.forEach(row => {
                 seatStructure[row] = [];
                 let currentSeatNumber = row === 'A' ? 2 : 20 + (rows.indexOf(row) - 1) * seatsPerRow; // Skip seat number 1 for row A
@@ -156,18 +156,20 @@ const seatingPlanService = {
     
             // Populate seatStructure with seat details from the database
             seatDetails.forEach(detail => {
-                const { rowNumber, seatNumber } = detail;
+                const { rowNumber, seatNumber, isRequest } = detail;
                 const member = detail.member ? {
                     id: detail.member.id,
                     memberName: detail.member.memberName,
                     memberUrduName: detail.member.memberUrduName,
                     governmentType: detail.member.governmentType,
+                    isMinister: detail.member.isMinister,
                 } : null;
     
                 // Find the correct seat by seatNumber and assign the member details
                 const seat = seatStructure[rowNumber].find(s => s.seatNumber === seatNumber);
                 if (seat) {
                     seat.member = member;
+                    seat.isRequest = isRequest; // Add isRequest property
                 }
             });
     
@@ -188,7 +190,7 @@ const seatingPlanService = {
         } catch (error) {
             throw ({ message: error.message || "Error Retrieving Seat Details!" });
         }
-    },    
+    },
     
     // Retrive Seat Details
     getSeatDetails: async (seatNumber) => {
