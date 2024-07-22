@@ -74,10 +74,12 @@ const casesController = {
   updateCaseStatus: async (req, res) => {
     try {
       const { caseId, newStatus } = req.body;
+      console.log(caseId, newStatus);
       const result = await casesService.updateCaseStatus(caseId, newStatus);
       res.status(200).send({
         success: true,
         message: result.message,
+        data: result.data,
       });
     } catch (error) {
       res.status(400).send({

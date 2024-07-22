@@ -1134,12 +1134,15 @@ const casesService = {
   updateCaseStatus: async (caseId, newStatus) => {
     try {
       // Update status to 'approved'
-      await CaseNotes.update(
+      const caseNoteData = await CaseNotes.update(
         { caseStatus: newStatus },
-        { where: { id: caseId } }
+        { where: { fkCaseId: caseId } }
       );
-
-      return { message: "Case status updated successfully." };
+      console.log(caseNoteData);
+      return {
+        message: "Case status updated successfully.",
+        data: caseNoteData,
+      };
     } catch (error) {
       console.log(error);
       throw new Error(error.message || "Error updating case status");
