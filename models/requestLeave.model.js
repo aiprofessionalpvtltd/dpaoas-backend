@@ -25,11 +25,11 @@ module.exports = (sequelize, Sequelize) => {
     },
     requestStartDate: {
       type: Sequelize.DATE,
-      allowNull: false
+      allowNull: true
     },
-    requestEndDate: {
+    requstEndDate: {
       type: Sequelize.DATE,
-      allowNull: false
+      allowNull: true
 
     },
     requestStatus: {
@@ -43,7 +43,7 @@ module.exports = (sequelize, Sequelize) => {
     },
 
     requestLeaveReason: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
       allowNull: true
     },
     requestNumberOfDays: {
@@ -52,7 +52,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     requestStationLeave: {
       type: Sequelize.BOOLEAN,
-      allowNull: false
+      allowNull: true
     },
     requestLeaveAttachment: {
       type: Sequelize.STRING,
@@ -60,7 +60,11 @@ module.exports = (sequelize, Sequelize) => {
     },
     requestLeaveSubmittedTo: {
       type: Sequelize.STRING,
-      allowNull: true
+      allowNull: true,
+      references: {
+      model: 'users', // Assuming the table name is 'users'
+      key: 'id',
+    },
     },
     requestLeaveApplyOnBehalf: {
       type: Sequelize.BOOLEAN,
@@ -74,8 +78,9 @@ module.exports = (sequelize, Sequelize) => {
     updatedAt: Sequelize.DATE,
   });
   requestLeaves.associate = function (models) {
-    requestLeaves.belongsTo(db.users, { foreignKey: 'fkUserId', as: 'users' });
-    requestLeaves.hasMany(models.leaveComments);
+    requestLeaves.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'users' });
+    requestLeaves.belongsTo(models.users, {foreignKey: 'requestLeaveSubmittedTo',as: 'submittedToUser'});
+    requestLeaves.hasMany(models.leaveComments, { foreignKey: 'fkRequestLeaveId', as: 'leaveComments' });
   };
   return requestLeaves;
 };

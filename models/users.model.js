@@ -1,24 +1,11 @@
-const jwt = require('jsonwebtoken');
-const db = require("../models");
 module.exports = (sequelize, Sequelize) => {
-  const users = sequelize.define('users', {
+  const Users = sequelize.define('users', {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    phoneNo: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    gender: {
-      type: Sequelize.ENUM("male", "female"),
-      allowNull: false
-    },
+
     email: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -28,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    status: {
+    userStatus: {
       type: Sequelize.ENUM("active", "inactive", "locked"),
       defaultValue: 'active',
       allowNull: false
@@ -37,17 +24,26 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       defaultValue: 3, // Set the number of login attempts
     },
+
+    fkRoleId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'roles',
+        key: 'id'
+      }
+    },
+
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });
 
-  users.associate = function (models) {
-    // Associations to link applicant with form data collected during sign up
-    users.hasMany(models.requestLeaves, { foreignKey: 'fkUserId', as: 'requestLeaves' });
-    users.hasMany(models.leaveComments, { foreignKey: 'commentedBy', as: 'leaveComments' });
+  Users.associate = function(models) {
+    Users.hasOne(models.employees, { as: 'employee', foreignKey: 'fkUserId' });
+    Users.belongsTo(models.roles, { foreignKey: 'fkRoleId', as: 'role' });
 
-    // users.hasMany(models.requestLeaves, { foreignKey: 'fkUserId', as: 'requestLeaves' });
-  };
 
-  return users;
+};
+
+  return Users;
 };

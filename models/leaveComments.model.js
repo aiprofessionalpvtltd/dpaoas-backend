@@ -27,8 +27,8 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   LeaveComments.associate = function (models) {
-    LeaveComments.belongsTo(models.requestLeaves);
-    LeaveComments.belongsTo(models.users, { foreignKey: 'commentedBy', as: 'users' });
+    LeaveComments.belongsTo(models.requestLeaves,);
+    LeaveComments.belongsTo(models.users,);
     // other associations...
   };
 

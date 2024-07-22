@@ -4,15 +4,16 @@ exports.leaveRequestValidation = (req, res, next) => {
         fkRequestTypeId: Joi.number().required(),
         fkUserId: Joi.number().required(),
         requestLeaveSubmittedTo: Joi.number().required(),
-        requestStatus:Joi.string(),
-        requestLeaveApplyOnBehalf:Joi.any(),
-        requestLeaveForwarder:Joi.any(),
-        requestNumberOfDays:Joi.string(),
+        requestStatus: Joi.string(),
+        requestLeaveApplyOnBehalf: Joi.any(),
+        requestLeaveForwarder: Joi.any(),
+        requestNumberOfDays: Joi.string(),
         requestStartDate: Joi.date().required(),
         requestEndDate: Joi.date().required(),
         requestLeaveSubType: Joi.string().required(),
         requestLeaveReason: Joi.string().required(),
-        requestStationLeave: Joi.boolean()
+        requestStationLeave: Joi.boolean(),
+        
     })
     const { error } = createLeaveSchema.validate(req.body)
     if (error) {
@@ -30,10 +31,10 @@ exports.leaveupdateValidation = (req, res, next) => {
         requestLeaveSubType: Joi.string(),
         requestLeaveReason: Joi.string(),
         requestStationLeave: Joi.boolean(),
-        requestStatus:Joi.string(),
-        requestLeaveApplyOnBehalf:Joi.any(),
-        requestLeaveForwarder:Joi.any(),
-        requestNumberOfDays:Joi.string(),
+        requestStatus: Joi.string(),
+        requestLeaveApplyOnBehalf: Joi.any(),
+        requestLeaveForwarder: Joi.any(),
+        requestNumberOfDays: Joi.string(),
         leaveComment: Joi.string().required(),
         commentedBy: Joi.number().required(),
     })

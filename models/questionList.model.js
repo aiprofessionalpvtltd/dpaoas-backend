@@ -1,0 +1,84 @@
+module.exports = (sequelize, Sequelize) => {
+    const questionLists = sequelize.define("questionLists", {
+        id: {
+            type: Sequelize.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+
+        questionCategory: {
+            type: Sequelize.ENUM("Starred", "Un-Starred", "Short Notice"),
+            allowNull: false
+        },
+
+        fkSessionId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'sessions',
+                key: 'id'
+            }
+        },
+
+        fkGroupId: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'groups',
+                key: 'id'
+            }
+        },
+
+        startListNo: {
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
+
+        listName: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+
+        houseLayDate: {
+            type: Sequelize.DATE,
+            allowNull: false
+        },
+
+        defferedQuestions: {
+            type: Sequelize.BOOLEAN,
+            allowNull: true
+        },
+
+        fkUserId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
+        },
+
+        questionListStatus: {
+            type: Sequelize.ENUM("active", "inactive"),
+            defaultValue: "active"
+        },
+
+        createdAt: Sequelize.DATE,
+        updatedAt: Sequelize.DATE,
+
+    });
+
+    questionLists.associate = function (models) {
+        questionLists.belongsTo(models.sessions, { foreignKey: 'fkSessionId' });
+        questionLists.belongsTo(models.groups, { foreignKey: 'fkGroupId' });
+        questionLists.belongsToMany(models.questions, {
+            through: 'questionQuestionList',
+            foreignKey: 'fkQuestionListId',
+            otherKey: 'fkQuestionId'
+        });
+        questionLists.belongsTo(models.users, { foreignKey: 'fkUserId' })
+
+    };
+
+    return questionLists;
+};

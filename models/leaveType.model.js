@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const LeaveType = sequelize.define("leaveTypes", {
+    const leaveTypes = sequelize.define("leaveTypes", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -18,19 +18,18 @@ module.exports = (sequelize, Sequelize) => {
           key: 'id'
         }
       },
-    
       leavesCount: {
         type: Sequelize.STRING,
         allowNull:true
       }, 
       leaveStatus :{
-        type: Sequelize.ENUM("active", "inactive"),
-        defaultValue: 'inactive'
+        type: Sequelize.STRING,
+        allowNull:true
       },
      
       createdAt: Sequelize.DATE, 
       updatedAt: Sequelize.DATE,
     });
   
-    return LeaveType;
+    return leaveTypes;
   };
