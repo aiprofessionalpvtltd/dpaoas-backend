@@ -88,6 +88,10 @@ module.exports = (sequelize, Sequelize) => {
         key: 'id'
       }
     },
+    employeeStatus: {
+      type: Sequelize.ENUM('active', 'inactive'),
+      defaultValue: 'active',
+    },
 
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,

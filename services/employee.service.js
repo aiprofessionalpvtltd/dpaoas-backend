@@ -370,27 +370,30 @@ updateEmployee: async (employee, req) => {
 
 
   // Delete the Employee
-  deleteEmployee: async (req) => {
+  deleteEmployee: async (employee) => {
     try {
-      const userId = req.fkUserId;
-      console.log(userId);
-
-      const user = await Users.findByPk(userId);
-      console.log(user);
-
-      const deletedData = {
-        userStatus: "inactive"
-      }
-
-      await Users.update(deletedData, { where: { id: userId } })
+      const userId = employee.fkUserId;
+  
+      // Update the employee status to inactive
+      const deletedEmployeeData = {
+        employeeStatus: 'inactive',
+      };
+      await Employee.update(deletedEmployeeData, { where: { id: employee.id } });
+  
+      // Update the user status to inactive
+      const deletedUserData = {
+        userStatus: 'inactive',
+      };
+      await Users.update(deletedUserData, { where: { id: userId } });
+  
+      const updatedEmployee = await Employee.findByPk(employee.id);
       const updatedUser = await Users.findByPk(userId);
-
-      return updatedUser;
+  
+      return { updatedEmployee, updatedUser };
     } catch (error) {
-      throw { message: error.message || "Error Deleting Employee!" };
+      throw { message: error.message || 'Error Deleting Employee!' };
     }
-
-  }
+  }  
 }
 
 module.exports = employeeService
