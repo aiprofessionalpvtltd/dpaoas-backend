@@ -135,26 +135,24 @@ const employeeController = {
       const employeeId = req.params.id;
       const employee = await Employee.findByPk(employeeId);
       if (!employee) {
-        throw { message: "Employee Not Found!" }
+        throw { message: 'Employee Not Found!' };
       }
-
-      const deletedEmployee = await employeeService.deleteEmployee(employee)
-      logger.info("Employee Deleted Successfully!");
+  
+      const { updatedEmployee, updatedUser } = await employeeService.deleteEmployee(employee);
+      logger.info('Employee Deleted Successfully!');
       return res.status(200).send({
         success: true,
-        message: "Employee Deleted Successfully!",
-        data: deletedEmployee,
-      })
+        message: 'Employee Deleted Successfully!',
+        data: { updatedEmployee, updatedUser },
+      });
     } catch (error) {
-      logger.error(error.message)
+      logger.error(error.message);
       return res.status(400).send({
         success: false,
         message: error.message,
-
-      })
-
+      });
     }
-  }
+  }  
 
 }
 
