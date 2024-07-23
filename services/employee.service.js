@@ -357,16 +357,46 @@ const employeeService = {
 // Update Employee
 updateEmployee: async (employee, req) => {
   try {
-    // Update the Employee
-    await Employee.update(req.body, { where: { id: employee.id } });
-    const updatedEmployee = await Employee.findByPk(employee.id);
+    const t = await db.sequelize.transaction();
 
-    return updatedEmployee;
+    try {
+      const userPayload = {
+        email: req.body.email,
+        password: req.body.password,
+        fkRoleId: req.body.fkRoleId
+      };
+
+      // Update the User
+      await db.users.update(userPayload, { where: { id: employee.fkUserId }, transaction: t });
+
+      const employeePayload = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        userName: req.body.userName,
+        phoneNo: req.body.phoneNo,
+        gender: req.body.gender,
+        fileNumber: req.body.fileNumber,
+        supervisor: req.body.supervisor,
+        fkBranchId: req.body.fkBranchId,
+        fkDesignationId: req.body.fkDesignationId
+      };
+
+      // Update the Employee
+      await Employee.update(employeePayload, { where: { id: employee.id }, transaction: t });
+
+      await t.commit();
+
+      const updatedEmployee = await Employee.findByPk(employee.id, { include: ['users'] });
+      return updatedEmployee;
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
   } catch (error) {
-    throw { message: error.message || "Error Updating Employee!" }
-
+    throw { message: error.message || "Error Updating Employee!" };
   }
 },
+
 
 
   // Delete the Employee
