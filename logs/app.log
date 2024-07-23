@@ -6635,3 +6635,22 @@
 [32m[info]: Nov-21-2023 23:38:05: 	Server Logger has been started Successfully[39m
 [32m[info]: Nov-21-2023 23:38:11: 	LeaveController: getLeaveById 15[39m
 [32m[info]: Nov-21-2023 23:38:54: 	LeaveController: getLeaveById 15[39m
+[32m[info]: Jul-23-2024 07:03:42: 	Server Logger has been started Successfully[39m
+[31m[error]: Jul-23-2024 07:03:42: 	uncaughtException: listen EADDRINUSE: address already in use :::2424[39m
+[31mError: listen EADDRINUSE: address already in use :::2424[39m
+[31m    at Server.setupListenHandle [as _listen2] (node:net:1872:16)[39m
+[31m    at listenInCluster (node:net:1920:12)[39m
+[31m    at Server.listen (node:net:2008:7)[39m
+[31m    at Function.listen (/home/coderepo/noticeOffice/dpaoas/node_modules/express/lib/application.js:635:24)[39m
+[31m    at Object.<anonymous> (/home/coderepo/noticeOffice/dpaoas/server.js:294:5)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1376:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1207:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:1023:12)[39m
+[31m    at Object.<anonymous> (/home/coderepo/.nvm/versions/node/v21.5.0/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)[39m
+[31m    at Module._compile (node:internal/modules/cjs/loader:1376:14)[39m
+[31m    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)[39m
+[31m    at Module.load (node:internal/modules/cjs/loader:1207:32)[39m
+[31m    at Module._load (node:internal/modules/cjs/loader:1023:12)[39m
+[31m    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:135:12)[39m
+[31m    at node:internal/main/run_main_module:28:49[39m
