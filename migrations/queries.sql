@@ -17,3 +17,8 @@
 
 -- ALTER TABLE public.employees
 -- ADD COLUMN ""employeeStatus"" employee_status_enum DEFAULT 'active' NOT NULL; 
+
+
+
+ALTER TABLE public."noteParagraphs" ADD createdby int4 NULL;
+

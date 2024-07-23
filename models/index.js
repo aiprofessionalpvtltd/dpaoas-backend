@@ -605,6 +605,10 @@ db.noteParagraphs.belongsTo(db.caseNotes, {
   foreignKey: "fkCaseNoteId",
   as: "noteParagraphs",
 });
+ db.noteParagraphs.belongsTo(db.users, {
+   foreignKey: "createdBy",
+   as: "createdByUser",
+ });
 // db.employees.belongsTo(db.users, { as: 'users', foreignKey: 'fkUserId' });
 
 // db.employees.belongsTo(db.users, { as: "users", foreignKey: "fkUserId" });

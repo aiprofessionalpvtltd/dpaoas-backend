@@ -1099,25 +1099,33 @@ const casesService = {
         }
       }
 
-      // Destroy all existing paragraphs only once
+      console.log("Data object:", data); // Log the entire data object to inspect its structure
+ 
+            // Destroy all existing paragraphs only once
       await NoteParagraphs.destroy({ where: { fkCaseNoteId: caseNotesId } });
 
+      
+      // Declare and initialize allCorrespondencesIds outside of the loop
       let allCorrespondencesIds = [];
+
       if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
         createdParas = await Promise.all(
-          data.paragraphArray.map(async (para, index) => {
+          paragraphArray.map(async (para, index) => {
             const correspondencesIds = para.references.map((ref) => ref.id);
             allCorrespondencesIds =
               allCorrespondencesIds.concat(correspondencesIds);
             const updateData = {
               fkCorrespondenceIds: allCorrespondencesIds,
             };
-            //   await NoteParagraphs.destroy({ where: { fkCaseNoteId: caseNotesId } })
             await CaseNotes.update(updateData, { where: { id: caseNotesId } });
+
+            console.log("Creating paragraph with createdBy:", para.createdBy); // Log before creation
+
             return await NoteParagraphs.create({
               fkCaseNoteId: caseNotesId,
               paragraphTitle: para.title,
               paragraph: para.description,
+              createdBy: para.createdBy,
               flags: para.references.map((flag) => flag.flag).join(","),
             });
           })
@@ -1925,9 +1933,25 @@ const casesService = {
 
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
-        attributes: ["paragraphTitle", "paragraph", "flags"],
+        attributes: ["paragraphTitle", "paragraph", "flags", "createdBy"],
         order: [["createdAt", "ASC"]],
+        include: [
+          {
+            model: Users,
+            as: "createdByUser",
+            attributes: ["id"],
+            include: [
+              {
+                model: Employees,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName", "userType"],
+              },
+            ],
+          },
+        ],
       });
+
+      console.log(noteParas);
 
       const validCorrespondenceIds = caseNotes.fkCorrespondenceIds;
       console.log("validCorrespondenceIds", validCorrespondenceIds);
@@ -2079,6 +2103,8 @@ const casesService = {
           title: para.paragraphTitle,
           description: para.paragraph,
           references: references,
+          // createdByUser: para.createdByUser,
+          createdBy: para.createdBy,
         };
       });
 

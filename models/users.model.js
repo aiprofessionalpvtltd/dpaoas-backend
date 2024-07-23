@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Users = sequelize.define('users', {
+  const Users = sequelize.define("users", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -17,8 +17,8 @@ module.exports = (sequelize, Sequelize) => {
     },
     userStatus: {
       type: Sequelize.ENUM("active", "inactive", "locked"),
-      defaultValue: 'active',
-      allowNull: false
+      defaultValue: "active",
+      allowNull: false,
     },
     loginAttempts: {
       type: Sequelize.INTEGER,
@@ -29,21 +29,23 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: true,
       references: {
-        model: 'roles',
-        key: 'id'
-      }
+        model: "roles",
+        key: "id",
+      },
     },
 
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });
 
-  Users.associate = function(models) {
-    Users.hasOne(models.employees, { as: 'employee', foreignKey: 'fkUserId' });
-    Users.belongsTo(models.roles, { foreignKey: 'fkRoleId', as: 'role' });
-
-
-};
+  Users.associate = function (models) {
+    Users.hasOne(models.employees, { as: "employee", foreignKey: "fkUserId" });
+    Users.belongsTo(models.roles, { foreignKey: "fkRoleId", as: "role" });
+    Users.hasMany(models.noteParagraphs, {
+      foreignKey: "createdBy",
+      as: "noteParagraphs",
+    });
+  };
 
   return Users;
 };
