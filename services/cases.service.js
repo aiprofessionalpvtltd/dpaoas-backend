@@ -148,6 +148,7 @@ const casesService = {
               fkCaseNoteId: caseNotes.id,
               paragraphTitle: para.title,
               paragraph: para.description,
+              createdBy: createdBy,
               flags: para.references.map((ref) => ref.flag).join(","),
             });
           })
@@ -1099,12 +1100,12 @@ const casesService = {
         }
       }
 
+      console.log("case note id", caseNotesId);
       console.log("Data object:", data); // Log the entire data object to inspect its structure
- 
-            // Destroy all existing paragraphs only once
+
+      // Destroy all existing paragraphs only once
       await NoteParagraphs.destroy({ where: { fkCaseNoteId: caseNotesId } });
 
-      
       // Declare and initialize allCorrespondencesIds outside of the loop
       let allCorrespondencesIds = [];
 
@@ -1114,12 +1115,12 @@ const casesService = {
             const correspondencesIds = para.references.map((ref) => ref.id);
             allCorrespondencesIds =
               allCorrespondencesIds.concat(correspondencesIds);
+
             const updateData = {
               fkCorrespondenceIds: allCorrespondencesIds,
             };
-            await CaseNotes.update(updateData, { where: { id: caseNotesId } });
 
-            console.log("Creating paragraph with createdBy:", para.createdBy); // Log before creation
+            await CaseNotes.update(updateData, { where: { id: caseNotesId } });
 
             return await NoteParagraphs.create({
               fkCaseNoteId: caseNotesId,
@@ -1802,6 +1803,341 @@ const casesService = {
   // },
 
   // Get File Details On the Case if FR is available
+  // getSingleCaseDetails: async (fileId, caseId) => {
+  //   try {
+  //     const caseNotes = await CaseNotes.findOne({
+  //       where: {
+  //         fkFileId: fileId,
+  //         fkCaseId: caseId,
+  //       },
+  //       attributes: [
+  //         "id",
+  //         "fkBranchId",
+  //         "notingSubject",
+  //         "fkCorrespondenceIds",
+  //         "fkFreshReciptIds",
+  //       ],
+  //     });
+
+  //     if (!caseNotes) {
+  //       return {};
+  //     }
+
+  //     const cases = await Cases.findOne({
+  //       where: { id: caseId, fkFileId: fileId },
+  //       attributes: ["id", "isEditable"],
+  //       include: [
+  //         {
+  //           model: Files,
+  //           as: "files",
+  //         },
+  //         {
+  //           model: FreshReceipts,
+  //           as: "freshReceipts",
+  //           include: [
+  //             {
+  //               model: FreshReceiptAttachments,
+  //               as: "freshReceiptsAttachments",
+  //               attributes: ["id", "filename"],
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           model: FileRemarks,
+  //           as: "casesRemarks",
+  //           separate: true,
+  //           order: [["id", "DESC"]],
+  //           attributes: [
+  //             "id",
+  //             "assignedTo",
+  //             "submittedBy",
+  //             "fkFileId",
+  //             "fkCaseId",
+  //             "comment",
+  //             "CommentStatus",
+  //             "createdAt",
+  //             "updatedAt",
+  //           ],
+  //           include: [
+  //             {
+  //               model: Users,
+  //               as: "submittedUser",
+  //               attributes: ["id"],
+  //               include: [
+  //                 {
+  //                   model: Employees,
+  //                   as: "employee",
+  //                   attributes: ["id", "firstName", "lastName", "userType"],
+  //                   include: [
+  //                     {
+  //                       model: Designations,
+  //                       as: "designations",
+  //                       attributes: ["id", "designationName"],
+  //                     },
+  //                   ],
+  //                 },
+  //               ],
+  //             },
+  //             {
+  //               model: Users,
+  //               as: "assignedUser",
+  //               attributes: ["id"],
+  //               include: [
+  //                 {
+  //                   model: Employees,
+  //                   as: "employee",
+  //                   attributes: ["id", "firstName", "lastName", "userType"],
+  //                   include: [
+  //                     {
+  //                       model: Designations,
+  //                       as: "designations",
+  //                       attributes: ["id", "designationName"],
+  //                     },
+  //                   ],
+  //                 },
+  //               ],
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           model: FileUserDiares,
+  //           as: "fileDiary",
+  //           include: [
+  //             {
+  //               model: Users,
+  //               as: "submittedByUser",
+  //               attributes: ["id"],
+  //               include: [
+  //                 {
+  //                   model: Employees,
+  //                   as: "employee",
+  //                   attributes: ["id", "firstName", "lastName"],
+  //                   include: [
+  //                     {
+  //                       model: Departments,
+  //                       as: "departments",
+  //                       attributes: ["id", "departmentName"],
+  //                     },
+  //                     {
+  //                       model: Branches,
+  //                       as: "branches",
+  //                       attributes: ["id", "branchName"],
+  //                     },
+  //                   ],
+  //                 },
+  //               ],
+  //             },
+  //           ],
+  //         },
+  //       ],
+  //     });
+
+  //     const noteParas = await NoteParagraphs.findAll({
+  //       where: { fkCaseNoteId: caseNotes.id },
+  //       attributes: ["paragraphTitle", "paragraph", "flags", "createdBy"],
+  //       order: [["createdAt", "ASC"]],
+  //       include: [
+  //         {
+  //           model: Users,
+  //           as: "createdByUser",
+  //           attributes: ["id"],
+  //           include: [
+  //             {
+  //               model: Employees,
+  //               as: "employee",
+  //               attributes: ["id", "firstName", "lastName", "userType"],
+  //             },
+  //           ],
+  //         },
+  //       ],
+  //     });
+
+  //     const validCorrespondenceIds = caseNotes.fkCorrespondenceIds;
+  //     console.log("validCorrespondenceIds", validCorrespondenceIds);
+  //     const correspondences = await Correspondences.findAll({
+  //       where: { id: { [Op.in]: validCorrespondenceIds } },
+  //       include: [
+  //         {
+  //           model: CorrespondenceAttachments,
+  //           as: "correspondenceAttachments",
+  //           attributes: ["id", "file"],
+  //         },
+  //       ],
+  //     });
+
+  //     const validFreshReceiptIds = caseNotes.fkFreshReciptIds;
+  //     console.log("validFreshReceiptIds", validFreshReceiptIds);
+  //     const freshReceipts = await FreshReceipts.findAll({
+  //       where: { id: { [Op.in]: validFreshReceiptIds } },
+  //       include: [
+  //         {
+  //           model: FreshReceiptAttachments,
+  //           as: "freshReceiptsAttachments",
+  //           attributes: ["id", "filename"],
+  //         },
+  //       ],
+  //     });
+
+  //     let correspondenceMap = {};
+  //     correspondences.forEach((corr) => {
+  //       correspondenceMap[corr.id] = {
+  //         id: corr.id,
+  //         name: corr.name,
+  //         description: corr.description,
+  //         attachments: corr.correspondenceAttachments.map((att) => ({
+  //           id: att.id,
+  //           file: att.file,
+  //         })),
+  //       };
+  //     });
+
+  //     console.log("correspondenceMap---", correspondenceMap);
+
+  //     let freshReceiptMap = {};
+  //     freshReceipts.forEach((fresh) => {
+  //       freshReceiptMap[fresh.id] = {
+  //         id: fresh.id,
+  //         attachments: fresh.freshReceiptsAttachments.map((att) => ({
+  //           id: att.id,
+  //           filename: att.filename,
+  //         })),
+  //       };
+  //     });
+
+  //     console.log("freshReceiptMap---", freshReceiptMap);
+
+  //     // Create a map to associate flags with their IDs
+  //     const flagIdMap = {};
+  //     let flagIdMapC = {};
+  //     let flagIdMapF = {};
+
+  //     noteParas.forEach((para, index) => {
+  //       const flags = para.flags ? para.flags.split(",") : [];
+  //       console.log("flags", flags);
+
+  //       flags.forEach((flag) => {
+  //         console.log(
+  //           "validCorrespondenceIds[index]",
+  //           validCorrespondenceIds[index],
+  //           index
+  //         );
+  //         console.log(
+  //           "validFreshReceiptIds[index]",
+  //           validFreshReceiptIds[index],
+  //           index
+  //         );
+  //         const correspondenceId = validCorrespondenceIds[index];
+  //         const freshReceiptId = validFreshReceiptIds[index];
+
+  //         console.log("correspondenceId", correspondenceId);
+  //         console.log("freshReceiptId", freshReceiptId);
+
+  //         console.log("flags", flag);
+  //         console.log("flags", flag.trim());
+
+  //         if (correspondenceId !== null) {
+  //           flagIdMap[flag.trim()] = correspondenceId;
+
+  //           console.log(
+  //             "flagIdMap[flag.trim()]-- Correspondenc",
+  //             flagIdMap[flag.trim()]
+  //           );
+  //         }
+  //         if (freshReceiptId !== null) {
+  //           flagIdMap[flag.trim()] = freshReceiptId;
+  //           console.log("flagIdMap[flag.trim()]-- FR", flagIdMap[flag.trim()]);
+  //         }
+  //       });
+  //     });
+
+  //     console.log("ccccccc", flagIdMap);
+  //     const paragraphArray = noteParas.map((para, index) => {
+  //       const flags = para.flags ? para.flags.split(",") : [];
+  //       let references = [];
+
+  //       flags.forEach((flag) => {
+  //         const reference = {
+  //           flag: flag.trim(),
+  //           id: flagIdMap[flag.trim()],
+  //           attachments: [],
+  //         };
+  //         console.log("flagIdMap", flagIdMap);
+
+  //         const correspondenceId = flagIdMap[flag.trim()];
+  //         const freshReceiptsId = flagIdMap[flag.trim()];
+
+  //         console.log("correspondenceId", correspondenceId);
+  //         console.log("freshReceiptsId", freshReceiptsId);
+
+  //         console.log(
+  //           "correspondenceMap[correspondenceId]----",
+  //           correspondenceMap[correspondenceId]
+  //         );
+  //         if (correspondenceId && correspondenceMap[correspondenceId]) {
+  //           const correspondenceAttachment = correspondenceMap[
+  //             correspondenceId
+  //           ].attachments.map((att) => ({
+  //             id: att.id,
+  //             file: att.file,
+  //           }));
+  //           reference.attachments.push({
+  //             id: correspondenceMap[correspondenceId].id,
+  //             name: correspondenceMap[correspondenceId].name,
+  //             description: correspondenceMap[correspondenceId].description,
+  //             attachments: correspondenceAttachment,
+  //           });
+
+  //           console.log("reference C------", reference);
+  //           return false;
+  //         } else if (freshReceiptsId && freshReceiptMap[freshReceiptsId]) {
+  //           const freshReceiptAttachments = freshReceiptMap[
+  //             freshReceiptsId
+  //           ].attachments.map((att) => ({
+  //             id: att.id,
+  //             filename: att.filename,
+  //           }));
+  //           console.log("reference F------", reference);
+  //           reference.attachments.push(...freshReceiptAttachments);
+  //         }
+  //         console.log("references before----", references);
+  //         references.push(reference);
+  //         console.log("references after----", references);
+  //       });
+
+  //       return {
+  //         title: para.paragraphTitle,
+  //         description: para.paragraph,
+  //         references: references,
+  //         // createdByUser: para.createdByUser,
+  //         createdBy: para.createdBy,
+  //       };
+  //     });
+
+  //     // Filter unique paragraphs (if necessary)
+  //     const uniqueParagraphArray = paragraphArray.filter(
+  //       (para, index, self) =>
+  //         index ===
+  //         self.findIndex(
+  //           (p) => p.title === para.title && p.description === para.description
+  //         )
+  //     );
+
+  //     // Construct the response
+  //     const response = {
+  //       cases: cases,
+  //       caseNoteId: caseNotes.id,
+  //       fkBranchId: caseNotes.fkBranchId,
+  //       notingSubject: caseNotes.notingSubject,
+  //       paragraphArray: uniqueParagraphArray,
+  //     };
+
+  //     return response;
+  //   } catch (error) {
+  //     console.error("Error Fetching Case Details", error);
+  //     throw new Error(error.message || "Error Fetching Case Details");
+  //   }
+  // },
+
   getSingleCaseDetails: async (fileId, caseId) => {
     try {
       const caseNotes = await CaseNotes.findOne({
@@ -1951,10 +2287,12 @@ const casesService = {
         ],
       });
 
-      console.log(noteParas);
-
+      // Ensure validCorrespondenceIds and validFreshReceiptIds are arrays
       const validCorrespondenceIds = caseNotes.fkCorrespondenceIds;
+
       console.log("validCorrespondenceIds", validCorrespondenceIds);
+
+      // return false;
       const correspondences = await Correspondences.findAll({
         where: { id: { [Op.in]: validCorrespondenceIds } },
         include: [
@@ -1965,9 +2303,10 @@ const casesService = {
           },
         ],
       });
+      console.log("correspondences", correspondences);
 
       const validFreshReceiptIds = caseNotes.fkFreshReciptIds;
-      console.log("validFreshReceiptIds", validFreshReceiptIds);
+
       const freshReceipts = await FreshReceipts.findAll({
         where: { id: { [Op.in]: validFreshReceiptIds } },
         include: [
@@ -2009,66 +2348,59 @@ const casesService = {
 
       // Create a map to associate flags with their IDs
       const flagIdMap = {};
-      let flagIdMapC = {};
-      let flagIdMapF = {};
 
-      noteParas.forEach((para, index) => {
+      noteParas.forEach((para) => {
         const flags = para.flags ? para.flags.split(",") : [];
+
         console.log("flags", flags);
 
         flags.forEach((flag) => {
-          console.log(
-            "validCorrespondenceIds[index]",
-            validCorrespondenceIds[index],
-            index
-          );
-          console.log(
-            "validFreshReceiptIds[index]",
-            validFreshReceiptIds[index],
-            index
-          );
-          const correspondenceId = validCorrespondenceIds[index];
-          const freshReceiptId = validFreshReceiptIds[index];
+          const trimmedFlag = flag.trim();
+          if (trimmedFlag) {
+            // Check if the flag is already in the map
+            if (!flagIdMap[trimmedFlag]) {
+              // Find the correct ID for this flag
+              const correspondenceId = validCorrespondenceIds.find(
+                (id) => !Object.values(flagIdMap).includes(id)
+              );
+              const freshReceiptId = validFreshReceiptIds.find(
+                (id) => !Object.values(flagIdMap).includes(id)
+              );
 
-          console.log("correspondenceId", correspondenceId);
-          console.log("freshReceiptId", freshReceiptId);
+              // Assign the correspondenceId first if it exists, otherwise use freshReceiptId
+              if (correspondenceId !== null && correspondenceId !== undefined) {
+                flagIdMap[trimmedFlag] = correspondenceId;
+              } else if (
+                freshReceiptId !== null &&
+                freshReceiptId !== undefined
+              ) {
+                flagIdMap[trimmedFlag] = freshReceiptId;
+              }
 
-          console.log("flags", flag);
-          console.log("flags", flag.trim());
-
-          if (correspondenceId !== null) {
-            flagIdMap[flag.trim()] = correspondenceId;
-            console.log("flagIdMap[flag.trim()]-- C", flagIdMap[flag.trim()]);
-          }
-          if (freshReceiptId !== null) {
-            flagIdMap[flag.trim()] = freshReceiptId;
-            console.log("flagIdMap[flag.trim()]-- F", flagIdMap[flag.trim()]);
+              console.log("flagIdMap[trimmedFlag]", flagIdMap[trimmedFlag]);
+            }
           }
         });
       });
 
-      const paragraphArray = noteParas.map((para, index) => {
+      console.log("ccccccc", flagIdMap);
+
+     
+      const paragraphArray = noteParas.map((para) => {
         const flags = para.flags ? para.flags.split(",") : [];
         let references = [];
 
         flags.forEach((flag) => {
+          const trimmedFlag = flag.trim();
           const reference = {
-            flag: flag.trim(),
-            id: flagIdMap[flag.trim()],
+            flag: trimmedFlag,
+            id: flagIdMap[trimmedFlag],
             attachments: [],
           };
-          console.log("flagIdMap", flagIdMap);
 
-          const correspondenceId = flagIdMap[flag.trim()];
-          const freshReceiptsId = flagIdMap[flag.trim()];
+          const correspondenceId = flagIdMap[trimmedFlag];
+          const freshReceiptsId = flagIdMap[trimmedFlag];
 
-          console.log("correspondenceId", correspondenceId);
-          console.log("freshReceiptsId", freshReceiptsId);
-
-          console.log(
-            "correspondenceMap[correspondenceId]----",
-            correspondenceMap[correspondenceId]
-          );
           if (correspondenceId && correspondenceMap[correspondenceId]) {
             const correspondenceAttachment = correspondenceMap[
               correspondenceId
@@ -2082,8 +2414,6 @@ const casesService = {
               description: correspondenceMap[correspondenceId].description,
               attachments: correspondenceAttachment,
             });
-
-            console.log("reference C------", reference);
           } else if (freshReceiptsId && freshReceiptMap[freshReceiptsId]) {
             const freshReceiptAttachments = freshReceiptMap[
               freshReceiptsId
@@ -2091,19 +2421,16 @@ const casesService = {
               id: att.id,
               filename: att.filename,
             }));
-            console.log("reference F------", reference);
             reference.attachments.push(...freshReceiptAttachments);
           }
-          console.log("references before----", references);
+
           references.push(reference);
-          console.log("references after----", references);
         });
 
         return {
           title: para.paragraphTitle,
           description: para.paragraph,
           references: references,
-          // createdByUser: para.createdByUser,
           createdBy: para.createdBy,
         };
       });
