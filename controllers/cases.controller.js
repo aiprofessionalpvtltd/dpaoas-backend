@@ -514,6 +514,87 @@ const casesController = {
       });
     }
   },
+
+  // delete single correspondence
+  deleteSingleCorrespondence: async (req, res) => {
+    try {
+      logger.info(
+        `casesController: deleteSingleCorrespondence query ${JSON.stringify(
+          req.query
+        )}`
+      );
+      const caseId = req.query.caseId;
+      const correspondenceID = req.query.correspondenceID;
+      const paraID = req.query.paraID;
+
+      if (!caseId || !paraID) {
+        return res.status(400).send({
+          success: false,
+          message: "caseId and paraID are required",
+          data: {},
+        });
+      }
+
+      const result = await casesService.deleteSingleCorrespondence(
+        caseId,
+        paraID,
+        correspondenceID
+      );
+
+      res.status(200).send({
+        success: true,
+        message: result.message,
+        data: result.data,
+      });
+    } catch (error) {
+      console.error("Error deleting attachment:", error);
+      return res.status(500).send({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  },
+
+  //  delete  Correspondence Attachment
+  deleteCorrespondenceAttachment: async (req, res) => {
+    try {
+      logger.info(
+        `casesController: deleteSingleCorrespondence query ${JSON.stringify(
+          req.query
+        )}`
+      );
+      const caseId = req.query.caseId;
+      const correspondenceID = req.query.correspondenceID;
+      const paraID = req.query.paraID;
+      if (!caseId || !correspondenceID) {
+        return res.status(400).send({
+          success: false,
+          message: "caseId and correspondenceID are required",
+          data: {},
+        });
+      }
+
+      const result = await casesService.deleteCorrespondenceAttachment(
+        caseId,
+        correspondenceID,
+        paraID
+      );
+
+      res.status(200).send({
+        success: true,
+        message: result.message,
+        data: result.data,
+      });
+    } catch (error) {
+      console.error("Error deleting attachment:", error);
+      return res.status(500).send({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = casesController;
