@@ -144,6 +144,8 @@ const casesService = {
               allFreshReceiptIds[index] = freshReceiptIds[0];
             }
 
+            // add new entry to note paragraph table
+            console.log("Created By =====>", createdBy);
             await NoteParagraphs.create({
               fkCaseNoteId: caseNotes.id,
               paragraphTitle: para.title,
