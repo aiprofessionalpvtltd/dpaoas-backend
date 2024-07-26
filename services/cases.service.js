@@ -1111,13 +1111,19 @@ const casesService = {
       // Declare and initialize allCorrespondencesIds outside of the loop
       let allCorrespondencesIds = [];
 
+      console.log('paragraphArray.length',paragraphArray.length)
+      
       if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
         createdParas = await Promise.all(
           paragraphArray.map(async (para, index) => {
             const correspondencesIds = para.references.map((ref) => ref.id);
+            console.log('ppara.referencesara', para.references)
+ 
             allCorrespondencesIds =
               allCorrespondencesIds.concat(correspondencesIds);
 
+          
+            // return false;
             const updateData = {
               fkCorrespondenceIds: allCorrespondencesIds,
             };
@@ -2395,7 +2401,7 @@ const casesService = {
           const trimmedFlag = flag.trim();
           const reference = {
             flag: trimmedFlag,
-            id: noteParas[trimmedFlag],
+            id: flagIdMap[trimmedFlag],
             attachments: [],
           };
 
