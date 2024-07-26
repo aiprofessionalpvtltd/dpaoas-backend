@@ -2815,7 +2815,7 @@ const casesService = {
     }
   },
 
-  // delete correspondence id from case notes
+  // delete correspondence id from case notes table
   deleteCorrespondenceAttachment: async (
     caseId,
     correspondenceID = null,
