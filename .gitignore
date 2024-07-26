@@ -29,3 +29,7 @@ yarn-error.log*
 public/
 pdfDownload/
 logs/
+.idea/
+yarn.lock
+package-lock.json
+logs/
