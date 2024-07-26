@@ -2444,6 +2444,7 @@ const casesService = {
           description: para.paragraph,
           references: references,
           createdBy: para.createdBy,
+          createdByUser: para.createdByUser.employee.firstName + para.createdByUser.employee.lastName,
           isSave: true,
         };
       });
