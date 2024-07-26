@@ -340,4 +340,15 @@ router.get("/getHLEmployees/:id", cases.getHigherLevelDesignations);
  */
 router.get("/getBranch/:id", cases.getBranchesByUserLogin);
 
+
+// delete single Para With Correspondence
+router.get("/deleteSingleCorrespondence/", cases.deleteSingleCorrespondence);
+
+// delete  Correspondence Attachment
+router.get(
+  "/deleteCorrespondenceAttachment/",
+  cases.deleteCorrespondenceAttachment
+);
+
+
 module.exports = router;

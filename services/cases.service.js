@@ -2271,7 +2271,7 @@ const casesService = {
 
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
-        attributes: ["paragraphTitle", "paragraph", "flags", "createdBy"],
+        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy"],
         order: [["createdAt", "ASC"]],
         include: [
           {
@@ -2387,7 +2387,6 @@ const casesService = {
 
       console.log("ccccccc", flagIdMap);
 
-     
       const paragraphArray = noteParas.map((para) => {
         const flags = para.flags ? para.flags.split(",") : [];
         let references = [];
@@ -2396,7 +2395,7 @@ const casesService = {
           const trimmedFlag = flag.trim();
           const reference = {
             flag: trimmedFlag,
-            id: flagIdMap[trimmedFlag],
+            id: noteParas[trimmedFlag],
             attachments: [],
           };
 
@@ -2409,7 +2408,11 @@ const casesService = {
             ].attachments.map((att) => ({
               id: att.id,
               file: att.file,
+              correspondenceId: correspondenceId,
+              paraID: para.id,
+              isSave: true,
             }));
+
             reference.attachments.push({
               id: correspondenceMap[correspondenceId].id,
               name: correspondenceMap[correspondenceId].name,
@@ -2430,10 +2433,12 @@ const casesService = {
         });
 
         return {
+          id: para.id,
           title: para.paragraphTitle,
           description: para.paragraph,
           references: references,
           createdBy: para.createdBy,
+          isSave: true,
         };
       });
 
@@ -2759,6 +2764,126 @@ const casesService = {
     } catch (error) {
       console.error("Error Fetching Branches:", error.message);
       throw new Error("Error Fetching Branches");
+    }
+  },
+
+  // delete correspondence id from case notes
+  deleteSingleCorrespondence: async (
+    caseId,
+    paraID,
+    correspondenceID = null
+  ) => {
+    try {
+      // Step 1: Find the case note with the specific caseId
+      const caseNote = await CaseNotes.findOne({ where: { fkCaseId: caseId } });
+      if (!caseNote) throw new Error("Case note not found");
+
+      // Step 2: Update correspondence IDs if provided
+      if (correspondenceID !== null) {
+        const currentCorrespondenceIds = caseNote.fkCorrespondenceIds || [];
+        console.log("Current Correspondence IDs:", currentCorrespondenceIds);
+
+        const updatedCorrespondenceIds = currentCorrespondenceIds.filter(
+          (id) => id !== Number(correspondenceID)
+        );
+        console.log("Updated Correspondence IDs:", updatedCorrespondenceIds);
+
+        await CaseNotes.update(
+          { fkCorrespondenceIds: updatedCorrespondenceIds },
+          { where: { fkCaseId: caseId } }
+        );
+      }
+
+      // Step 3: Delete the specific note paragraph
+      const deletedNoteParagraph = await NoteParagraphs.destroy({
+        where: { id: paraID },
+      });
+      console.log("Deleted Note Paragraph Count:", deletedNoteParagraph);
+
+      // Step 4: Return success message
+      return {
+        message:
+          "Correspondence ID and specified note paragraph deleted successfully",
+        data: {
+          correspondenceIDUpdated: correspondenceID !== null,
+          deletedNoteParagraph,
+        },
+      };
+    } catch (error) {
+      console.error("Error performing the operation:", error);
+      throw new Error(error.message || "Error performing the operation");
+    }
+  },
+
+  // delete correspondence id from case notes
+  deleteCorrespondenceAttachment: async (
+    caseId,
+    correspondenceID = null,
+    paraID
+  ) => {
+    try {
+      // Step 1: Find the case note with the specific caseId
+      const caseNote = await CaseNotes.findOne({
+        where: { fkCaseId: caseId },
+      });
+
+      // Step 2: Check if the case note was found
+      if (!caseNote) {
+        throw new Error("Case note not found");
+      }
+
+      // Step 3: If correspondenceID is provided, update the correspondence IDs
+      if (correspondenceID !== null) {
+        // Ensure currentCorrespondenceIds is an array
+        let currentCorrespondenceIds = caseNote.fkCorrespondenceIds;
+
+        // Log the currentCorrespondenceIds for debugging
+        console.log("Current Correspondence IDs:", currentCorrespondenceIds);
+
+        // Check if currentCorrespondenceIds is defined and is an array
+        if (!Array.isArray(currentCorrespondenceIds)) {
+          throw new Error("Current Correspondence IDs is not an array");
+        }
+
+        // Step 4: Filter out the provided correspondenceID from the array
+        const updatedCorrespondenceIds = currentCorrespondenceIds.filter(
+          (id) => id !== Number(correspondenceID)
+        );
+
+        // Log the updatedCorrespondenceIds for debugging
+        console.log("Updated Correspondence IDs:", updatedCorrespondenceIds);
+
+        // Step 5: Update the case note with the new set of correspondence IDs
+        await CaseNotes.update(
+          { fkCorrespondenceIds: updatedCorrespondenceIds },
+          { where: { fkCaseId: caseId } }
+        );
+      } else {
+        console.error("Correspondence ID is required");
+      }
+
+      // Step 6: Update NoteParagraphs.flags to null for the provided paraID
+      const updatedNoteParagraph = await NoteParagraphs.update(
+        { flags: null },
+        { where: { id: paraID } }
+      );
+
+      // Log the updated note paragraph for debugging
+      console.log("Updated Note Paragraph Count:", updatedNoteParagraph);
+
+      // Step 7: Return success message
+      return {
+        message:
+          "Correspondence ID updated and Note Paragraph flag cleared successfully.",
+        data: {
+          correspondenceIDUpdated: correspondenceID !== null,
+          updatedNoteParagraph,
+        },
+      };
+    } catch (error) {
+      // Log and throw the error for better error handling
+      console.error("Error updating correspondence ID:", error);
+      throw new Error(error.message || "Error performing the operation");
     }
   },
 };
