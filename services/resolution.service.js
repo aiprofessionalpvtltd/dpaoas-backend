@@ -186,6 +186,106 @@ const resolutionService = {
         }
     },
 
+    // Retrieve Resolutions with Status 'Balloting'
+    findAllBallotingResolutions: async (currentPage, pageSize) => {
+        try {
+            const offset = currentPage * pageSize;
+            const limit = pageSize;
+
+            // Construct where clause using literal for subquery
+            let whereClause = {
+                fkResolutionStatus: {
+                    [Op.in]: db.sequelize.literal(`(SELECT "id" FROM "resolutionStatuses" WHERE "resolutionStatus" = 'balloting')`)
+                }
+            };
+
+
+            const { count, rows } = await resolution.findAndCountAll({
+                where: whereClause,
+                include: [
+                    {
+                        model: sessions,
+                        as: 'session',
+                        attributes: ['sessionName']
+                    },
+                    {
+                        model: resolutionStatus,
+                        as: 'resolutionStatus',
+                        attributes: ['resolutionStatus']
+                    },
+                    {
+                        model: resolutionMovers,
+                        as: 'resolutionMoversAssociation',
+                        attributes: ['fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'memberAssociation',
+                                attributes: ['memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: noticeOfficeDairies,
+                        as: 'noticeDiary',
+                        attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
+                    },
+                    {
+                        model: resolutionDiaries,
+                        as: 'resolutionDiaries',
+                        attributes: ['resolutionId', 'resolutionDiaryNo']
+                    },
+                    {
+                        model: Users,
+                        as: 'createdBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    },
+                    {
+                        model: Users,
+                        as: 'deletedBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    }
+                ],
+                offset,
+                limit,
+                order: [
+                    ['id', 'DESC']
+                ]
+            });
+
+            const totalPages = Math.ceil(count / pageSize);
+            return { count, totalPages, resolution: rows };
+
+        } catch (error) {
+            throw { message: error.message || "Error Fetching Balloting Resolutions!" };
+        }
+    },
+
+    // Update Resolutions Status of 'Balloting'
+    updateResolutionsStatus: async (resolutionIds, fkResolutionStatus) => {
+        try {
+            await resolution.update(
+                { fkResolutionStatus },
+                { where: { id: resolutionIds } }
+            );
+
+            return { message: "Resolutions status updated successfully!" };
+        } catch (error) {
+            throw { message: error.message || "Error updating resolutions status!" };
+        }
+    },
+
+
     // Retrieve Resolutions by IDs
     pdfResolutionList: async (resolutionIds) => {
         try {
@@ -1561,7 +1661,11 @@ const resolutionService = {
                 query["$resolutionSentDate$"] = resolutionSentDate;
             }
             if (memberPosition) {
-                query["$memberPosition$"] = memberPosition;
+                if (memberPosition === "Joint Resolution") {
+                    query["$memberPosition$"] = { [Op.in]: ["Treasury", "Opposition", "Independent", "Anyside"] };
+                } else {
+                    query["$memberPosition$"] = memberPosition;
+                }
             }
 
             // Construct Sequelize query
@@ -1642,13 +1746,170 @@ const resolutionService = {
         }
     },
 
+// Search Resolution
+selectColumnsResolution: async (queryParams, selectedColumns) => {
+    try {
+        const {
+            fkSessionNoFrom,
+            fkSessionNoTo,
+            resolutionType,
+            colourResNo,
+            keyword,
+            resolutionId,
+            resolutionDiaryNo,
+            fkResolutionStatus,
+            noticeOfficeDiaryNo,
+            noticeOfficeDiaryDateFrom,
+            noticeOfficeDiaryDateTo,
+            resolutionMovers,
+            resolutionSentStatus,
+            resolutionSentDate,
+            memberPosition
+        } = queryParams;
+
+        const query = {};
+
+        if (fkSessionNoFrom && fkSessionNoTo) {
+            query.fkSessionNo = { [Op.between]: [fkSessionNoFrom, fkSessionNoTo] };
+        }
+
+        if (resolutionType) {
+            query.resolutionType = resolutionType;
+        }
+
+        if (colourResNo) {
+            query.colourResNo = colourResNo;
+        }
+
+        if (keyword) {
+            query[Op.or] = [
+                { englishText: { [Op.iLike]: `%${keyword}%` } },
+                { urduText: { [Op.iLike]: `%${keyword}%` } },
+            ];
+        }
+
+        if (resolutionId) {
+            query["$resolutionDiaries.resolutionId$"] = resolutionId;
+        }
+
+        if (resolutionDiaryNo) {
+            query["$resolutionDiaries.resolutionDiaryNo$"] = resolutionDiaryNo;
+        }
+
+        if (fkResolutionStatus) {
+            query["$resolutionStatus.id$"] = fkResolutionStatus;
+        }
+
+        if (noticeOfficeDiaryNo) {
+            query["$noticeDiary.noticeOfficeDiaryNo$"] = noticeOfficeDiaryNo;
+        }
+
+        if (noticeOfficeDiaryDateFrom && noticeOfficeDiaryDateTo) {
+            query["$noticeDiary.noticeOfficeDiaryDate$"] = {
+                [Op.between]: [noticeOfficeDiaryDateFrom, noticeOfficeDiaryDateTo],
+            };
+        } else if (noticeOfficeDiaryDateFrom) {
+            query["$noticeDiary.noticeOfficeDiaryDate$"] = {
+                [Op.gte]: noticeOfficeDiaryDateFrom,
+            };
+        }
+
+        if (resolutionMovers) {
+            query["$resolutionMoversAssociation.fkMemberId$"] = resolutionMovers;
+        }
+        if (resolutionSentStatus) {
+            query["$resolutionSentStatus$"] = resolutionSentStatus;
+        }
+        if (resolutionSentDate) {
+            query["$resolutionSentDate$"] = resolutionSentDate;
+        }
+        if (memberPosition) {
+            if (memberPosition === "Joint Resolution") {
+                query["$memberPosition$"] = { [Op.in]: ["Treasury", "Opposition", "Independent", "Anyside"] };
+            } else {
+                query["$memberPosition$"] = memberPosition;
+            }
+        }
+
+        // Construct Sequelize query with selected attributes
+        const resolutionData = await resolution.findAll({
+            attributes: selectedColumns.filter(col => !['sessionName', 'resolutionStatus', 'memberName', 'noticeOfficeDiaryNo', 'resolutionDiaryNo'].includes(col)).concat('id'),
+            include: [
+                {
+                    model: db.sessions,
+                    as: 'session',
+                    attributes: selectedColumns.includes('sessionName') ? ['sessionName'] : [],
+                },
+                {
+                    model: db.resolutionStatus,
+                    as: 'resolutionStatus',
+                    attributes: selectedColumns.includes('resolutionStatus') ? ['resolutionStatus'] : [],
+                },
+                {
+                    model: db.resolutionMovers,
+                    as: 'resolutionMoversAssociation',
+                    attributes: [],
+                    include: [
+                        {
+                            model: db.members,
+                            as: 'memberAssociation',
+                            attributes: selectedColumns.includes('memberName') ? ['memberName'] : [],
+                        },
+                    ],
+                },
+                {
+                    model: db.noticeOfficeDairies,
+                    as: 'noticeDiary',
+                    attributes: selectedColumns.includes('noticeOfficeDiaryNo') ? ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'] : [],
+                },
+                {
+                    model: db.resolutionDiaries,
+                    as: 'resolutionDiaries',
+                    attributes: selectedColumns.includes('resolutionDiaryNo') ? ['resolutionDiaryNo'] : [],
+                },
+                {
+                    model: Users,
+                    as: 'createdBy',
+                    attributes: selectedColumns.includes('createdBy') ? ['id'] : [],
+                    include: [{
+                        model: Employees,
+                        as: 'employee',
+                        attributes: selectedColumns.includes('createdBy') ? ['firstName', 'lastName'] : [],
+                    }]
+                },
+                {
+                    model: Users,
+                    as: 'deletedBy',
+                    attributes: selectedColumns.includes('deletedBy') ? ['id'] : [],
+                    include: [{
+                        model: Employees,
+                        as: 'employee',
+                        attributes: selectedColumns.includes('deletedBy') ? ['firstName', 'lastName'] : [],
+                    }]
+                },
+            ],
+            subQuery: false,
+            distinct: true,
+            where: query,
+            order: [
+                ['id', 'ASC']
+            ],
+        });
+
+        return resolutionData;
+    } catch (error) {
+        throw { message: error.message || "Error searching resolutions!" };
+    }
+},
+
+
     // Search Resolution Annual Service
     searchResolutionAnnualReportService: async (queryParams, currentPage, pageSize) => {
         try {
             const offset = currentPage * pageSize; // Adjust offset calculation
             const limit = pageSize;
             const currentYear = moment().year(); // Get the current year
-    
+
             const {
                 fkSessionNoFrom,
                 fkSessionNoTo,
@@ -1666,9 +1927,9 @@ const resolutionService = {
                 resolutionSentDate,
                 memberPosition
             } = queryParams;
-    
+
             const query = {};
-    
+
             // Filter for the current year
             query.createdAt = {
                 [Op.between]: [
@@ -1676,42 +1937,42 @@ const resolutionService = {
                     moment().endOf('year').toDate()
                 ]
             };
-    
+
             if (fkSessionNoFrom && fkSessionNoTo) {
                 query.fkSessionNo = { [Op.between]: [fkSessionNoFrom, fkSessionNoTo] };
             }
-    
+
             if (resolutionType) {
                 query.resolutionType = resolutionType;
             }
-    
+
             if (colourResNo) {
                 query.colourResNo = colourResNo;
             }
-    
+
             if (keyword) {
                 query[Op.or] = [
                     { englishText: { [Op.iLike]: `%${keyword}%` } },
                     { urduText: { [Op.iLike]: `%${keyword}%` } },
                 ];
             }
-    
+
             if (resolutionId) {
                 query["$resolutionDiaries.resolutionId$"] = resolutionId;
             }
-    
+
             if (resolutionDiaryNo) {
                 query["$resolutionDiaries.resolutionDiaryNo$"] = resolutionDiaryNo;
             }
-    
+
             if (fkResolutionStatus) {
                 query["$resolutionStatus.id$"] = fkResolutionStatus;
             }
-    
+
             if (noticeOfficeDiaryNo) {
                 query["$noticeDiary.noticeOfficeDiaryNo$"] = noticeOfficeDiaryNo;
             }
-    
+
             if (noticeOfficeDiaryDateFrom && noticeOfficeDiaryDateTo) {
                 query["$noticeDiary.noticeOfficeDiaryDate$"] = {
                     [Op.between]: [noticeOfficeDiaryDateFrom, noticeOfficeDiaryDateTo],
@@ -1721,7 +1982,7 @@ const resolutionService = {
                     [Op.gte]: noticeOfficeDiaryDateFrom,
                 };
             }
-    
+
             if (resolutionMovers) {
                 query["$resolutionMoversAssociation.fkMemberId$"] = resolutionMovers;
             }
@@ -1734,7 +1995,7 @@ const resolutionService = {
             if (memberPosition) {
                 query["$memberPosition$"] = memberPosition;
             }
-    
+
             // Construct Sequelize query
             const { count, rows } = await resolution.findAndCountAll({
                 include: [
@@ -1800,10 +2061,10 @@ const resolutionService = {
                     ['id', 'ASC']
                 ],
             });
-    
+
             const totalPages = Math.ceil(count / pageSize);
             return { count: rows.length, totalPages, resolutions: rows };
-    
+
         } catch (error) {
             throw { message: error.message || "Error searching resolutions!" };
         }

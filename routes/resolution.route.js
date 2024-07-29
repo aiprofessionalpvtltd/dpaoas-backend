@@ -185,6 +185,8 @@ router.delete('/resolutionlists/:id', resolution.deleteResolutionList);
  *         description: A successful response
  */
 router.get("/searchQuery", resolution.searchResolution);
+router.post("/selectColumnsResolution", resolution.selectColumnsResolution);
+
 router.get("/searchQuery/annual-report", resolution.searchResolutionAnnualReport);
 
 router.get("/searchInactiveResoultion", resolution.searchInactiveResolution);
@@ -212,6 +214,10 @@ router.get("/searchInactiveResoultion", resolution.searchInactiveResolution);
  *         description: A successful response
  */
 router.get("/all", resolution.findAllResolution);
+
+router.get("/findAllBalloting", resolution.findAllBallotingResolutions);
+router.put("/resolutionsBalloting/status", resolution.updateResolutionsStatus);
+
 
 router.post("/pdfResolutionList", resolution.pdfResolutionList);
 
