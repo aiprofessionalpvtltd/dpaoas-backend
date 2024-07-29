@@ -89,6 +89,58 @@ const resolutionController = {
         }
     },
 
+    // Retrieve Resolutions with Status 'Balloting'
+     findAllBallotingResolutions: async (req, res) => {
+        try {
+            const currentPage = parseInt(req.query.currentPage);
+            const pageSize = parseInt(req.query.pageSize);
+            const { count, totalPages, resolution } = await resolutionService.findAllBallotingResolutions(currentPage, pageSize);
+
+            if (resolution.length === 0) {
+                logger.info("No data found on this page!")
+                return res.status(200).send({
+                    success: true,
+                    message: 'No data found on this page!',
+                    data: { resolution }
+                });
+            }
+            else {
+                logger.info("All Balloting Resolution Fetched Successfully!")
+                return res.status(200).send({
+                    success: true,
+                    message: "All Balloting resolution fetched successfully!",
+                    data: { resolution, totalPages, count }
+                })
+            }
+
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+
+            })
+        }
+    },
+
+    updateResolutionsStatus: async (req, res) => {
+        try {
+            const { resolutionIds, fkResolutionStatus } = req.body; // Expecting resolutionIds array and fkResolutionStatus
+            const result = await resolutionService.updateResolutionsStatus(resolutionIds, fkResolutionStatus);
+            return res.status(200).send({
+                success: true,
+                message: result,
+            });
+        } catch (error) {
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+    
+
     findAllResolutionInNotice: async (req, res) => {
         try {
             const currentPage = parseInt(req.query.currentPage);
@@ -482,6 +534,54 @@ const resolutionController = {
                             resolutions,
                             count,
                             totalPages
+
+                        },
+                    });
+                }
+                else {
+                    logger.info("Data not found!");
+                    return res.status(200).send({
+                        success: true,
+                        message: "Data not found!",
+                        data: { resolutions },
+                    });
+                }
+            }
+            else {
+                logger.info("Data Not Found!");
+                return res.status(200).send({
+                    success: false,
+                    message: "Data not found!",
+                    data: [],
+                });
+            }
+
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+
+            })
+        }
+    },
+
+    // Search Resolution
+    selectColumnsResolution: async (req, res) => {
+        try {
+            const selectedColumns = req.body;
+
+
+            if (Object.keys(req.query).length !== 0) {
+                const resolutions  = await resolutionService.selectColumnsResolution(req.query, selectedColumns);
+                // console.log("resolution----->>", resolutions)
+                if (resolutions.length > 0) {
+                    logger.info("Searched Successfully!");
+                    return res.status(200).send({
+                        success: true,
+                        message: "Resolution search results!",
+                        data: {
+                            resolutions
 
                         },
                     });
