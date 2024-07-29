@@ -147,7 +147,7 @@ module.exports = (sequelize, Sequelize) => {
         },
 
         memberPosition: {
-            type: Sequelize.ENUM("Treasury", "Opposition", "Independent", "Anyside"),
+            type: Sequelize.ENUM("Treasury", "Opposition", "Independent", "Anyside", "Joint Resolution"),
             allowNull: true,
         },
 
