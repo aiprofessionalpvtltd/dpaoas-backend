@@ -1852,7 +1852,7 @@ selectColumnsResolution: async (queryParams, selectedColumns) => {
                 {
                     model: db.resolutionMovers,
                     as: 'resolutionMoversAssociation',
-                    attributes: ['id'],
+                    attributes: selectedColumns.includes('memberName') ? ['id'] : [],
                     include: [
                         {
                             model: db.members,
@@ -1874,7 +1874,7 @@ selectColumnsResolution: async (queryParams, selectedColumns) => {
                 {
                     model: Users,
                     as: 'createdBy',
-                    attributes: ['id'],
+                    attributes: selectedColumns.includes('createdByUser') ? ['id'] : [],
                     include: [{
                         model: Employees,
                         as: 'employee',
@@ -1884,7 +1884,7 @@ selectColumnsResolution: async (queryParams, selectedColumns) => {
                 {
                     model: Users,
                     as: 'deletedBy',
-                    attributes: ['id'],
+                    attributes: selectedColumns.includes('deletedByUser') ? ['id'] : [],
                     include: [{
                         model: Employees,
                         as: 'employee',
