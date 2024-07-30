@@ -27,6 +27,14 @@ module.exports = (sequelize, Sequelize) => {
       //   Departments.hasMany(models.users, { foreignKey: 'fkDepartmentId', as: 'users' });
       // };
     
+  
+      branches.associate = function (models) {
+        branches.hasMany(models.flags, {
+          foreignKey: "fkBranchId",
+          as: "flags",
+        });
+  };
+  
       return branches;
       
     };
