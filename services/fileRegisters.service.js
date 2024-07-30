@@ -82,98 +82,44 @@ const fileRegistersService = {
         } catch (error) {
             console.error('Error Fetching File Register request:', error.message);
         }
-    }
+    },
+
+    updateFileRegister: async (id, updateData) => {
+        try {
+            // Check if the file register exists
+            const fileRegister = await FileRegisters.findByPk(id);
+            if (!fileRegister) {
+                throw new Error('File Register not found');
+            }
+    
+            // Check if there is an existing register with the same year and branch ID (excluding the current register being updated)
+            const existingRegisterNumber = await FileRegisters.findOne({
+                where: {
+                    registerNumber: updateData.registerNumber,
+                    year: updateData.year,
+                    fkBranchId: updateData.fkBranchId,
+                    id: {
+                        [Op.ne]: id
+                    }
+                }
+            });
+            if (existingRegisterNumber) {
+                throw new Error('Register Number is already created for same year  in the same branch');
+            }
+    
+            // Update the file register
+            await fileRegister.update(updateData);
+    
+            // Return the updated file register
+            return fileRegister;
+        } catch (error) {
+            // Throw the error with a custom message
+            throw { message: error.message || "Error Updating File Register!" };
+        }
+    },
 
 
-    // Retrieve Main Heading On the basis of Branch
-    // findMainHeadingsByBranchId: async(branchId) => {
-    //     try {
-    //         const headings = await MainHeadingFiles.findAll({
-    //             where: { fkBranchId: branchId },
-    //             include: [
-    //                 {
-    //                     model: Branches,
-    //                     as: 'branches',
-    //                     attributes: ['id','branchName']
-    //                 },
-    //             ]
-    //     })
-    //         return headings
-    //     } catch (error)
-    //     {
-    //         throw new Error(error.message || "Error Fetching Headings By Branch ");
-    //     }
-    // },
-
-
-    // Get Single Session
-    // getSingleSessionSitting: async (sessionSittingId) => {
-    //     try {
-    //         const session = await ManageSessions.findOne({
-    //             where: { id: sessionSittingId },
-    //             include: [
-    //                 {
-    //                     model: Sessions,
-    //                     attributes: ['id', 'sessionName']
-    //                 },
-    //             ],
-    //         });
-    //         if (!session) {
-    //             throw ({ message: "Session Sitting Not Found!" })
-    //         }
-    //         return session;
-    //     } catch (error) {
-    //         throw new Error(error.message || "Error Fetching Session Sitting");
-
-    //     }
-    // },
-
-    // Update Session Sitting
-    // updateSessionSitting: async (req, sessionSittingId) => {
-    //     try {
-    //         await ManageSessions.update(req, { where: { id: sessionSittingId } });
-    //         // Fetch the updated session sitting after the update
-    //         const updatedSession = await ManageSessions.findOne({
-    //             where: { id: sessionSittingId },
-    //             include: [
-    //                 {
-    //                     model: Sessions,
-    //                     attributes: ['id', 'sessionName']
-    //                 },
-    //             ],
-    //         });
-    //         return updatedSession;
-    //     } catch (error) {
-    //         throw { message: error.message || "Error Updating Session Sitting!" };
-    //     }
-    // },
-
-    // deleteSessionSitting: async (sessionSittingId) => {
-    //     try {
-    //         const updatedData = {
-    //             status: "inactive"
-    //         }
-    //         await ManageSessions.update(updatedData, { where: { id: sessionSittingId } });
-    //         // Fetch the updated session sitting after the update
-    //         const updatedSession = await ManageSessions.findOne({
-    //             where: { id: sessionSittingId },
-    //             include: [
-    //                 {
-    //                     model: Sessions,
-    //                     attributes: ['id', 'sessionName']
-    //                 },
-    //             ],
-    //         });
-    //         return updatedSession;
-    //     } catch (error) {
-    //         throw { message: error.message || "Error Deleting Session Sitting!" };
-    //     }
-    // },
-
-
-
-
-
+     
 }
 
 module.exports = fileRegistersService

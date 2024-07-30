@@ -125,9 +125,9 @@ const correspondenceService = {
             };
             if (files && files.length > 0) {
                 // Remove existing attachments for this FR
-                await CorrespondenceAttachments.destroy({
-                    where: { fkCorrespondenceId: correspondenceId }
-                });
+                // await CorrespondenceAttachments.destroy({
+                //     where: { fkCorrespondenceId: correspondenceId }
+                // });
 
                 // Check if files array has elements
                 if (files.length > 0) {

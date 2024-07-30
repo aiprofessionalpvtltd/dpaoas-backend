@@ -290,6 +290,14 @@ app.use(
 // Serve static files from the 'public' directory
 app.use('/public', express.static('public'));
 
+
+
+// const flagRoutes = require('./routes/flagRoutes.route');
+
+
+// Flag Module Routes
+// app.use('/api/flags', flagRoutes);
+
 const PORT = process.env.LOCAL_PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);

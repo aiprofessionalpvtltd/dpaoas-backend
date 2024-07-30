@@ -87,96 +87,36 @@ const fileRegistersController = {
             });
         }
 
-    }
+    },
 
-    // Retrieve Main Heading Number On the basis of Main Heading Id
-    // findHeadingNumberByHeadingId: async (req, res) => {
-    //     try {
-    //         logger.info(`mainHeadingFileController: findHeadingNumberByHeadingId id ${JSON.stringify(req.params.id)}`)
-    //         const headingId = req.params.id;
-    //         const mainHeadings = await mainHeadingFileService.findHeadingNumberByHeadingId(headingId)
-    //         return res.status(200).send({
-    //             success: true,
-    //             message: `Main Headings Numbers fetched successfully for Heading id ${headingId}`,
-    //             data: mainHeadings,
-    //         })
-    //     }
-    //     catch (error) {
-    //         logger.error(error.message);
-    //         return res.status(400).send({
-    //             success: false,
-    //             message: error.message
-    //         });
-
-
-    //     }
-    // },
-
-
-
-
-
-    // Retrieve Single Branch
-    // findSingleBranch: async (req, res) => {
-    //     const { params } = req
-    //     const { id } = params
-    //     logger.info(`branchesController: findSingleBranch for Id ${id}`)
-    //     const motionRecord = await branchesService.findSingleBranch(id)
-    //     if (motionRecord) {
-    //         return res.status(200).send({
-    //             success: true,
-    //             message: `Branch fetched successfully for id ${id}`,
-    //             data: motionRecord,
-    //         })
-    //     }
-    //     return res.status(400).send({
-    //         success: false,
-    //         message: `No record found for id ${id}`,
-    //         data: {},
-    //     })
-    // },
-
-    // Updates the Branch
-    // updateBranch: async (req, res) => {
-    //     try {
-    //         const { body } = req
-    //         logger.info(`branchesController: updateBranch body ${JSON.stringify(body)}`)
-    //         const branch = await branchesService.updateBranch(req);
-    //         return res.status(200).send({
-    //             success: true,
-    //             message: "Branch Updated Successfully!",
-    //             data: branch,
-    //         })
-    //     } catch (error) {
-    //         logger.error(error.message)
-    //         return res.status(400).send({
-    //             success: false,
-    //             message: error.message
-    //         })
-    //     }
-    // },
-
-    // Delete/Suspend the Branch
-    // suspendBranch: async (req, res) => {
-    //     try {
-    //         const { params } = req
-    //         const { id } = params
-    //         logger.info(`branchesController: suspendBranch for Id ${id}`)
-    //         const branch = await branchesService.suspendBranch(req);
-    //         return res.status(200).send({
-    //             success: true,
-    //             message: "Branch Suspend/Deleted Successfully!",
-    //             data: branch,
-    //         })
-    //     } catch (error) {
-    //         logger.error(error.message)
-    //         return res.status(400).send({
-    //             success: false,
-    //             message: error.message
-    //         })
-    //     }
-    // },
-
+    updateFileRegister: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { body } = req;
+    
+            // Log the incoming request details
+            logger.info(`fileRegistersController: updateFileRegister id ${JSON.stringify(id)} and body ${JSON.stringify(body)}`);
+    
+            // Call the service function to update the file register
+            const updatedFileRegister = await fileRegistersService.updateFileRegister(id, body);
+    
+            // Return a success response
+            return res.status(200).send({
+                success: true,
+                message: "File Register Updated Successfully!",
+                data: updatedFileRegister,
+            });
+        } catch (error) {
+            // Log the error message
+            logger.error(error.message);
+    
+            // Return an error response
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+            });
+        }
+    },
 }
 
 module.exports = fileRegistersController;
