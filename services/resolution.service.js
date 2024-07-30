@@ -1833,7 +1833,11 @@ selectColumnsResolution: async (queryParams, selectedColumns) => {
 
         // Construct Sequelize query with selected attributes
         const resolutionData = await resolution.findAll({
-            attributes: selectedColumns.filter(col => !['sessionName', 'resolutionStatus', 'memberName', 'noticeOfficeDiaryNo', 'resolutionDiaryNo'].includes(col)).concat('id'),
+            attributes: selectedColumns.filter(col => ![
+                'sessionName', 'resolutionStatus', 'memberName', 
+                'noticeOfficeDiaryNo', 'resolutionDiaryNo', 
+                'createdByUser', 'deletedByUser'
+            ].includes(col)).concat('id', 'description'),
             include: [
                 {
                     model: db.sessions,
@@ -1848,7 +1852,7 @@ selectColumnsResolution: async (queryParams, selectedColumns) => {
                 {
                     model: db.resolutionMovers,
                     as: 'resolutionMoversAssociation',
-                    attributes: [],
+                    attributes: ['id'],
                     include: [
                         {
                             model: db.members,
@@ -1870,21 +1874,21 @@ selectColumnsResolution: async (queryParams, selectedColumns) => {
                 {
                     model: Users,
                     as: 'createdBy',
-                    attributes: selectedColumns.includes('createdBy') ? ['id'] : [],
+                    attributes: ['id'],
                     include: [{
                         model: Employees,
                         as: 'employee',
-                        attributes: selectedColumns.includes('createdBy') ? ['firstName', 'lastName'] : [],
+                        attributes: selectedColumns.includes('createdByUser') ? ['firstName', 'lastName'] : [],
                     }]
                 },
                 {
                     model: Users,
                     as: 'deletedBy',
-                    attributes: selectedColumns.includes('deletedBy') ? ['id'] : [],
+                    attributes: ['id'],
                     include: [{
                         model: Employees,
                         as: 'employee',
-                        attributes: selectedColumns.includes('deletedBy') ? ['firstName', 'lastName'] : [],
+                        attributes: selectedColumns.includes('deletedByUser') ? ['firstName', 'lastName'] : [],
                     }]
                 },
             ],
