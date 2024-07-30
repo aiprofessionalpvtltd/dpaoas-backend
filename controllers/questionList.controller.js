@@ -90,28 +90,13 @@ const questionListController = {
     try {
         logger.info(`questionListController: editQuestionList body ${JSON.stringify(req.body)}`);
         const questionList = req.body;
-        const questionIds = req.body.id;
+        const questionIds = req.body.questionDetails;
         const updatedQuestionList = await questionListService.editQuestionList(questionList, questionIds);
-
-        const questionLists = await questionListService.generateQuestionList(req.body);
-        const pdfData = await questionListService.printQuestionList(questionLists);
-        const buffer = Buffer.from(pdfData);
-        const fileName = `output_${Date.now()}.pdf`;
-        const pdfDirectory = path.join(__dirname, '..', 'pdfDownload');
-        if (!fs.existsSync(pdfDirectory)) {
-            fs.mkdirSync(pdfDirectory, { recursive: true });
-        }
-        const filePathh = path.join(pdfDirectory, fileName);
-        fs.writeFileSync(filePathh, buffer);
-        const fileLink = `/assets/${fileName}`;
-        logger.info("Question List Updated Successfully!");
-        const updatedQuestionListPlain = updatedQuestionList.get({ plain: true });
-        updatedQuestionListPlain.fileLink = fileLink;
 
         return res.status(200).send({
             success: true,
             message: "Question List Updated Successfully!",
-            data: [updatedQuestionListPlain],
+            data: updatedQuestionList,
         });
     } catch (error) {
         logger.error(error.message);
@@ -136,7 +121,8 @@ const questionListController = {
       return res.status(200).send({
         success: true,
         message: "Single Question List Fetched Successfully!",
-        data: singleQuestionList,
+        data: singleQuestionList.questions,
+        memberQuestionCount: singleQuestionList.memberQuestionCount
       })
     } catch (error) {
       logger.error(error.message)
