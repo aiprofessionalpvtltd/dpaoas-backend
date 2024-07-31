@@ -1321,5 +1321,10 @@ db.motionLists.belongsTo(db.sessions, {
   as: "sessionName",
 });
 
+
+// Flag Module
+db.flags = require('./flagModel')(sequelize, SequelizeMain);
+
+
 sequelize.sync();
 module.exports = db;
