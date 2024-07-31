@@ -1836,8 +1836,8 @@ selectColumnsResolution: async (queryParams, selectedColumns) => {
             attributes: selectedColumns.filter(col => ![
                 'sessionName', 'resolutionStatus', 'memberName', 
                 'noticeOfficeDiaryNo', 'resolutionDiaryNo', 
-                'createdByUser', 'deletedByUser'
-            ].includes(col)).concat('id', 'description'),
+                'createdByUser', 'deletedByUser', 'description'
+            ].includes(col)).concat('id', ...(selectedColumns.includes('description') ? ['description'] : [])),
             include: [
                 {
                     model: db.sessions,

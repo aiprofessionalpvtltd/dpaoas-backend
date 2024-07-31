@@ -471,23 +471,15 @@ const questionListService = {
                 defferedQuestions: questionList.defferedQuestions,
                 fkUserId: questionList.fkUserId
             });
-    
-            // Handle updating question associations
-            await QuestionListJoin.destroy({ where: { fkQuestionListId: existingQuestionList.id } });
-    
-            if (Array.isArray(questionIds) && questionIds.length > 0) {
-                for (const questionId of questionIds) {
-                    await QuestionListJoin.create({
-                        fkQuestionListId: existingQuestionList.id,
-                        fkQuestionId: questionId.id
-                    });
-                }
-            } else if (questionIds) {
-                await QuestionListJoin.create({
-                    fkQuestionListId: existingQuestionList.id,
-                    fkQuestionId: questionIds.id
-                });
+
+            // Remove specified question IDs from the question list
+        await db.questionQuestionLists.destroy({
+            where: {
+                fkQuestionListId: questionList.id,
+                fkQuestionId: questionList.questionDetails
             }
+        });
+
     
             return existingQuestionList;
         } catch (error) {
@@ -576,7 +568,22 @@ const questionListService = {
             const allQuestionsData = await Promise.all(questions);
             // Flatten the array of arrays to get a single-level array
             const flattenedQuestions = allQuestionsData.flat();
-            return flattenedQuestions;
+
+
+        // Aggregate question counts by member
+        const memberQuestionCount = {};
+        flattenedQuestions.forEach(question => {
+            const memberName = question.dataValues.member ? question.dataValues.member.memberName : null;
+            if (memberName) {
+                if (!memberQuestionCount[memberName]) {
+                    memberQuestionCount[memberName] = 0;
+                }
+                memberQuestionCount[memberName]++;
+            }
+        });
+
+
+            return { questions: flattenedQuestions, memberQuestionCount };
         } catch (error) {
             throw new Error(error.message || "Error Fetching Question");
         }
