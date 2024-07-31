@@ -1324,7 +1324,10 @@ db.motionLists.belongsTo(db.sessions, {
 
 // Flag Module
 db.flags = require('./flagModel')(sequelize, SequelizeMain);
-
+db.flags.belongsTo(db.branches, {
+  foreignKey: "fkBranchId",
+  as: "branches",
+});
 
 sequelize.sync();
 module.exports = db;

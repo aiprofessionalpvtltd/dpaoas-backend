@@ -13,15 +13,16 @@ const flagService = {
       // Check for existing flag with the same branch
       const existingFlag = await db.flags.findOne({
         where: {
-            fkBranchId: flagData.fkBranchId
-        }
+          flag: flagData.flag,
+          fkBranchId: flagData.fkBranchId,
+        },
       });
 
       if (existingFlag) {
         console.warn("A flag with the same branch already exists.");
         return {
           success: false,
-          message: "A flag with the same branch already exists."
+          message: "A flag with the same branch already exists.",
         };
       }
 
@@ -31,18 +32,17 @@ const flagService = {
       return {
         success: true,
         message: "Flag created successfully.",
-        data: flag
+        data: flag,
       };
     } catch (error) {
       console.error("Error creating flag:", error.message);
       return {
         success: false,
         message: "Error creating flag.",
-        error: error.message
+        error: error.message,
       };
     }
   },
-
 
   /**
    * Retrieve all flags
@@ -82,38 +82,65 @@ const flagService = {
    * @returns {Promise<Object|null>} - The updated flag or null if not found
    * @throws {Error} - If there is an error updating the flag
    */
-  updateFlag: async (id, flagData) => {
-      try {
-        //   console.log('flagData', id, flagData); return false;
-      // Validate input
-      if (!flagData || typeof flagData.fkBranchId === 'undefined') {
-        return { success: false, message: 'Invalid flag data: branchId is required' };
-      }
-  
-      // Check if a flag with the given ID exists
-      const existingFlag = await db.flags.findOne({ where: { id } });
-      if (!existingFlag) {
-        return { success: false, message: 'Flag with the given ID not found' };
-      }
-  
-       // Proceed with the update
-      const [updateCount, updatedFlag] = await db.flags.update(flagData, {
-        where: { id },
-        returning: true,
-        plain: true,
-      });
-  
-      if (updateCount === 0) {
-        return { success: false, message: 'Flag update failed' };
-      }
-  
-      return { success: true, data: updatedFlag };
-    } catch (error) {
-      console.error("Error updating flag:", error);
-      return { success: false, message: error.message || "Error updating flag!" };
+
+// Service function to update a flag by ID
+updateFlag: async (id, flagData) => {
+  try {
+    // Validate input
+    if (!flagData || typeof flagData.fkBranchId === "undefined" || typeof flagData.flag === "undefined") {
+      return {
+        success: false,
+        message: "Invalid flag data: branchId and flag are required",
+      };
     }
-  },
-  
+
+    // Check if a flag with the given ID exists
+    const existingFlag = await db.flags.findOne({ where: { id } });
+    if (!existingFlag) {
+      return { success: false, message: "Flag with the given ID not found" };
+    }
+
+    // Check for duplicate flag with the same fkBranchId and flag
+    const duplicateFlag = await db.flags.findOne({
+      where: {
+        fkBranchId: flagData.fkBranchId,
+        flag: flagData.flag,
+        id: { [db.Sequelize.Op.ne]: id }, // Ensure it's not the same flag being updated
+      },
+    });
+
+    if (duplicateFlag) {
+      return {
+        success: false,
+        message: `Duplicate flag found with branch ID: ${flagData.fkBranchId} and flag: ${flagData.flag}`,
+      };
+    }
+
+    // Proceed with the update
+    const [updateCount] = await db.flags.update(flagData, {
+      where: { id },
+      returning: true,
+      plain: true,
+    });
+
+    // If no rows were updated, return an error
+    if (updateCount === 0) {
+      return { success: false, message: "Flag update failed" };
+    }
+
+    // Retrieve the updated flag
+    const updatedFlag = await db.flags.findOne({ where: { id } });
+
+    return { success: true, data: updatedFlag };
+  } catch (error) {
+    console.error("Error updating flag:", error);
+    return {
+      success: false,
+      message: error.message || "Error updating flag!",
+    };
+  }
+},
+
 
   /**
    * Delete a flag by ID
@@ -132,17 +159,31 @@ const flagService = {
       console.error("Error deleting flag:", error);
       throw new Error(error.message || "Error deleting flag!");
     }
-    },
-  
-  
-  // Retrieve flags by branchId
-  getFlagsByBranchId: async (branchId) => {
+  },
+
+  // Service function to get flags by branch ID with pagination and branch name
+  getFlagsByBranchId: async (branchId, currentPage, pageSize) => {
     try {
-      // Find all flags that belong to the given branchId
-      const flags = await db.flags.findAll({ where: { fkBranchId : branchId } });
+      // Calculate offset for pagination
+      const offset = currentPage * pageSize;
+      const limit = parseInt(pageSize);
+
+      // Find all flags that belong to the given branchId with pagination and include branch name
+      const flags = await db.flags.findAndCountAll({
+        where: { fkBranchId: branchId },
+        limit,
+        offset,
+        include: [
+          {
+            model: db.branches,
+            as: "branches",
+            attributes: ["id", "branchName"], // Include branch details
+          },
+        ],
+      });
 
       // If no flags are found, return a specific message
-      if (!flags || flags.length === 0) {
+      if (!flags || flags.rows.length === 0) {
         return {
           success: false,
           message: `No flags found for branch ID: ${branchId}`,
@@ -153,7 +194,10 @@ const flagService = {
       return {
         success: true,
         message: "Flags retrieved successfully",
-        data: flags,
+        data: flags.rows,
+        totalItems: flags.count,
+        totalPages: Math.ceil(flags.count / pageSize),
+        currentPage: parseInt(currentPage),
       };
     } catch (error) {
       console.error("Error retrieving flags:", error);
@@ -162,7 +206,7 @@ const flagService = {
         message: error.message || "Error retrieving flags!",
       };
     }
-  }
+  },
 };
 
 module.exports = flagService;
