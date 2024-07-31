@@ -131,7 +131,7 @@ router.put("/update/:id", flagController.updateFlag);
 router.delete("/delete/:id", flagController.deleteFlag);
 
 // Define the route for retrieving flags by branchId
-router.get('/flags/branch/:branchId', flagController.getFlagsByBranchId);
+router.get('/branch/:branchId', flagController.getFlagsByBranchId);
 
 
 module.exports = router;

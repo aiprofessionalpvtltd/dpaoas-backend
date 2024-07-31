@@ -139,7 +139,7 @@ const flagService = {
   getFlagsByBranchId: async (branchId) => {
     try {
       // Find all flags that belong to the given branchId
-      const flags = await db.flags.findAll({ where: { branchId } });
+      const flags = await db.flags.findAll({ where: { fkBranchId : branchId } });
 
       // If no flags are found, return a specific message
       if (!flags || flags.length === 0) {

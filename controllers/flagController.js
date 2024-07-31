@@ -206,7 +206,6 @@ exports.deleteFlag = async (req, res) => {
 
 exports.getFlagsByBranchId = async (req, res) => {
     try {
-        console.log(req.params); return false;
       // Extract branchId from request parameters
       const { branchId } = req.params;
       
