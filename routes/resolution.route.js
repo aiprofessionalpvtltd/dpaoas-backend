@@ -100,6 +100,7 @@ router.post("/generateResolutionListData", resolution.generateResolutionListData
 router.put('/updateResolutionListAndAssociations', resolution.updateResolutionListAndAssociations);
 router.get('/resolutionLists', resolution.getAllResolutionLists);
 router.delete('/resolutionlists/:id', resolution.deleteResolutionList);
+// router.get("/resolutionsBySessionRange", resolution.findAllResolutionsBySessionRange);
 
 
 // Search Resolution

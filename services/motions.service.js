@@ -65,14 +65,48 @@ const motionService = {
                 }
             }
 
-            if (moverIds && Array.isArray(moverIds)) {
-                const motionAssociations = moverIds.map(senatorID => ({
-                    fkMotionId: fkMotionId,
-                    fkMemberId: senatorID
-                }));
+            // if (moverIds && Array.isArray(moverIds)) {
+            //     const motionAssociations = moverIds.map(senatorID => ({
+            //         fkMotionId: fkMotionId,
+            //         fkMemberId: senatorID
+            //     }));
 
-                await motionMovers.bulkCreate(motionAssociations);
+            //     await motionMovers.bulkCreate(motionAssociations);
+            // }
+            if (moverIds && Array.isArray(moverIds)) {
+                for (const senatorID of moverIds) {
+                    // Determine the fkMemberId value
+                    const fkMemberIdValue = senatorID ? senatorID : (web_id ? web_id : null);
+                    console.log("fkMemberIdValue=------", fkMemberIdValue);
+    
+                    // Prepare the data for motionMovers table
+                    const motionMoversData = {
+                        fkMotionId: fkMotionId,
+                        fkMemberId: fkMemberIdValue
+                    };
+    
+                    const motionMover = await motionMovers.create(motionMoversData);
+                    console.log("motionMover------", motionMover);
+                }
+            } else {
+                // Handle the case when moverIds does not exist
+                const fkMemberIdValue = web_id ? web_id : null;
+                console.log("fkMemberIdValue when moverIds is not present=------", fkMemberIdValue);
+    
+                // If fkMemberIdValue is not null, create a motion mover entry
+                if (fkMemberIdValue !== null) {
+                    const motionMoversData = {
+                        fkMotionId: fkMotionId,
+                        fkMemberId: fkMemberIdValue
+                    };
+    
+                    const motionMover = await motionMovers.create(motionMoversData);
+                    console.log("motionMover when moverIds is not present------", motionMover);
+                } else {
+                    console.log("No fkMemberId or web_id provided for motionMover.");
+                }
             }
+
             if (ministryIds && Array.isArray(ministryIds)) {
                 const ministryAssociations = ministryIds.map(ministerId => ({
                     fkMotionId: fkMotionId,

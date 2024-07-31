@@ -1329,5 +1329,11 @@ db.flags.belongsTo(db.branches, {
   as: "branches",
 });
 
+
+db.legislativeBills.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
+db.privateMemberBills.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
+db.researchServices.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
+db.speechOnDemands.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
+
 sequelize.sync();
 module.exports = db;

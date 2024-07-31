@@ -40,5 +40,10 @@ module.exports = (sequelize, Sequelize) => {
         updatedAt: Sequelize.DATE,
     });
 
+
+    ResearchServices.associate = function (models) {
+        ResearchServices.belongsTo(models.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
+      };
+
     return ResearchServices;
 };

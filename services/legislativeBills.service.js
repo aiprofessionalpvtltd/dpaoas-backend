@@ -28,6 +28,11 @@ const legislativeBillService = {
                     {
                         model: BillStatuses,
                         as: 'billStatuses'
+                    },
+                    {
+                        model: db.members,
+                        as: 'member',
+                        attributes: ['memberName'] // Include only the member name
                     }
                 ],
             });
@@ -61,11 +66,16 @@ const legislativeBillService = {
                     {
                         model: BillStatuses,
                         as: 'billStatuses'
+                    },
+                    {
+                        model: db.members,
+                        as: 'member',
+                        attributes: ['memberName'] // Include only the member name
                     }
                 ],
             });
 
-            console.log("rows: " + rows)
+            // console.log("rows: " + rows)
 
             const totalPages = Math.ceil(count / pageSize);
 
