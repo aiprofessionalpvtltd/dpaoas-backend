@@ -83,6 +83,7 @@ module.exports = (sequelize, Sequelize) => {
     PrivateMemberBills.associate = function (models) {
         PrivateMemberBills.belongsTo(models.branches, {foreignKey: 'fkBranchesId', as: 'branch'});
         PrivateMemberBills.belongsTo(models.billStatuses, { foreignKey: 'fkBillStatus', as: 'billStatuses' });
+        PrivateMemberBills.belongsTo(models.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
       };
 
     

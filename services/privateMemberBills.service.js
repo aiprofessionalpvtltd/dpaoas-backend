@@ -62,6 +62,11 @@ const privateMemberBillService = {
                     {
                         model: BillStatuses,
                         as: 'billStatuses'
+                    },
+                    {
+                        model: db.members,
+                        as: 'member',
+                        attributes: ['memberName'] // Include only the member name
                     }
                 ],
             });

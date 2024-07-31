@@ -442,6 +442,11 @@ const SpeechOnDemandService = {
                         as: 'session',
                         attributes: ['id', 'sessionName', 'calledBy'],
                     },
+                    {
+                        model: db.members,
+                        as: 'member',
+                        attributes: ['memberName'] // Include only the member name
+                    }
                 ],
             });
 
