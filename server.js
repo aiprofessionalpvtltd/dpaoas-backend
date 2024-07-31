@@ -292,11 +292,11 @@ app.use('/public', express.static('public'));
 
 
 
-// const flagRoutes = require('./routes/flagRoutes.route');
+const flagRoutes = require('./routes/flagRoutes.route');
 
 
 // Flag Module Routes
-// app.use('/api/flags', flagRoutes);
+app.use('/api/flags', flagRoutes);
 
 const PORT = process.env.LOCAL_PORT || 3000;
 app.listen(PORT, () => {
