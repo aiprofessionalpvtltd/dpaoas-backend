@@ -36,14 +36,20 @@ const resolutionController = {
                     }
                 );
                 const updatedResolution = await Resolution.findOne({ where: { id: resolution.id } });
+
+                console.log("updatedResolution-----",updatedResolution)
                 logger.info("Resolution submitted!")
                 return res.status(200).send({
                     success: true,
                     message: "Submitted",
                     data: updatedResolution,
-                })
+                });
             } catch (error) {
                 console.error("Error updating attachment:", error);
+                return res.status(400).send({
+                    success: false,
+                    message: error,
+                });
             }
         } catch (error) {
             logger.error(error.message);
@@ -90,7 +96,7 @@ const resolutionController = {
     },
 
     // Retrieve Resolutions with Status 'Balloting'
-     findAllBallotingResolutions: async (req, res) => {
+    findAllBallotingResolutions: async (req, res) => {
         try {
             const currentPage = parseInt(req.query.currentPage);
             const pageSize = parseInt(req.query.pageSize);
@@ -139,7 +145,7 @@ const resolutionController = {
         }
     },
 
-    
+
 
     findAllResolutionInNotice: async (req, res) => {
         try {
@@ -371,7 +377,7 @@ const resolutionController = {
             const pageSize = parseInt(req.query.pageSize);
 
             const { count, totalPages, resolutionList } = await resolutionService.getAllResolutionLists(currentPage, pageSize);
-            
+
             if (resolutionList.length === 0) {
                 logger.info("No data found on this page!")
                 return res.status(200).send({
@@ -501,7 +507,11 @@ const resolutionController = {
             const webId = req.query.web_id;
             const resolution = await resolutionService.findAllResolutionsByWebId(webId);
             resolution.forEach(resolution => {
-                resolution.attachment = JSON.parse(resolution.attachment[0]);
+                if (resolution.attachment && resolution.attachment[0]) {
+                    resolution.attachment = JSON.parse(resolution.attachment[0]);
+                } else {
+                    resolution.attachment = null; // or set it to some default value
+                }
             });
             logger.info("Resolutions fetched successfully!")
             return res.status(200).send({
@@ -573,7 +583,7 @@ const resolutionController = {
 
 
             if (Object.keys(req.query).length !== 0) {
-                const resolutions  = await resolutionService.selectColumnsResolution(req.query, selectedColumns);
+                const resolutions = await resolutionService.selectColumnsResolution(req.query, selectedColumns);
                 // console.log("resolution----->>", resolutions)
                 if (resolutions.length > 0) {
                     logger.info("Searched Successfully!");
@@ -825,6 +835,29 @@ const resolutionController = {
         }
 
     },
+
+
+    // // Retrieve all Resolutions filtered by session range
+    // findAllResolutionsBySessionRange: async (req, res) => {
+    //     try {
+    //         const { fromSessionId, toSessionId, currentPage, pageSize } = req.query;
+    //         console.log("data comes this ",fromSessionId, toSessionId, currentPage, pageSize );
+    //         const resolutionData = await resolutionService.findAllResolutionsBySessionRange(fromSessionId, toSessionId, currentPage, pageSize);
+    //         logger.info("Resolution data fetched successfully!");
+    //         return res.status(200).send({
+    //             success: true,
+    //             message: "Resolution data fetched successfully!",
+    //             data: resolutionData
+    //         });
+    //     } catch (error) {
+    //         logger.error(error.message);
+    //         return res.status(400).send({
+    //             success: false,
+    //             message: error.message
+    //         });
+    //     }
+    // },
+
 }
 
 

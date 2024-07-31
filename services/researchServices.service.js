@@ -33,6 +33,13 @@ const researchService = {
                 limit,
                 where: whereClause,
                 order: [['id', 'DESC']],
+                include: [
+                    {
+                        model: db.members,
+                        as: 'member',
+                        attributes: ['memberName'] // Include only the member name
+                    }
+                ],
             });
             const totalPages = Math.ceil(count / pageSize);
 

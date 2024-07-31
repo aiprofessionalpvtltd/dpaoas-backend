@@ -27,10 +27,11 @@ const questionsService = {
     createQuestion: async (req, url, file) => {
         try {
             const formattedDate = moment(req.noticeOfficeDiaryDate).format('DD-MM-YYYY');
+            const fkMemberIdValue = req.fkMemberId ? req.fkMemberId : (req.web_id ? req.web_id : null);
             const question = await Questions.create({
                 fkSessionId: req.fkSessionId ? req.fkSessionId : null,
                 questionCategory: req.questionCategory ? req.questionCategory : null,
-                fkMemberId: req.fkMemberId ? req.fkMemberId : null,
+                fkMemberId: fkMemberIdValue,
                 memberPosition: req.memberPosition ? req.memberPosition : null,
                 englishText: req.englishText ? req.englishText : null,
                 urduText: req.urduText ? req.urduText : null,

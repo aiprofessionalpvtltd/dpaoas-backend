@@ -20,7 +20,6 @@ const resolutionService = {
     createResolution: async (data, url, file) => {
         try {
 
-            console.log("create resolution", data);
 
             // Prepare the data for noticeOfficeDairy table
             const noticeOfficeDairyData = {
@@ -58,28 +57,48 @@ const resolutionService = {
 
             // Create the Resolution table
             const resolutions = await resolution.create(resolutionData);
-            console.log("Resolutions", resolutions)
+            // console.log("Resolutions", resolutions)
             const resolutionId = resolutions.id;
-            console.log("resolution id", resolutionId)
+            // console.log("resolution id", resolutionId)
 
             if (Array.isArray(data.resolutionMovers)) {
 
                 for (const moverData of data.resolutionMovers) {
                     const fkMemberId = moverData.fkMemberId;
 
+                    // Determine the fkMemberId value
+                    const fkMemberIdValue = moverData.fkMemberId ? moverData.fkMemberId : (data.web_id ? data.web_id : null);
+                    console.log("fkMemberIdValue=------",fkMemberIdValue)
+
 
 
                     // Prepare the data for resolutionMovers table
                     const resolutionMoversData = {
                         fkResolutionId: resolutionId,
-                        fkMemberId: fkMemberId
+                        fkMemberId: fkMemberIdValue
                     };
 
                     const resolutionMover = await resolutionMovers.create(resolutionMoversData);
+                    console.log("resolutionMover------",resolutionMover)
 
                 }
             } else {
-                console.error("resolutionMovers is not an array.");
+                // Handle the case when resolutionMovers does not exist
+                const fkMemberIdValue = data.web_id ? data.web_id : null;
+                console.log("fkMemberIdValue when resolutionMovers is not present=------", fkMemberIdValue);
+    
+                // If fkMemberIdValue is not null, create a resolution mover entry
+                if (fkMemberIdValue !== null) {
+                    const resolutionMoversData = {
+                        fkResolutionId: resolutionId,
+                        fkMemberId: fkMemberIdValue
+                    };
+    
+                    const resolutionMover = await resolutionMovers.create(resolutionMoversData);
+                    console.log("resolutionMover when resolutionMovers is not present------", resolutionMover);
+                } else {
+                    console.log("No fkMemberId or web_id provided for resolutionMover.");
+                }
             }
 
             // update businessId in noticeOfficeDairy table
@@ -1746,165 +1765,165 @@ const resolutionService = {
         }
     },
 
-// Search Resolution
-selectColumnsResolution: async (queryParams, selectedColumns) => {
-    try {
-        const {
-            fkSessionNoFrom,
-            fkSessionNoTo,
-            resolutionType,
-            colourResNo,
-            keyword,
-            resolutionId,
-            resolutionDiaryNo,
-            fkResolutionStatus,
-            noticeOfficeDiaryNo,
-            noticeOfficeDiaryDateFrom,
-            noticeOfficeDiaryDateTo,
-            resolutionMovers,
-            resolutionSentStatus,
-            resolutionSentDate,
-            memberPosition
-        } = queryParams;
+    // Search Resolution
+    selectColumnsResolution: async (queryParams, selectedColumns) => {
+        try {
+            const {
+                fkSessionNoFrom,
+                fkSessionNoTo,
+                resolutionType,
+                colourResNo,
+                keyword,
+                resolutionId,
+                resolutionDiaryNo,
+                fkResolutionStatus,
+                noticeOfficeDiaryNo,
+                noticeOfficeDiaryDateFrom,
+                noticeOfficeDiaryDateTo,
+                resolutionMovers,
+                resolutionSentStatus,
+                resolutionSentDate,
+                memberPosition
+            } = queryParams;
 
-        const query = {};
+            const query = {};
 
-        if (fkSessionNoFrom && fkSessionNoTo) {
-            query.fkSessionNo = { [Op.between]: [fkSessionNoFrom, fkSessionNoTo] };
-        }
-
-        if (resolutionType) {
-            query.resolutionType = resolutionType;
-        }
-
-        if (colourResNo) {
-            query.colourResNo = colourResNo;
-        }
-
-        if (keyword) {
-            query[Op.or] = [
-                { englishText: { [Op.iLike]: `%${keyword}%` } },
-                { urduText: { [Op.iLike]: `%${keyword}%` } },
-            ];
-        }
-
-        if (resolutionId) {
-            query["$resolutionDiaries.resolutionId$"] = resolutionId;
-        }
-
-        if (resolutionDiaryNo) {
-            query["$resolutionDiaries.resolutionDiaryNo$"] = resolutionDiaryNo;
-        }
-
-        if (fkResolutionStatus) {
-            query["$resolutionStatus.id$"] = fkResolutionStatus;
-        }
-
-        if (noticeOfficeDiaryNo) {
-            query["$noticeDiary.noticeOfficeDiaryNo$"] = noticeOfficeDiaryNo;
-        }
-
-        if (noticeOfficeDiaryDateFrom && noticeOfficeDiaryDateTo) {
-            query["$noticeDiary.noticeOfficeDiaryDate$"] = {
-                [Op.between]: [noticeOfficeDiaryDateFrom, noticeOfficeDiaryDateTo],
-            };
-        } else if (noticeOfficeDiaryDateFrom) {
-            query["$noticeDiary.noticeOfficeDiaryDate$"] = {
-                [Op.gte]: noticeOfficeDiaryDateFrom,
-            };
-        }
-
-        if (resolutionMovers) {
-            query["$resolutionMoversAssociation.fkMemberId$"] = resolutionMovers;
-        }
-        if (resolutionSentStatus) {
-            query["$resolutionSentStatus$"] = resolutionSentStatus;
-        }
-        if (resolutionSentDate) {
-            query["$resolutionSentDate$"] = resolutionSentDate;
-        }
-        if (memberPosition) {
-            if (memberPosition === "Joint Resolution") {
-                query["$memberPosition$"] = { [Op.in]: ["Treasury", "Opposition", "Independent", "Anyside"] };
-            } else {
-                query["$memberPosition$"] = memberPosition;
+            if (fkSessionNoFrom && fkSessionNoTo) {
+                query.fkSessionNo = { [Op.between]: [fkSessionNoFrom, fkSessionNoTo] };
             }
+
+            if (resolutionType) {
+                query.resolutionType = resolutionType;
+            }
+
+            if (colourResNo) {
+                query.colourResNo = colourResNo;
+            }
+
+            if (keyword) {
+                query[Op.or] = [
+                    { englishText: { [Op.iLike]: `%${keyword}%` } },
+                    { urduText: { [Op.iLike]: `%${keyword}%` } },
+                ];
+            }
+
+            if (resolutionId) {
+                query["$resolutionDiaries.resolutionId$"] = resolutionId;
+            }
+
+            if (resolutionDiaryNo) {
+                query["$resolutionDiaries.resolutionDiaryNo$"] = resolutionDiaryNo;
+            }
+
+            if (fkResolutionStatus) {
+                query["$resolutionStatus.id$"] = fkResolutionStatus;
+            }
+
+            if (noticeOfficeDiaryNo) {
+                query["$noticeDiary.noticeOfficeDiaryNo$"] = noticeOfficeDiaryNo;
+            }
+
+            if (noticeOfficeDiaryDateFrom && noticeOfficeDiaryDateTo) {
+                query["$noticeDiary.noticeOfficeDiaryDate$"] = {
+                    [Op.between]: [noticeOfficeDiaryDateFrom, noticeOfficeDiaryDateTo],
+                };
+            } else if (noticeOfficeDiaryDateFrom) {
+                query["$noticeDiary.noticeOfficeDiaryDate$"] = {
+                    [Op.gte]: noticeOfficeDiaryDateFrom,
+                };
+            }
+
+            if (resolutionMovers) {
+                query["$resolutionMoversAssociation.fkMemberId$"] = resolutionMovers;
+            }
+            if (resolutionSentStatus) {
+                query["$resolutionSentStatus$"] = resolutionSentStatus;
+            }
+            if (resolutionSentDate) {
+                query["$resolutionSentDate$"] = resolutionSentDate;
+            }
+            if (memberPosition) {
+                if (memberPosition === "Joint Resolution") {
+                    query["$memberPosition$"] = { [Op.in]: ["Treasury", "Opposition", "Independent", "Anyside"] };
+                } else {
+                    query["$memberPosition$"] = memberPosition;
+                }
+            }
+
+            // Construct Sequelize query with selected attributes
+            const resolutionData = await resolution.findAll({
+                attributes: selectedColumns.filter(col => ![
+                    'sessionName', 'resolutionStatus', 'memberName',
+                    'noticeOfficeDiaryNo', 'resolutionDiaryNo',
+                    'createdByUser', 'deletedByUser', 'description'
+                ].includes(col)).concat('id', ...(selectedColumns.includes('description') ? ['description'] : [])),
+                include: [
+                    {
+                        model: db.sessions,
+                        as: 'session',
+                        attributes: selectedColumns.includes('sessionName') ? ['sessionName'] : [],
+                    },
+                    {
+                        model: db.resolutionStatus,
+                        as: 'resolutionStatus',
+                        attributes: selectedColumns.includes('resolutionStatus') ? ['resolutionStatus'] : [],
+                    },
+                    {
+                        model: db.resolutionMovers,
+                        as: 'resolutionMoversAssociation',
+                        attributes: selectedColumns.includes('memberName') ? ['id'] : [],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'memberAssociation',
+                                attributes: selectedColumns.includes('memberName') ? ['memberName'] : [],
+                            },
+                        ],
+                    },
+                    {
+                        model: db.noticeOfficeDairies,
+                        as: 'noticeDiary',
+                        attributes: selectedColumns.includes('noticeOfficeDiaryNo') ? ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'] : [],
+                    },
+                    {
+                        model: db.resolutionDiaries,
+                        as: 'resolutionDiaries',
+                        attributes: selectedColumns.includes('resolutionDiaryNo') ? ['resolutionDiaryNo'] : [],
+                    },
+                    {
+                        model: Users,
+                        as: 'createdBy',
+                        attributes: selectedColumns.includes('createdByUser') ? ['id'] : [],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: selectedColumns.includes('createdByUser') ? ['firstName', 'lastName'] : [],
+                        }]
+                    },
+                    {
+                        model: Users,
+                        as: 'deletedBy',
+                        attributes: selectedColumns.includes('deletedByUser') ? ['id'] : [],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: selectedColumns.includes('deletedByUser') ? ['firstName', 'lastName'] : [],
+                        }]
+                    },
+                ],
+                subQuery: false,
+                distinct: true,
+                where: query,
+                order: [
+                    ['id', 'ASC']
+                ],
+            });
+
+            return resolutionData;
+        } catch (error) {
+            throw { message: error.message || "Error searching resolutions!" };
         }
-
-        // Construct Sequelize query with selected attributes
-        const resolutionData = await resolution.findAll({
-            attributes: selectedColumns.filter(col => ![
-                'sessionName', 'resolutionStatus', 'memberName', 
-                'noticeOfficeDiaryNo', 'resolutionDiaryNo', 
-                'createdByUser', 'deletedByUser', 'description'
-            ].includes(col)).concat('id', ...(selectedColumns.includes('description') ? ['description'] : [])),
-            include: [
-                {
-                    model: db.sessions,
-                    as: 'session',
-                    attributes: selectedColumns.includes('sessionName') ? ['sessionName'] : [],
-                },
-                {
-                    model: db.resolutionStatus,
-                    as: 'resolutionStatus',
-                    attributes: selectedColumns.includes('resolutionStatus') ? ['resolutionStatus'] : [],
-                },
-                {
-                    model: db.resolutionMovers,
-                    as: 'resolutionMoversAssociation',
-                    attributes: selectedColumns.includes('memberName') ? ['id'] : [],
-                    include: [
-                        {
-                            model: db.members,
-                            as: 'memberAssociation',
-                            attributes: selectedColumns.includes('memberName') ? ['memberName'] : [],
-                        },
-                    ],
-                },
-                {
-                    model: db.noticeOfficeDairies,
-                    as: 'noticeDiary',
-                    attributes: selectedColumns.includes('noticeOfficeDiaryNo') ? ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'] : [],
-                },
-                {
-                    model: db.resolutionDiaries,
-                    as: 'resolutionDiaries',
-                    attributes: selectedColumns.includes('resolutionDiaryNo') ? ['resolutionDiaryNo'] : [],
-                },
-                {
-                    model: Users,
-                    as: 'createdBy',
-                    attributes: selectedColumns.includes('createdByUser') ? ['id'] : [],
-                    include: [{
-                        model: Employees,
-                        as: 'employee',
-                        attributes: selectedColumns.includes('createdByUser') ? ['firstName', 'lastName'] : [],
-                    }]
-                },
-                {
-                    model: Users,
-                    as: 'deletedBy',
-                    attributes: selectedColumns.includes('deletedByUser') ? ['id'] : [],
-                    include: [{
-                        model: Employees,
-                        as: 'employee',
-                        attributes: selectedColumns.includes('deletedByUser') ? ['firstName', 'lastName'] : [],
-                    }]
-                },
-            ],
-            subQuery: false,
-            distinct: true,
-            where: query,
-            order: [
-                ['id', 'ASC']
-            ],
-        });
-
-        return resolutionData;
-    } catch (error) {
-        throw { message: error.message || "Error searching resolutions!" };
-    }
-},
+    },
 
 
     // Search Resolution Annual Service
@@ -2245,6 +2264,90 @@ selectColumnsResolution: async (queryParams, selectedColumns) => {
             throw { message: error.message || "Error searching resolutions!" };
         }
     },
+
+    // // Get all resolutions filtered by session range 
+    // findAllResolutionsBySessionRange: async (fromSessionId, toSessionId, currentPage, pageSize) => {
+    //     try {
+    //         const offset = currentPage * pageSize;
+    //         const limit = pageSize;
+
+    //         // Create the base where clause
+    //         const whereClause = {
+    //             fkSessionNo: {
+    //                 [db.Sequelize.Op.between]: [fromSessionId, toSessionId]
+    //             }
+    //         };
+
+    //         // Fetch the data
+    //         const { count, rows } = await db.resolutions.findAndCountAll({
+    //             where: whereClause,
+    //             include: [
+    //                 {
+    //                     model: db.sessions,
+    //                     as: 'session',
+    //                     attributes: ['sessionName']
+    //                 },
+    //                 {
+    //                     model: db.resolutionStatus,
+    //                     as: 'resolutionStatus',
+    //                     attributes: ['resolutionStatus']
+    //                 },
+    //                 {
+    //                     model: db.resolutionMovers,
+    //                     as: 'resolutionMoversAssociation',
+    //                     attributes: ['fkMemberId'],
+    //                     include: [
+    //                         {
+    //                             model: db.members,
+    //                             as: 'memberAssociation',
+    //                             attributes: ['memberName']
+    //                         }
+    //                     ]
+    //                 },
+    //                 {
+    //                     model: db.noticeOfficeDairies,
+    //                     as: 'noticeDiary',
+    //                     attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
+    //                 },
+    //                 {
+    //                     model: db.resolutionDiaries,
+    //                     as: 'resolutionDiaries',
+    //                     attributes: ['resolutionId', 'resolutionDiaryNo']
+    //                 },
+    //                 {
+    //                     model: db.users,
+    //                     as: 'createdBy',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: db.Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName']
+    //                     }]
+    //                 },
+    //                 {
+    //                     model: db.users,
+    //                     as: 'deletedBy',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: db.Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName']
+    //                     }]
+    //                 }
+    //             ],
+    //             offset,
+    //             limit,
+    //             order: [['id', 'DESC']]
+    //         });
+
+    //         const totalPages = Math.ceil(count / pageSize);
+    //         return { count, totalPages, resolutions: rows };
+
+    //     } catch (error) {
+    //         throw { message: error.message || "Error Fetching All resolutions by session range!" };
+    //     }
+    // },
+
 
 
 

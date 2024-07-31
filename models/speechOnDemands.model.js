@@ -66,6 +66,7 @@ module.exports = (sequelize, Sequelize) => {
 
     SpeechOnDemands.associate = function (models) {
         SpeechOnDemands.belongsTo(models.sessions, { foreignKey: 'fkSessionNo', as: 'session' });
+        SpeechOnDemands.belongsTo(models.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
     };
 
     return SpeechOnDemands;
