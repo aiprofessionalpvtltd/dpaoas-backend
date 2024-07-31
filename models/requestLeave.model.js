@@ -27,7 +27,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.DATE,
       allowNull: true
     },
-    requstEndDate: {
+    requestEndDate: {
       type: Sequelize.DATE,
       allowNull: true
 
@@ -62,9 +62,9 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true,
       references: {
-      model: 'users', // Assuming the table name is 'users'
-      key: 'id',
-    },
+        model: 'users', // Assuming the table name is 'users'
+        key: 'id',
+      },
     },
     requestLeaveApplyOnBehalf: {
       type: Sequelize.BOOLEAN,
@@ -74,12 +74,24 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true
     },
+    leave_oneday: {
+      type: Sequelize.DATE,
+      allowNull: true
+    },
+    file: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    web_id: {
+      type: Sequelize.INTEGER,
+      allowNull: true
+    },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });
   requestLeaves.associate = function (models) {
     requestLeaves.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'users' });
-    requestLeaves.belongsTo(models.users, {foreignKey: 'requestLeaveSubmittedTo',as: 'submittedToUser'});
+    requestLeaves.belongsTo(models.users, { foreignKey: 'requestLeaveSubmittedTo', as: 'submittedToUser' });
     requestLeaves.hasMany(models.leaveComments, { foreignKey: 'fkRequestLeaveId', as: 'leaveComments' });
   };
   return requestLeaves;

@@ -13,7 +13,7 @@ const leaveService = {
         try {
             let { fkRequestTypeId, fkUserId, requestStartDate, requestEndDate, requestStatus, requestLeaveSubType, requestLeaveReason,
                 requestNumberOfDays, requestStationLeave, requestLeaveAttachment,
-                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder } = req;
+                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leave_oneday, web_id } = req;
 
             const leaveRequest = await requestLeaves.create({
                 fkRequestTypeId,
@@ -28,7 +28,9 @@ const leaveService = {
                 requestLeaveAttachment,
                 requestLeaveSubmittedTo,
                 requestLeaveApplyOnBehalf,
-                requestLeaveForwarder
+                requestLeaveForwarder,
+                leave_oneday,
+                web_id
             });
 
             return leaveRequest;
@@ -42,7 +44,7 @@ const leaveService = {
         try {
             let { fkRequestTypeId, fkUserId, requestStartDate, requestEndDate, requestStatus, requestLeaveSubType, requestLeaveReason,
                 requestNumberOfDays, requestStationLeave, requestLeaveAttachment,
-                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leaveComment, commentedBy, file } = payload;
+                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leaveComment, commentedBy, leave_oneday } = payload;
 
             const result = await requestLeaves.update(
                 {
@@ -58,7 +60,8 @@ const leaveService = {
                     requestLeaveAttachment,
                     requestLeaveSubmittedTo,
                     requestLeaveApplyOnBehalf,
-                    requestLeaveForwarder, file
+                    requestLeaveForwarder,
+                    leave_oneday
                 },
                 {
                     where: { id: id } // Add the WHERE condition to filter by id
@@ -83,6 +86,7 @@ const leaveService = {
             const leaves = await db.sequelize.query(`
                         SELECT 
                             "requestLeaves".*,
+                            "leaveTypes"."leaveType" AS "leaveTypeName",
                             "employees"."id" AS "employees.id",
                             "employees"."firstName" AS "employees.firstName",
                             "employees"."lastName" AS "employees.lastName",
@@ -93,8 +97,10 @@ const leaveService = {
                             "requestLeaves"
                         LEFT JOIN 
                             "employees" ON "requestLeaves"."fkUserId" = "employees"."id"
-                            LEFT JOIN
+                        LEFT JOIN
                             "employees" AS "leaveOf" ON "requestLeaves"."requestLeaveSubmittedTo"::integer = "leaveOf"."id"
+                        LEFT JOIN
+                            "leaveTypes" ON "requestLeaves"."fkRequestTypeId" = "leaveTypes"."id"
                         LIMIT :limit
                         OFFSET :offset
                     `, {
@@ -152,6 +158,60 @@ const leaveService = {
             console.error('Error Fetching leave request:', error.message);
         }
     },
+    findAllLeaveByWebId: async (web_id) => {
+        try {
+            const result = await db.sequelize.query(`
+                SELECT 
+                    "requestLeaves".*,
+                    "leaveOf"."firstName" AS "leavesubmittedTofirstName",
+                    "leaveOf"."lastName" AS "leavesubmittedTolastName",
+                    ARRAY_AGG(
+                        json_build_object(
+                            'leaveCommentId', "leaveComments"."id",
+                            'leaveComment', "leaveComments"."leaveComment",
+                            'commentedById', "leaveComments"."commentedBy",
+                            'commentedByName', "commentingEmployee"."firstName"
+                        )
+                    ) AS "comments",
+                    "employees"."id" AS "userId",
+                    "employees"."firstName" AS "RequesterNamefirstName",
+                    "employees"."lastName" AS "RequesterNamelastName",
+                    "leaveTypes"."leaveType" AS "requestLeaveTypeName"
+                FROM 
+                    "requestLeaves"
+                LEFT JOIN 
+                    "leaveComments" ON "requestLeaves"."id" = "leaveComments"."fkRequestLeaveId"
+                LEFT JOIN 
+                    "employees" ON "requestLeaves"."fkUserId" = "employees"."id" 
+                LEFT JOIN
+                    "employees" AS "leaveOf" ON "requestLeaves"."requestLeaveSubmittedTo"::integer = "leaveOf"."id"
+                LEFT JOIN
+                    "employees" AS "commentingEmployee" ON "leaveComments"."commentedBy" = "commentingEmployee"."id"
+                LEFT JOIN
+                    "leaveTypes" ON "requestLeaves"."fkRequestTypeId" = "leaveTypes"."id"    
+                WHERE 
+                    "requestLeaves"."web_id" = :web_id
+                GROUP BY
+                    "requestLeaves"."id",
+                    "employees"."id",
+                    "leaveOf"."firstName",
+                    "leaveOf"."lastName",
+                    "leaveTypes"."leaveType"
+                ORDER BY
+                    "requestLeaves"."createdAt" DESC
+            `, {
+                type: db.sequelize.QueryTypes.SELECT,
+                replacements: { web_id: web_id },
+            });
+
+            console.log("result---->>", result)
+
+            return result;
+        } catch (error) {
+            console.error('Error Fetching leave request:', error.message);
+            throw error; // Re-throwing the error to handle it further up the call stack if needed
+        }
+    },
     getLeaveTypes: async (id) => {
         try {
             const result = await typeLeave.findAll({
@@ -166,12 +226,13 @@ const leaveService = {
     },
     search: async (req) => {
         try {
-            const { employeeName, startDate, endDate, departmentName } = req
+            const { employeeName, startDate, endDate, departmentName } = req;
             let whereConditions = '';
 
             if (employeeName) {
                 whereConditions += `"employees"."id" = ${employeeName}`;
             }
+
             if (departmentName) {
                 if (whereConditions) {
                     whereConditions += ' AND ';
@@ -183,33 +244,41 @@ const leaveService = {
                 if (whereConditions) {
                     whereConditions += ' AND ';
                 }
-                whereConditions += `"requestLeaves"."createdAt" BETWEEN '${startDate}' AND '${endDate}'`;
+                const startOfDay = `${startDate}T00:00:00.000Z`;
+                const endOfDay = `${endDate}T23:59:59.999Z`;
+
+                whereConditions += `"requestLeaves"."requestStartDate" >= '${startOfDay}' AND "requestLeaves"."requestStartDate" <= '${endOfDay}'`;
             }
 
             // Use whereConditions in your main query
             const result = await db.sequelize.query(`
-                    SELECT 
-                        "requestLeaves"."requestStartDate",
-                        "requestLeaves"."requestEndDate",
-                        "requestLeaves"."requestLeaveReason",
-                        "requestLeaves"."requestLeaveSubmittedTo",
-                        "leaveOf"."firstName" AS "leavesubmittedTofirstName",
-                        "leaveOf"."lastName" AS "leavesubmittedTolastName",
-                        "employees"."id" AS "userId",
-                        "employees"."firstName" AS "userfirstName",
-                        "employees"."lastName" AS "userlastName",
-                        "departments"."id" AS "departmentId",
-                        "departments"."departmentName" AS "departmentName"
-                    FROM 
-                        "requestLeaves"
-                    INNER JOIN 
-                        "employees" ON "requestLeaves"."fkUserId" = "employees"."id"
-                        LEFT JOIN
-                    public."employees" AS "leaveOf" ON "requestLeaves"."requestLeaveSubmittedTo"::integer = "leaveOf"."id"
-                    LEFT JOIN 
-                        "departments" ON "employees"."fkDepartmentId" = "departments"."id"
-                    ${whereConditions ? `WHERE ${whereConditions}` : ''}
-                `, {
+                            SELECT 
+                                "requestLeaves"."requestStartDate",
+                                "requestLeaves"."requestEndDate",
+                                "requestLeaves"."requestLeaveReason",
+                                "requestLeaves"."requestLeaveSubType",
+                                "requestLeaves"."requestStatus",
+                                "requestLeaves"."requestLeaveAttachment",
+                                "requestLeaves"."requestLeaveSubmittedTo",
+                                "leaveOf"."profileImage" AS "leavesubmittedImage",
+                                "leaveOf"."firstName" AS "leavesubmittedTofirstName",
+                                "leaveOf"."lastName" AS "leavesubmittedTolastName",
+                                "employees"."id" AS "userId",
+                                "employees"."profileImage" AS "userImage",
+                                "employees"."firstName" AS "userfirstName",
+                                "employees"."lastName" AS "userlastName",
+                                "departments"."id" AS "departmentId",
+                                "departments"."departmentName" AS "departmentName"
+                            FROM 
+                                "requestLeaves"
+                            INNER JOIN 
+                                "employees" ON "requestLeaves"."fkUserId" = "employees"."id"
+                            LEFT JOIN
+                                public."employees" AS "leaveOf" ON "requestLeaves"."requestLeaveSubmittedTo"::integer = "leaveOf"."id"
+                            LEFT JOIN 
+                                "departments" ON "employees"."fkDepartmentId" = "departments"."id"
+                                ${whereConditions ? `WHERE ${whereConditions}` : ''}
+                            `, {
                 type: db.sequelize.QueryTypes.SELECT,
                 raw: true,
             });
@@ -218,6 +287,7 @@ const leaveService = {
             console.error('Error Fetching leave Type:', error.message);
         }
     },
+
 
     getAllLeavesOfUser: async (id, pageSize, offset) => {
         try {
