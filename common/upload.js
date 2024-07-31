@@ -533,6 +533,36 @@ const correspondencesStorage = multer.diskStorage({
     },
 })
 
+const leaveStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const publicDir = `./public`;
+        if (!fs.existsSync(publicDir)) {
+            fs.mkdirSync(publicDir);
+        }
+        const dir = `./public/leaveAttachment`;
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+        const subDir = `./public/leaveAttachment/${req.body.fkUserId}`;
+        if (!fs.existsSync(subDir)) {
+            fs.mkdirSync(subDir);
+        }
+        if (req.body.fkUserId) {
+            const attendeeDir = `./public/leaveAttachment/${req.body.fkUserId}`;
+            if (!fs.existsSync(attendeeDir)) {
+                fs.mkdirSync(attendeeDir);
+            }
+            cb(null, attendeeDir);
+        } else {
+            cb(null, subDir);
+        }
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${file.originalname}`);
+    },
+});
+
+
 const motionUpload = multer({ storage: motionStorage });
 const resolutionUpload = multer({ storage: resolutionStorage });
 const questionUpload = multer({ storage: questionStorage })
@@ -550,6 +580,7 @@ const casesUpload = multer({ storage: casesStorage })
 const fileSignaturesUpload = multer({ storage: fileSignatureStorage })
 const researchServicesUpload = multer({ storage: researchServicesStorage })
 const correspondencesUpload = multer({ storage: correspondencesStorage })
+const leaveUpload = multer({ storage: leaveStorage });
 
 exports.uploadFile = (name) =>
     name === 'motion'
@@ -584,7 +615,9 @@ exports.uploadFile = (name) =>
                                                                 ? researchServicesUpload.single('attachment', 10)
                                                                 : name === 'correspondence'
                                                                     ? correspondencesUpload.array('file', 10)
-                                                                    : upload.single('file')
+                                                                    : name === 'leave'
+                                                                        ? leaveUpload.single('file')
+                                                                        : upload.single('file')
 
 
 

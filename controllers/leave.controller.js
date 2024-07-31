@@ -1,13 +1,15 @@
 const leaveService = require("../services/leave.service")
 const logger = require('../common/winston');
-const multer = require('multer');
-const upload = multer();
 const { uploadFile } = require('../common/upload')
+const db = require("../models");
+const requestLeaves = db.requestLeaves;
 const {
     validationErrorResponse,
     notFoundResponse,
     unAuthorizedResponse,
-} = require('../common/validation-responses')
+} = require('../common/validation-responses');
+const { Console } = require("winston/lib/winston/transports");
+const { log } = require("winston");
 const leaveController = {
     // Leave Listing
     getAllLeaves: async (req, res) => {
@@ -49,29 +51,58 @@ const leaveController = {
         else {
             orderType = "DESC";
         }
+        const count = await requestLeaves.findAll();
+        console.log("count", count.length)
+        const counts = count.length;
         const result = await leaveService.getAllLeavesOfUser(id, pageSize, offset);
-        console.log("Result", result);
         return res.status(200).send({
             success: true,
-            message: `All leave information fetched successfully`,
-            data: result,
+            message: `All Leave Information fetched successfully`,
+            data: { result, counts },
         })
+    },
+  // Retrieve all All Leave by web_id
+    findAllLeaveByWebId: async (req, res) => {
+        try {
+            logger.info(`req.query.web_id--- ${req.query.web_id}`);
+            const webId = req.query.web_id;
+            const result = await leaveService.findAllLeaveByWebId(webId);
+            logger.info("All Leave Information Fetched Successfully!")
+            return res.status(200).send({
+                success: true,
+                message: "All Leave Information Fetched Successfully!",
+                data: { result },
+            })
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            })
+        }
     },
 
     // Creates A New User
     createleave: async (req, res) => {
         try {
-
             const { body, file } = req
-
             logger.info(`LeaveController: createleave body ${JSON.stringify(body)}`)
             const result = await leaveService.createleave(body);
-            if (result) {
-                // const filePath = uploadFile("leave", result.dataValues.id, file);
-                // const attachment = await requestLeaves.update(
-                //     { file: filePath },
-                //     { where: { id: result.dataValues.id } }
-                // );
+            if (result && file) {
+                const path = file.destination.replace('./public/', '/public/')
+                try {
+                    // Your code to update the database
+                    await requestLeaves.update(
+                        {
+                            file: `${path}/${file.originalname}`,
+                        },
+                        {
+                            where: { id: result.dataValues.id }
+                        }
+                    );
+                } catch (error) {
+                    console.error("Error updating attachment:", error);
+                }
             }
             logger.info('Leave Request submitted Successfully!');
             return res.status(201).send({
@@ -88,10 +119,10 @@ const leaveController = {
             })
         }
     },
-    // Update User
+// Update User
     updateleave: async (req, res) => {
         try {
-            const { body, params } = req
+            const { body, params, file } = req
             const { id } = params
             logger.info(
                 `LeaveController: updateLeaveRequest id ${id} and body ${JSON.stringify(
@@ -100,6 +131,22 @@ const leaveController = {
             )
             const result = await leaveService.updateleave(id, body);
             if (result) {
+                if (file) {
+                    const path = file.destination.replace('./public/', '/public/')
+                    try {
+                        // Your code to update the database
+                        await requestLeaves.update(
+                            {
+                                file: `${path}/${file.originalname}`,
+                            },
+                            {
+                                where: { id: id }
+                            }
+                        );
+                    } catch (error) {
+                        console.error("Error updating attachment:", error);
+                    }
+                }
                 logger.info('Leave Request Updated Successfully!');
                 return res.status(201).send({
                     success: true,
@@ -139,7 +186,7 @@ const leaveController = {
             data: transformedResult,
         })
     },
-    //Get Leave Types
+//Get Leave Types
     getLeaveTypes: async (req, res) => {
         logger.info(`LeaveControllers: getLeaveTypes`);
         const result = await leaveService.getLeaveTypes();
@@ -163,4 +210,3 @@ const leaveController = {
     },
 }
 module.exports = leaveController;
-
