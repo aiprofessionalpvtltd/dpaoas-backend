@@ -202,37 +202,43 @@ exports.deleteFlag = async (req, res) => {
   }
 };
 
-// Controller method to Get a flag by ID
-
+// Controller method to get flags by branch ID with pagination
 exports.getFlagsByBranchId = async (req, res) => {
-    try {
-      // Extract branchId from request parameters
-      const { branchId } = req.params;
-      
-      // Call the service method to get flags by branchId
-      const response = await flagService.getFlagsByBranchId(branchId);
-      
-      // Check if the service response was successful
-      if (!response.success) {
-        return res.status(400).send({
-          success: false,
-          message: response.message,
-        });
-      }
-  
-      // Return the flags with a 200 status code
-      return res.status(200).send({
-        success: true,
-        message: response.message,
-        data: response.data,
-      });
-    } catch (err) {
-      // Handle any errors and return a 500 status code with the error message
-      return res.status(500).send({
+  try {
+    // Extract branchId from request parameters
+    const { branchId } = req.params;
+    
+    // Extract pagination parameters from query
+    const { currentPage = 0, pageSize = 10 } = req.query;
+    
+    // Call the service method to get flags by branchId with pagination
+    const response = await flagService.getFlagsByBranchId(branchId, currentPage, pageSize);
+    
+    // Check if the service response was successful
+    if (!response.success) {
+      return res.status(400).send({
         success: false,
-        message: "An error occurred while retrieving the flags",
-        error: err.message,
+        message: response.message,
       });
     }
-  };
+
+    // Return the flags with a 200 status code
+    return res.status(200).send({
+      success: true,
+      message: response.message,
+      data: response.data,
+      totalItems: response.totalItems,
+      totalPages: response.totalPages,
+      currentPage: response.currentPage,
+    });
+  } catch (err) {
+    // Handle any errors and return a 500 status code with the error message
+    return res.status(500).send({
+      success: false,
+      message: "An error occurred while retrieving the flags",
+      error: err.message,
+    });
+  }
+};
+ 
   
