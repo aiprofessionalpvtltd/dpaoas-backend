@@ -551,7 +551,11 @@ const MotionController = {
             console.log("sds", webId);
             const motion = await motionService.findAllMotionsByWebId(webId);
             motion.forEach(motion => {
-                motion.file = JSON.parse(motion.file[0]);
+                if(motion.file && motion.file[0]){
+                    motion.file = JSON.parse(motion.file[0]);
+                } else {
+                    motion.file = null;
+                }
             });
             logger.info("Motions fetched successfully!")
             return res.status(200).send({

@@ -82,7 +82,12 @@ const privateMemberBillController = {
             const webId = req.query.web_id;
             const privateMemberBills = await privateMemberBillService.findAllPrivateMemberBillsByWebId(webId);
             privateMemberBills.forEach(privateMemberBills => {
-                privateMemberBills.file = JSON.parse(privateMemberBills.file[0]);
+                if(privateMemberBills.file && privateMemberBills.file[0]){
+                    privateMemberBills.file = JSON.parse(privateMemberBills.file[0]);
+                } else {
+                    privateMemberBills.file = null;
+                }
+
             });
             logger.info("All privateMemberBills Fetched Successfully!")
             return res.status(200).send({
