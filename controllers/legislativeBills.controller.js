@@ -20,7 +20,7 @@ const legislativeBillController = {
                 return res.status(200).send({
                     success: false,
                     message: 'No data found on this page!',
-                    data: {legislativeBills}
+                    data: { legislativeBills }
                 });
             }
             else {
@@ -57,7 +57,7 @@ const legislativeBillController = {
                 return res.status(200).send({
                     success: false,
                     message: 'No data found on this page!',
-                    data: {legislativeBills}
+                    data: { legislativeBills }
                 });
             }
             else {
@@ -88,7 +88,13 @@ const legislativeBillController = {
             // Modify the legislative bills data
             const legislativeBills = legislativeBillsData.map(bill => {
                 if (Array.isArray(bill.attachment) && bill.attachment.length === 1) {
-                    bill.attachment = JSON.parse(bill.attachment[0]);
+                    try {
+                        logger.info(`Attempting to parse attachment for bill id ${bill.id}: ${bill.attachment[0]}`);
+                        bill.attachment = JSON.parse(bill.attachment[0]);
+                    } catch (error) {
+                        logger.error(`Error parsing attachment for bill id ${bill.id}: ${error.message}`);
+                        bill.attachment = null; // or set to some default value
+                    }
                 }
                 return bill;
             });
@@ -157,33 +163,33 @@ const legislativeBillController = {
         }
     },
 
- // Send To Legislation
- sendToLegislation: async(req,res) => {
-    try {
-        const billId = req.params.id;
-        const bill = await LegislativeBills.findByPk(billId);
-        if (!bill) {
+    // Send To Legislation
+    sendToLegislation: async (req, res) => {
+        try {
+            const billId = req.params.id;
+            const bill = await LegislativeBills.findByPk(billId);
+            if (!bill) {
+                return res.status(200).send({
+                    success: true,
+                    message: "LegislativeBill Not Found!",
+                    data: null
+                })
+            }
+            const updatedBill = await legislativeBillService.sendToLegislation(req.body, billId);
+            logger.info("Legislative bill sent to concerned branch successfully!")
             return res.status(200).send({
                 success: true,
-                message: "LegislativeBill Not Found!",
-                data: null
+                message: "Legislative bill sent to concerned branch successfully!",
+                data: updatedBill,
+            })
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
             })
         }
-        const updatedBill = await legislativeBillService.sendToLegislation(req.body, billId);
-        logger.info("Legislative bill sent to concerned branch successfully!")
-        return res.status(200).send({
-            success: true,
-            message: "Legislative bill sent to concerned branch successfully!",
-            data: updatedBill,
-        })
-    } catch (error) {
-        logger.error(error.message)
-        return res.status(400).send({
-            success: false,
-            message: error.message
-        })
-    }
-},
+    },
     // Retrieve Single legislativeBill
     findSinlgeLegislativeBill: async (req, res) => {
         try {
