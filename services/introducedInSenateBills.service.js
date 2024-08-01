@@ -156,6 +156,105 @@ const senateBillService = {
         }
     },
 
+    // Retrieve All Introduced In Senate Bills By Category
+    findAllIntroducedInSenateBillsByCategory: async (currentPage, pageSize, billCategory, billFrom) => {
+        try {
+            const offset = currentPage * pageSize;
+            const limit = pageSize;
+
+            const whereClause = {};
+            if (billCategory) {
+                whereClause.billCategory = billCategory;
+            }
+            if(billFrom) {
+                whereClause.billFrom = billFrom;
+            }
+
+            const { count, rows } = await IntroducedInSenateBills.findAndCountAll({
+                offset,
+                limit,
+                order: [
+                // Order by the numeric part between slashes
+                [db.sequelize.literal(`CAST(REGEXP_REPLACE("introducedInSenateBills"."fileNumber", '^\\d+/\\((\\d+)\\)/\\d+$', '\\1') AS INTEGER)`), 'ASC']
+            ],
+                where: whereClause,
+                include: [
+                    {
+                        model: Users,
+                        as: 'user',
+                        include: [
+                            {
+                                model: Employees,
+                                as: 'employee',
+                                attributes: ['id', 'firstName', 'lastName', 'userName'],
+                            }
+                        ]
+                    },
+                    {
+                        model: ParliamentaryYears,
+                        as: 'parliamentaryYears'
+                    },
+                    {
+                        model: Sessions,
+                        as: 'sessions'
+                    },
+                    {
+                        model: BillStatuses,
+                        as: 'billStatuses'
+                    },
+                    {
+                        model: SenateBillSenatorMovers,
+                        as: 'senateBillSenatorMovers',
+                        include: [
+                            { model: members, as: 'member' }
+                        ]
+                    },
+                    {
+                        model: SenateBillMinistryMovers,
+                        as: 'senateBillMinistryMovers',
+                        include: [
+                            { model: ministries, as: 'ministrie' }
+                        ]
+                    },
+                    {
+                        model: SenateBillMnaMovers,
+                        as: 'senateBillMnaMovers',
+                        include: [
+                            { model: mnas, as: 'mna' }
+                        ]
+                    },
+                    {
+                        model: IntroducedInHouses,
+                        as: 'introducedInHouses',
+                        include: [
+                            { model: Sessions, as: 'sessions' },
+                            { model: ManageCommittees, as: 'manageCommittees' }
+                        ]
+                    },
+                    {
+                        model: MemberPassages,
+                        as: 'memberPassages',
+                        include: [
+                            { model: Sessions, as: 'sessions' }
+                        ]
+                    },
+                    {
+                        model: BillDocuments,
+                        as: 'billDocuments'
+                    }
+                ],
+                distinct: true,
+            });
+
+            const totalPages = Math.ceil(count / pageSize);
+
+            return { count, totalPages, senateBills: rows };
+        } catch (error) {
+            throw new Error(error.message || "Error Fetching All senate Bills by Category");
+        }
+    },
+
+
     // Search All Introduced In Senate Bills
     searchAllIntroducedInSenateBills: async (filters, currentPage, pageSize) => {
         try {

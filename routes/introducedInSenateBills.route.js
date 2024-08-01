@@ -11,6 +11,8 @@ router.post("/", upload.none(), introducedInSenateBills.createSenateBill);
 // Retrieve all Senate Bills
 router.get("/", introducedInSenateBills.findAllIntroducedInSenateBills);
 
+router.get("/byCategory", introducedInSenateBills.findAllIntroducedInSenateBillsByCategory);
+
 // search all Senate Bills
 router.get("/search", introducedInSenateBills.searchAllIntroducedInSenateBills);
 

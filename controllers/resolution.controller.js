@@ -837,26 +837,26 @@ const resolutionController = {
     },
 
 
-    // // Retrieve all Resolutions filtered by session range
-    // findAllResolutionsBySessionRange: async (req, res) => {
-    //     try {
-    //         const { fromSessionId, toSessionId, currentPage, pageSize } = req.query;
-    //         console.log("data comes this ",fromSessionId, toSessionId, currentPage, pageSize );
-    //         const resolutionData = await resolutionService.findAllResolutionsBySessionRange(fromSessionId, toSessionId, currentPage, pageSize);
-    //         logger.info("Resolution data fetched successfully!");
-    //         return res.status(200).send({
-    //             success: true,
-    //             message: "Resolution data fetched successfully!",
-    //             data: resolutionData
-    //         });
-    //     } catch (error) {
-    //         logger.error(error.message);
-    //         return res.status(400).send({
-    //             success: false,
-    //             message: error.message
-    //         });
-    //     }
-    // },
+    // Retrieve all Resolutions filtered by session range
+    findAllResolutionsBySessionRange: async (req, res) => {
+        try {
+            const { fromSessionId, toSessionId, currentPage, pageSize } = req.query;
+            console.log("data comes this ",fromSessionId, toSessionId, currentPage, pageSize );
+            const resolutionData = await resolutionService.findAllResolutionsBySessionRange(fromSessionId, toSessionId, currentPage, pageSize);
+            logger.info("Resolution data fetched successfully!");
+            return res.status(200).send({
+                success: true,
+                message: "Resolution data fetched successfully!",
+                data: resolutionData
+            });
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
 
 }
 
