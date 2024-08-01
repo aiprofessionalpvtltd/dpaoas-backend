@@ -404,7 +404,11 @@ const questionsController = {
       console.log("web id", webId)
       const questions = await questionsService.findAllQuestionsByWebId(webId);
       questions.forEach(question => {
-        question.questionImage = JSON.parse(question.questionImage[0]);
+        if(question.questionImage && question.questionImage[0]){
+          question.questionImage = JSON.parse(question.questionImage[0]);
+        } else {
+          question.questionImage = null;
+        }
       });
       logger.info("Questions fetched successfully!")
       return res.status(200).send({
