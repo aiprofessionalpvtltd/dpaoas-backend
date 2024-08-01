@@ -68,7 +68,7 @@ const resolutionService = {
 
                     // Determine the fkMemberId value
                     const fkMemberIdValue = moverData.fkMemberId ? moverData.fkMemberId : (data.web_id ? data.web_id : null);
-                    console.log("fkMemberIdValue=------",fkMemberIdValue)
+                    console.log("fkMemberIdValue=------", fkMemberIdValue)
 
 
 
@@ -79,21 +79,21 @@ const resolutionService = {
                     };
 
                     const resolutionMover = await resolutionMovers.create(resolutionMoversData);
-                    console.log("resolutionMover------",resolutionMover)
+                    console.log("resolutionMover------", resolutionMover)
 
                 }
             } else {
                 // Handle the case when resolutionMovers does not exist
                 const fkMemberIdValue = data.web_id ? data.web_id : null;
                 console.log("fkMemberIdValue when resolutionMovers is not present=------", fkMemberIdValue);
-    
+
                 // If fkMemberIdValue is not null, create a resolution mover entry
                 if (fkMemberIdValue !== null) {
                     const resolutionMoversData = {
                         fkResolutionId: resolutionId,
                         fkMemberId: fkMemberIdValue
                     };
-    
+
                     const resolutionMover = await resolutionMovers.create(resolutionMoversData);
                     console.log("resolutionMover when resolutionMovers is not present------", resolutionMover);
                 } else {
@@ -2265,88 +2265,99 @@ const resolutionService = {
         }
     },
 
-    // // Get all resolutions filtered by session range 
-    // findAllResolutionsBySessionRange: async (fromSessionId, toSessionId, currentPage, pageSize) => {
-    //     try {
-    //         const offset = currentPage * pageSize;
-    //         const limit = pageSize;
+    // Get all resolutions filtered by session range 
+    findAllResolutionsBySessionRange: async (fromSessionId, toSessionId, currentPage, pageSize) => {
+        try {
+            const offset = currentPage * pageSize;
+            const limit = pageSize;
 
-    //         // Create the base where clause
-    //         const whereClause = {
-    //             fkSessionNo: {
-    //                 [db.Sequelize.Op.between]: [fromSessionId, toSessionId]
-    //             }
-    //         };
+            // Create the base where clause
+            let whereClause = {};
+            if (fromSessionId && toSessionId) {
+                whereClause = {
+                    fkSessionNo: {
+                        [db.Sequelize.Op.between]: [fromSessionId, toSessionId]
+                    }
+                };
+            } else if (fromSessionId) {
+                whereClause = {
+                    fkSessionNo: {
+                        [db.Sequelize.Op.gte]: fromSessionId
+                    }
+                };
+            }
 
-    //         // Fetch the data
-    //         const { count, rows } = await db.resolutions.findAndCountAll({
-    //             where: whereClause,
-    //             include: [
-    //                 {
-    //                     model: db.sessions,
-    //                     as: 'session',
-    //                     attributes: ['sessionName']
-    //                 },
-    //                 {
-    //                     model: db.resolutionStatus,
-    //                     as: 'resolutionStatus',
-    //                     attributes: ['resolutionStatus']
-    //                 },
-    //                 {
-    //                     model: db.resolutionMovers,
-    //                     as: 'resolutionMoversAssociation',
-    //                     attributes: ['fkMemberId'],
-    //                     include: [
-    //                         {
-    //                             model: db.members,
-    //                             as: 'memberAssociation',
-    //                             attributes: ['memberName']
-    //                         }
-    //                     ]
-    //                 },
-    //                 {
-    //                     model: db.noticeOfficeDairies,
-    //                     as: 'noticeDiary',
-    //                     attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
-    //                 },
-    //                 {
-    //                     model: db.resolutionDiaries,
-    //                     as: 'resolutionDiaries',
-    //                     attributes: ['resolutionId', 'resolutionDiaryNo']
-    //                 },
-    //                 {
-    //                     model: db.users,
-    //                     as: 'createdBy',
-    //                     attributes: ['id'],
-    //                     include: [{
-    //                         model: db.Employees,
-    //                         as: 'employee',
-    //                         attributes: ['id', 'firstName', 'lastName']
-    //                     }]
-    //                 },
-    //                 {
-    //                     model: db.users,
-    //                     as: 'deletedBy',
-    //                     attributes: ['id'],
-    //                     include: [{
-    //                         model: db.Employees,
-    //                         as: 'employee',
-    //                         attributes: ['id', 'firstName', 'lastName']
-    //                     }]
-    //                 }
-    //             ],
-    //             offset,
-    //             limit,
-    //             order: [['id', 'DESC']]
-    //         });
+            console.log("whereClause--------", whereClause)
 
-    //         const totalPages = Math.ceil(count / pageSize);
-    //         return { count, totalPages, resolutions: rows };
+            // Fetch the data
+            const { count, rows } = await resolution.findAndCountAll({
+                where: whereClause,
+                include: [
+                    {
+                        model: db.sessions,
+                        as: 'session',
+                        attributes: ['sessionName']
+                    },
+                    {
+                        model: db.resolutionStatus,
+                        as: 'resolutionStatus',
+                        attributes: ['resolutionStatus']
+                    },
+                    {
+                        model: db.resolutionMovers,
+                        as: 'resolutionMoversAssociation',
+                        attributes: ['fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'memberAssociation',
+                                attributes: ['memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: db.noticeOfficeDairies,
+                        as: 'noticeDiary',
+                        attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
+                    },
+                    {
+                        model: db.resolutionDiaries,
+                        as: 'resolutionDiaries',
+                        attributes: ['resolutionId', 'resolutionDiaryNo']
+                    },
+                    {
+                        model: db.users,
+                        as: 'createdBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: db.employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    },
+                    {
+                        model: db.users,
+                        as: 'deletedBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: db.employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    }
+                ],
+                offset,
+                limit,
+                order: [['id', 'DESC']]
+            });
 
-    //     } catch (error) {
-    //         throw { message: error.message || "Error Fetching All resolutions by session range!" };
-    //     }
-    // },
+            const totalPages = Math.ceil(count / pageSize);
+            return { count, totalPages, resolutions: rows };
+
+        } catch (error) {
+            throw { message: error.message || "Error Fetching All resolutions by session range!" };
+        }
+    },
 
 
 

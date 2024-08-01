@@ -60,6 +60,52 @@ const senateBillController = {
             })
         }
     },
+
+    // Retrieves All Introduced In Senate Bills By Category
+    findAllIntroducedInSenateBillsByCategory: async (req, res) => {
+        try {
+            const currentPage = parseInt(req.query.currentPage);
+            const pageSize = parseInt(req.query.pageSize);
+            const billCategory = req.query.billCategory;
+            const billFrom = req.query.billFrom;
+
+            if (!billCategory) {
+                return res.status(400).send({
+                    success: false,
+                    message: 'billCategory is required!'
+                });
+            }
+
+            const { count, totalPages, senateBills } = await senateBillService.findAllIntroducedInSenateBillsByCategory(currentPage, pageSize, billCategory, billFrom);
+
+            logger.info("senateBills--->>", senateBills);
+
+            if (senateBills.length === 0) {
+                logger.info("No data found for this category on this page!");
+                return res.status(200).send({
+                    success: true,
+                    message: 'No data found for this category on this page!'
+                });
+            } else {
+                logger.info("All senate Bills Fetched Successfully!");
+                return res.status(200).send({
+                    success: true,
+                    message: "All senate Bills Fetched Successfully!",
+                    data: { senateBills, totalPages, count }
+                });
+            }
+
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+            });
+        }
+    },
+
+
+
     // search All Introduced In Senate Bills
     searchAllIntroducedInSenateBills: async (req, res) => {
         try {
