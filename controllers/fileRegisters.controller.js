@@ -117,6 +117,29 @@ const fileRegistersController = {
             });
         }
     },
+
+    // Controller Function: Delete File Register
+deleteFileRegister: async (req, res) => {
+    try {
+        const { id } = req.params;
+        logger.info(`fileRegistersController: deleteFileRegister id ${JSON.stringify(id)}`);
+
+        const result = await fileRegistersService.deleteFileRegister(id);
+
+        return res.status(200).send({
+            success: true,
+            message: "File Register Inactive Successfully!",
+            data: result,
+        });
+    } catch (error) {
+        logger.error(error.message);
+        return res.status(400).send({
+            success: false,
+            message: error.message,
+        });
+    }
+},
+
 }
 
 module.exports = fileRegistersController;

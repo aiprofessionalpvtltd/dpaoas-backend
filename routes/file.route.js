@@ -125,4 +125,7 @@ router.put("/update/:id", files.updateFile);
 // Suspend/Delete File
 router.put("/delete/:id", files.suspendFile);
 
+router.delete("/deleteFile/:id", files.deleteFile);
+
+
 module.exports = router;

@@ -2278,7 +2278,7 @@ const casesService = {
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
         attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy"],
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
         include: [
           {
             model: Users,

@@ -194,7 +194,7 @@ router.get('/ByBranch/:id', freshReceipts.getAllFRsByBranch)
  *       '200':
  *         description: A successful response
  */
-router.get('/frsHistory/:branchId', freshReceipts.getFRsHistory)
+router.get('/frsHistory/:branchId/:userId', freshReceipts.getFRsHistory)
 
 
 
