@@ -5,7 +5,6 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             autoIncrement: true,
         },
-
         fkBranchId: {
             type: Sequelize.INTEGER,
             allowNull: true,
@@ -14,33 +13,30 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
-
-
-        registerSubject:{
+        registerSubject: {
             type: Sequelize.STRING,
             allowNull: false
         },
-
         year: {
             type: Sequelize.STRING,
             allowNull: false
         },
-
         registerNumber: {
             type: Sequelize.STRING,
             allowNull: false,
         },
-
-
-
+        status: {
+            type: Sequelize.ENUM('active', 'inactive'), // ENUM type with 'active' or 'inactive'
+            allowNull: false,
+            defaultValue: 'active', // Default value set to 'active'
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });
+
     fileRegisters.associate = function (models) {
         fileRegisters.belongsTo(models.branches, { foreignKey: 'fkBranchId', as: 'branches' });
-       
-
     };
-    return fileRegisters;
 
+    return fileRegisters;
 };

@@ -87,4 +87,9 @@ router.get("/:branchId", fileRegisters.findAllFileRegisters)
  */
 router.get("/singleRegister/:id", fileRegisters.findSingleFileRegister)
 
+
+// Define route for deleting a file register
+router.delete("/delete/:id", fileRegisters.deleteFileRegister);
+
+
 module.exports = router;

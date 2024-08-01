@@ -174,9 +174,10 @@ const freshReceiptController = {
         try {
             logger.info(`freshReceiptController: getFRsHistory query ${JSON.stringify(req.query)}`);
             const branchId = req.params.branchId
+            const userId = req.params.userId
             const currentPage = req.query.currentPage;
             const pageSize = req.query.pageSize;
-            const { count, totalPages, freshReceipts } = await freshReceiptService.getFRsHistory(branchId, currentPage, pageSize)
+            const { count, totalPages, freshReceipts } = await freshReceiptService.getFRsHistory(branchId,userId, currentPage, pageSize)
             if (freshReceipts.length === 0) {
                 return res.status(200).send({
                     success: true,

@@ -54,7 +54,7 @@ const fileRegistersService = {
                 limit,
                 distinct: true,
                 order: [
-                    ['id', 'ASC'],
+                    ['id', 'DESC'],
                 ],
             });
             const totalPages = Math.ceil(count / pageSize);
@@ -118,6 +118,35 @@ const fileRegistersService = {
         }
     },
 
+// Service Function: Delete File Register
+deleteFileRegister: async (id) => {
+    try {
+        // Define the update data to set the status as inactive
+        const updatedData = { status: "inactive" };
+
+        // Update the file register to set its status to inactive
+        const [affectedRows] = await FileRegisters.update(updatedData, {
+            where: { id: id },
+        });
+
+        // Check if any rows were affected (i.e., if the update was successful)
+        if (affectedRows === 0) {
+            throw new Error('File Register not found or already inactive.');
+        }
+
+        // Fetch the updated file register to verify the update
+        const updatedRegister = await FileRegisters.findOne({
+            where: { id: id },
+        });
+
+        // Return the updated file register
+        return updatedRegister;
+    } catch (error) {
+        throw {
+            message: error.message || "Error Deleting File Register!",
+        };
+    }
+},
 
      
 }

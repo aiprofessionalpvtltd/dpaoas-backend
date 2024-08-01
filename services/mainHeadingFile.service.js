@@ -61,7 +61,7 @@ const mainHeadingFileService = {
 
         offset,
         limit,
-        order: [["mainHeadingNumber", "ASC"]],
+        order: [["id", "DESC"]],
       });
       const totalPages = Math.ceil(count / pageSize);
       return { count, totalPages, mainHeadings: rows };

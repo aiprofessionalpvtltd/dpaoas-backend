@@ -162,7 +162,7 @@ const freshReceiptService = {
             const offset = currentPage * pageSize;
             const limit = pageSize;
             const currentUserPosition = await freshReceiptService.getCurrentUserPosition(userId);
-            const currentUserBranch = await freshReceiptService.getCurrentUserBranch(userId)
+            const currentUserBranch = await freshReceiptService.getCurrentUserBranch(userId);
             const { count, rows } = await FreshReceipts.findAndCountAll({
                 where: {
                     fkUserBranchId: currentUserBranch.id,
@@ -180,6 +180,7 @@ const freshReceiptService = {
                         as: 'freshReceipt',
                         separate: true,
                         attributes: ['id', 'CommentStatus', 'comment', 'submittedBy', 'assignedTo', 'createdAt', 'updatedAt'],
+                       
                         order: [
                             ['id', 'DESC']
                         ],
@@ -222,7 +223,6 @@ const freshReceiptService = {
                                     }
                                 ]
                             },
-
                         ]
                     },
                     {
@@ -248,7 +248,7 @@ const freshReceiptService = {
                     {
                         model: ExternalMinistries,
                         as: 'externalMinistry',
-                        attributes: ['id','receivedFrom']
+                        attributes: ['id', 'receivedFrom']
                     }
                 ],
                 offset,
@@ -258,60 +258,85 @@ const freshReceiptService = {
                     ['id', 'DESC']
                 ]
             });
-
+    
             const branchHierarchyData = await BranchHierarchy.findOne({
                 where: { branchName: currentUserBranch.branchName },
                 attributes: ['id', 'branchHierarchy', 'higherLevelHierarchy', 'lowerLevelHierarchy']
             });
-
-
+    
             const lowerLevelHierarchy = branchHierarchyData.lowerLevelHierarchy;
-            const higherLevelHierarchy = branchHierarchyData.higherLevelHierarchy
-
+            const higherLevelHierarchy = branchHierarchyData.higherLevelHierarchy;
+    
             let isVisible = false;
             let isEditable = true;
-
+    
             const filterConditions = await Promise.all(rows.map(async (fr) => {
                 const remarks = fr.freshReceipt || [];
                 const createdBy = fr.createdBy || 0;
-                let isVisible = parseInt(userId) === createdBy;
-                let isEditable = isVisible && remarks.length === 0;
-
-                // Determine the latest remark
-                if (remarks.length > 0) {
-                    const latestRemark = remarks.reduce((latest, remark) => {
-                        return (latest.createdAt > remark.createdAt) ? latest : remark;
-                    }, { createdAt: new Date(0), assignedTo: null });
-
-                    isVisible = isVisible || parseInt(latestRemark.assignedTo) === parseInt(userId);
-
-                    if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
-                        isEditable = true;
-                    } else {
-                        isEditable = false;
-                    }
+                // let isVisible = parseInt(userId) === createdBy && remarks.length > 0;
+                // let isEditable = isVisible && remarks.length === 0;
+    
+                 // Initial visibility is only for the creator
+        if (parseInt(userId) === createdBy) {
+            isVisible = true;
+            isEditable = remarks.length === 0; // Creator can edit if no remarks
                 }
 
+                
+                // Determine the latest remark
+                // if (remarks.length > 0) {
+                //     const latestRemark = remarks.reduce((latest, remark) => {
+                //         return (latest.createdAt > remark.createdAt) ? latest : remark;
+                //     }, { createdAt: new Date(0), assignedTo: null });
+    
+                //     isVisible = isVisible || parseInt(latestRemark.assignedTo) === parseInt(userId);
+    
+                //     if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
+                //         isEditable = true;
+                //     } else {
+                //         isEditable = false;
+                //     }
+                // }
+                if (remarks.length > 0) {
+                    const latestRemark = remarks.reduce(
+                      (latest, remark) => {
+                        return latest.createdAt > remark.createdAt ? latest : remark;
+                      },
+                      { createdAt: new Date(0), assignedTo: null }
+                    );
+          
+                    // If there is a latest remark, check if the user is the one it's assigned to
+                    if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
+                      isVisible = true; // The assigned user can also see the case
+                      isEditable = true; // The assigned user can edit the case
+                    } else {
+                      // Ensure the creator retains visibility even when not the latest assigned
+                      // isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
+                      isVisible = false;
+                      isEditable = false; // Creator cannot edit once assigned to someone else
+                    }
+                  }
+    
                 return { isVisible, isEditable };
             }));
-
+    
             // Filter the FRs based on visibility and update with editability
             const filteredFRs = rows.filter((fr, index) => {
                 const condition = filterConditions[index];
                 fr.isEditable = condition.isEditable;
                 return condition.isVisible;
             });
-
+    
             const paginatedFRs = filteredFRs.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
             const totalPages = Math.ceil(filteredFRs.length / pageSize);
-
-            return { count: paginatedFRs.length, totalPages, freshReceipts: paginatedFRs };
-
+    
+            return { count: paginatedFRs.length, totalPages, freshReceipts: paginatedFRs};
+    
         } catch (error) {
             throw new Error(error.message || "Error Fetching All FRs");
         }
     },
-
+    
     // Retrieve External Ministry
     getAllExternalMinistries: async (currentPage, pageSize) => {
         try {
@@ -433,15 +458,15 @@ const freshReceiptService = {
     },
 
     //Get Frs History On The Basis of Branch
-    getFRsHistory: async (branchId, currentPage, pageSize) => {
+    getFRsHistory: async (branchId,userId, currentPage, pageSize) => {
         try {
             const offset = currentPage * pageSize;
             const limit = pageSize;
             const { count, rows } = await FreshReceipts.findAndCountAll({
                 where: {
                     fkUserBranchId: branchId,
-                    '$notExists$': db.sequelize.literal(`NOT EXISTS (SELECT 1 FROM "cases" WHERE "cases"."fkFreshReceiptId" = "freshReceipts"."id")`)
-
+                    '$notExists$': db.sequelize.literal(`NOT EXISTS (SELECT 1 FROM "cases" WHERE "cases"."fkFreshReceiptId" = "freshReceipts"."id")`),
+                    createdBy : userId
                 },
                 include: [
                     {

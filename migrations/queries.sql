@@ -20,5 +20,12 @@
 
 
 
-ALTER TABLE public."noteParagraphs" ADD createdby int4 NULL;
+-- ALTER TABLE public."noteParagraphs" ADD createdby int4 NULL;
+
+CREATE TYPE file_register_status AS ENUM ('active', 'inactive');
+ALTER TABLE "fileRegisters" ADD COLUMN "status" file_register_status DEFAULT 'active' NOT NULL;
+
+CREATE TYPE file_status AS ENUM ('active', 'inactive');
+ALTER TABLE "newFiles" ADD COLUMN "status" file_status DEFAULT 'active' NOT NULL;
+
 
