@@ -200,6 +200,17 @@ const casesService = {
         }
       }
   
+      // Preprocess paragraphArray to check for duplicate flags
+      const flagTracker = new Set();
+      paragraphArray.forEach(para => {
+        para.references.forEach(ref => {
+          if (flagTracker.has(ref.flag)) {
+            throw new Error(`The flag '${ref.flag}' is already assigned to '${para.title}'`);
+          }
+          flagTracker.add(ref.flag);
+        });
+      });
+  
       let allCorrespondencesIds = new Array(paragraphArray.length).fill(null);
       let allFreshReceiptIds = new Array(paragraphArray.length).fill(null);
   
@@ -229,23 +240,13 @@ const casesService = {
               allFreshReceiptIds[index] = freshReceiptIds[0];
             }
   
-            // Check for duplicate flags
-            const flagArray = para.references.map((ref) => ref.flag);
-            const uniqueFlags = [...new Set(flagArray)];
-            console.log("uniqueFlags  =====>", uniqueFlags);
-
-            if (uniqueFlags.length !== flagArray.length) {
-              throw new Error(`Duplicate flag found in paragraph titled: ${para.title}`);
-            }
-  
-            // Add new entry to note paragraph table
-            console.log("Created By =====>", createdBy);
+            // Create the NoteParagraph entry
             await NoteParagraphs.create({
               fkCaseNoteId: caseNotes.id,
               paragraphTitle: para.title,
               paragraph: para.description,
               createdBy: createdBy,
-              flags: uniqueFlags.join(","),
+              flags: para.references.map((ref) => ref.flag).join(","),
             }, { transaction });
           })
         );
@@ -267,6 +268,8 @@ const casesService = {
       throw new Error(error.message || "Error Creating Case");
     }
   },
+  
+  
   
 
   // Get Cases By File Id
@@ -1179,6 +1182,8 @@ const casesService = {
 
   //Update Case For The File
   updateCase: async (data, caseNotesId) => {
+    const transaction = await db.sequelize.transaction();
+  
     try {
       // Update existing case notes
       await CaseNotes.update(
@@ -1187,9 +1192,10 @@ const casesService = {
         },
         {
           where: { id: caseNotesId },
+          transaction,
         }
       );
-
+  
       let paragraphArray = data.paragraphArray;
       if (typeof paragraphArray === "string") {
         try {
@@ -1198,52 +1204,63 @@ const casesService = {
           throw new Error("Invalid format for paragraphArray");
         }
       }
-
+  
       console.log("case note id", caseNotesId);
       console.log("Data object:", data); // Log the entire data object to inspect its structure
-
+  
       // Destroy all existing paragraphs only once
-      await NoteParagraphs.destroy({ where: { fkCaseNoteId: caseNotesId } });
-
+      await NoteParagraphs.destroy({ where: { fkCaseNoteId: caseNotesId }, transaction });
+  
       // Declare and initialize allCorrespondencesIds outside of the loop
       let allCorrespondencesIds = [];
-
-      console.log('paragraphArray.length',paragraphArray.length)
-      
+  
+      console.log('paragraphArray.length', paragraphArray.length);
+  
+      // Preprocess paragraphArray to check for duplicate flags
+      const flagTracker = new Set();
+      paragraphArray.forEach(para => {
+        para.references.forEach(ref => {
+          if (flagTracker.has(ref.flag)) {
+            throw new Error(`The flag '${ref.flag}' is already assigned to '${para.title}'`);
+          }
+          flagTracker.add(ref.flag);
+        });
+      });
+  
       if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
-        createdParas = await Promise.all(
+        const createdParas = await Promise.all(
           paragraphArray.map(async (para, index) => {
             const correspondencesIds = para.references.map((ref) => ref.id);
-            console.log('ppara.referencesara', para.references)
- 
-            allCorrespondencesIds =
-              allCorrespondencesIds.concat(correspondencesIds);
-
-          
-            // return false;
+            console.log('para.references', para.references);
+  
+            allCorrespondencesIds = allCorrespondencesIds.concat(correspondencesIds);
+  
             const updateData = {
               fkCorrespondenceIds: allCorrespondencesIds,
             };
-
-            await CaseNotes.update(updateData, { where: { id: caseNotesId } });
-
+  
+            await CaseNotes.update(updateData, { where: { id: caseNotesId }, transaction });
+  
             return await NoteParagraphs.create({
               fkCaseNoteId: caseNotesId,
               paragraphTitle: para.title,
               paragraph: para.description,
               createdBy: para.createdBy,
-              flags: para.references.map((flag) => flag.flag).join(","),
-            });
+              flags: para.references.map((ref) => ref.flag).join(","),
+            }, { transaction });
           })
         );
       }
-
+  
+      await transaction.commit();
       return await CaseNotes.findByPk(caseNotesId);
     } catch (error) {
+      await transaction.rollback();
       console.log(error);
-      throw new Error({ message: error.message });
+      throw new Error(error.message || "Error Updating Case");
     }
   },
+  
 
   updateCaseStatus: async (caseId, newStatus) => {
     try {
@@ -2541,7 +2558,7 @@ const casesService = {
           description: para.paragraph,
           references: references,
           createdBy: para.createdBy,
-          createdByUser: para.createdByUser.employee.firstName + para.createdByUser.employee.lastName,
+          createdByUser: para.createdByUser.employee.firstName + ' ' + para.createdByUser.employee.lastName,
           isSave: true,
         };
       });

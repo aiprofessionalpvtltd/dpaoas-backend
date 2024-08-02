@@ -20,7 +20,7 @@ const correspondenceService = {
             console.log("Correspo",correspondence)
             if (files && files.length > 0) {
                 const attachments = files.map(file => {
-                    const path = file.destination.replace('./public/', '/public/');
+                    const path = file.destination.replace('./public/', '/assets/');
                     return {
                         file: `${path}/${file.filename}`,
                         fkCorrespondenceId: correspondence.id,
@@ -121,7 +121,8 @@ const correspondenceService = {
         try {
             let updateData = {
                 name: req.name ? req.name : null,
-                description: req.description ? req.description : null
+                description: req.description ? req.description : null,
+                status: req.status ? req.status : null
             };
             if (files && files.length > 0) {
                 // Remove existing attachments for this FR

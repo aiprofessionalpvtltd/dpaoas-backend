@@ -21,7 +21,10 @@ const FileService = {
     try {
       // Check if serialNumber is already assigned to another file
       const existingSerialNumber = await newFiles.findOne({
-        where: { serialNumber: req.serialNumber },
+        where: {
+          serialNumber: req.serialNumber,
+          fkBranchId: req.fkBranchId,
+        },
       });
 
       if (existingSerialNumber && req.serialNumber !== "") {
@@ -30,7 +33,7 @@ const FileService = {
 
       // Check if fileNumber is already assigned to another file
       const existingFileNumber = await newFiles.findOne({
-        where: { fileNumber: req.fileNumber },
+        where: { fileNumber: req.fileNumber  ,   fkBranchId: req.fkBranchId,},
       });
 
       if (existingFileNumber) {
@@ -218,91 +221,36 @@ const FileService = {
   },
 
   // Get File by ID
-  findSingleFile: async (id) => {
-    try {
-      const result = await File.findOne({
-        raw: false,
-        where: {
-          id: id,
-        },
-        include: [
-          {
-            model: fileRemarks,
-            as: "fileRemarks",
-            // attributes: ['comment', 'commentBy', 'CommentStatus'],
-            include: [
+ // Retrieve Single File
+findSingleFile: async (id) => {
+  try {
+      const result = await newFiles.findOne({
+          where: { id: id },
+          include: [
               {
-                model: users,
-                as: "users",
-                attributes: ["id"],
-                include: [
-                  {
-                    model: employees,
-                    as: "employee",
-                    attributes: [
-                      "firstName",
-                      "lastName",
-                      "fkDepartmentId",
-                      "fkDesignationId",
-                      "id",
-                    ],
-                    include: [
-                      {
-                        model: designations, // Assuming you have a 'designations' model
-                        as: "employeeDesignation",
-                        attributes: ["designationName", "id"],
-                      },
-                    ],
-                  },
-                ],
+                  model: mainHeadingFiles,
+                  as: "mainHeading",
+                  attributes: ["id", "mainHeading", "mainHeadingNumber"],
               },
-            ],
-          },
-          {
-            model: fileAttachments,
-            as: "fileAttachments",
-            // attributes: ['attachment', 'id']
-          },
-          {
-            model: filedairies,
-            as: "filedairies",
-            include: [
               {
-                model: users,
-                as: "users",
-                attributes: ["id"],
-                include: [
-                  {
-                    model: employees,
-                    as: "employee",
-                    attributes: [
-                      "firstName",
-                      "lastName",
-                      "fkDepartmentId",
-                      "fkDesignationId",
-                      "id",
-                    ],
-                    include: [
-                      {
-                        model: departments, // Assuming you have a 'designations' model
-                        as: "departments",
-                        attributes: ["departmentName", "id"],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-            distinct: true,
-          },
-        ],
+                  model: FileRegisters,
+                  as: "fileRegister",
+                  attributes: ["id", "registerSubject", "year", "registerNumber"],
+              }
+          ],
       });
 
+      if (!result) {
+          throw new Error("File not found.");
+      }
+
       return result;
-    } catch (error) {
+  } catch (error) {
       console.error("Error Fetching File request:", error.message);
-    }
-  },
+      throw new Error(error.message || "Error Fetching File request.");
+  }
+},
+
 
   // Updates File
 //   updateFile: async (id, payload) => {
@@ -396,13 +344,14 @@ updateFile: async (fileId, req) => {
         if (req.serialNumber && req.serialNumber !== "") {
             const existingSerialNumber = await newFiles.findOne({
                 where: {
-                    serialNumber: req.serialNumber,
+                serialNumber: req.serialNumber,
+                fkBranchId: req.fkBranchId,
                     id: { [Op.ne]: fileId },
                 },
             });
 
             if (existingSerialNumber) {
-                throw new Error("Serial Number already exists.");
+                throw new Error("Serial Number already exists on same branch.");
             }
         }
 
@@ -410,7 +359,8 @@ updateFile: async (fileId, req) => {
         if (req.fileNumber) {
             const existingFileNumber = await newFiles.findOne({
                 where: {
-                    fileNumber: req.fileNumber,
+                fileNumber: req.fileNumber,
+                     fkBranchId: req.fkBranchId,
                     id: { [Op.ne]: fileId },
                 },
             });

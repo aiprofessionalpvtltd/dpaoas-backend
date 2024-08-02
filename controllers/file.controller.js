@@ -212,6 +212,7 @@ const fileController = {
       data: {},
     });
   },
+  
   // Retrieve Single File
   updateCorrespondingFile: async (req, res) => {
     const { params, file } = req;
@@ -318,7 +319,7 @@ const fileController = {
       const { params, body } = req;
       const { id } = params;
       logger.info(`fileController: updateFile for Id ${id}`);
-      const updatedFile = await fileService.updateFile(id, body);
+      const updatedFile = await FileService.updateFile(id, body);
       return res.status(200).send({
         success: true,
         message: "File Updated Successfully!",
