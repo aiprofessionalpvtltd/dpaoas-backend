@@ -105,6 +105,10 @@ const introducedInSenateBills = require('./routes/introducedInSenateBills.route'
 const billStatuses = require('./routes/billStatuses.route')
 // Manage Committee 
 const manageCommittees = require('./routes/manageCommittees.route')
+
+// Manage Committee 
+const manageCommitteeRecomendations = require('./routes/manageCommitteeRecomendations.route')
+
 // Event Calender
 const eventCalenders = require('./routes/eventCalenders.route')
 // Ordinance route
@@ -270,6 +274,9 @@ app.use('/api/senate-bill', introducedInSenateBills)
 app.use('/api/bill-Status', billStatuses)
 // manage committees
 app.use('/api/manage-committee', manageCommittees)
+
+// manage committees recomendation
+app.use('/api/manage-committee-recomendation', manageCommitteeRecomendations)
 // Event Calender
 app.use('/api/event-calender', eventCalenders)
 // Ordinances route

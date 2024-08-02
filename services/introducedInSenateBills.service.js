@@ -11,6 +11,7 @@ const ministries = db.ministries;
 const mnas = db.mnas;
 const Sessions = db.sessions;
 const ManageCommittees = db.manageCommittees;
+const ManageCommitteeRecomendations = db.manageCommitteeRecomendations;
 const Users = db.users;
 const ParliamentaryYears = db.parliamentaryYears;
 const Employees = db.employees;
@@ -130,7 +131,8 @@ const senateBillService = {
                         as: 'introducedInHouses',
                         include: [
                             { model: Sessions, as: 'sessions' },
-                            { model: ManageCommittees, as: 'manageCommittees' }
+                            { model: ManageCommittees, as: 'manageCommittees' },
+                            { model: ManageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
                         ]
                     },
                     {
@@ -228,7 +230,8 @@ const senateBillService = {
                         as: 'introducedInHouses',
                         include: [
                             { model: Sessions, as: 'sessions' },
-                            { model: ManageCommittees, as: 'manageCommittees' }
+                            { model: ManageCommittees, as: 'manageCommittees' },
+                            { model: ManageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
                         ]
                     },
                     {
@@ -313,7 +316,8 @@ const senateBillService = {
                     as: 'introducedInHouses',
                     include: [
                         { model: Sessions, as: 'sessions' },
-                        { model: ManageCommittees, as: 'manageCommittees' }
+                        { model: ManageCommittees, as: 'manageCommittees' },
+                        { model: ManageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
                     ]
                 },
                 {
@@ -407,19 +411,21 @@ const senateBillService = {
                         where: { fkManageCommitteeId: filters.fkManageCommitteeId },
                         include: [
                             { model: Sessions, as: 'sessions' },
-                            { model: ManageCommittees, as: 'manageCommittees' }
+                            { model: ManageCommittees, as: 'manageCommittees' },
+                            { model: ManageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
                         ]
                     });
                 }
 
-                if (filters && filters.committeeRecomendation) {
+                if (filters && filters.fkManageCommitteeRecomendationId) {
                     includeOptions.push({
                         model: IntroducedInHouses,
                         as: 'introducedInHouses',
-                        where: { committeeRecomendation: filters.committeeRecomendation },
+                        where: { fkManageCommitteeRecomendationId: filters.fkManageCommitteeRecomendationId },
                         include: [
                             { model: Sessions, as: 'sessions' },
-                            { model: ManageCommittees, as: 'manageCommittees' }
+                            { model: ManageCommittees, as: 'manageCommittees' },
+                            { model: ManageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
                         ]
                     });
                 }
@@ -447,7 +453,8 @@ const senateBillService = {
                         where: { introducedInHouseDate },
                         include: [
                             { model: Sessions, as: 'sessions' },
-                            { model: ManageCommittees, as: 'manageCommittees' }
+                            { model: ManageCommittees, as: 'manageCommittees' },
+                            { model: ManageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
                         ]
                     });
                 }
@@ -524,7 +531,8 @@ const senateBillService = {
                         as: 'introducedInHouses',
                         include: [
                             { model: Sessions, as: 'sessions' },
-                            { model: ManageCommittees, as: 'manageCommittees' }
+                            { model: ManageCommittees, as: 'manageCommittees' },
+                            { model: ManageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
                         ]
                     },
                     {
@@ -612,7 +620,7 @@ const senateBillService = {
                         fkManageCommitteeId: updatedData.fkManageCommitteeId,
                         introducedInHouseDate: updatedData.introducedInHouseDate,
                         referedOnDate: updatedData.referedOnDate,
-                        committeeRecomendation: updatedData.committeeRecomendation,
+                        fkManageCommitteeRecomendationId: updatedData.fkManageCommitteeRecomendationId,
                         reportPresentationDate: updatedData.reportPresentationDate
                     }, { where: { fkIntroducedInHouseId: senateBillId } });
                 } else {
@@ -625,7 +633,7 @@ const senateBillService = {
                         fkManageCommitteeId: updatedData.fkManageCommitteeId,
                         introducedInHouseDate: updatedData.introducedInHouseDate,
                         referedOnDate: updatedData.referedOnDate,
-                        committeeRecomendation: updatedData.committeeRecomendation,
+                        fkManageCommitteeRecomendationId: updatedData.fkManageCommitteeRecomendationId,
                         reportPresentationDate: updatedData.reportPresentationDate
                     });
                 }
