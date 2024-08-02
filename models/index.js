@@ -391,6 +391,11 @@ db.manageCommittees = require("./manageCommittees.model.js")(
   sequelize,
   SequelizeMain
 );
+// Manage Committee Recommendations
+db.manageCommitteeRecomendations = require("./manageCommitteeRecomendations.model.js")(
+  sequelize,
+  SequelizeMain
+);
 // Intoduced in house
 db.introducedInHouses = require("./introducedInHouses.model.js")(
   sequelize,
@@ -605,10 +610,10 @@ db.noteParagraphs.belongsTo(db.caseNotes, {
   foreignKey: "fkCaseNoteId",
   as: "noteParagraphs",
 });
- db.noteParagraphs.belongsTo(db.users, {
-   foreignKey: "createdBy",
-   as: "createdByUser",
- });
+db.noteParagraphs.belongsTo(db.users, {
+  foreignKey: "createdBy",
+  as: "createdByUser",
+});
 // db.employees.belongsTo(db.users, { as: 'users', foreignKey: 'fkUserId' });
 
 // db.employees.belongsTo(db.users, { as: "users", foreignKey: "fkUserId" });
@@ -1266,6 +1271,7 @@ db.introducedInHouses.belongsTo(db.manageCommittees, {
   foreignKey: "fkManageCommitteeId",
   as: "manageCommittees",
 });
+db.introducedInHouses.belongsTo(db.manageCommitteeRecomendations, { foreignKey: 'fkManageCommitteeRecomendationId', as: 'manageCommitteeRecomendations' });
 db.introducedInHouses.belongsTo(db.introducedInSenateBills, {
   foreignKey: "fkIntroducedInHouseId",
   as: "introducedInSenateBills",

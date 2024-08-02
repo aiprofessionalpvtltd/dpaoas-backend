@@ -37,10 +37,18 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: true
         },
-        committeeRecomendation: {
-            type: Sequelize.ENUM("Ammended By Standing Committee", "May be Passed as Introduced in the House", "Passed without sending to Committee"),
+        fkManageCommitteeRecomendationId: {
+            type: Sequelize.INTEGER,
             allowNull: true,
+            references: {
+                model: 'manageCommitteeRecomendations',
+                key: 'id'
+            }
         },
+        // committeeRecomendation: {
+        //     type: Sequelize.ENUM("Ammended By Standing Committee", "May be Passed as Introduced in the House", "Passed without sending to Committee"),
+        //     allowNull: true,
+        // },
         reportPresentationDate: {
             type: Sequelize.DATE,
             allowNull: true
@@ -52,6 +60,7 @@ module.exports = (sequelize, Sequelize) => {
     introducedInHouses.associate = function (models) {
         introducedInHouses.belongsTo(models.sessions, { foreignKey: 'fkSessionHouseId', as: 'sessions' });
         introducedInHouses.belongsTo(models.manageCommittees, { foreignKey: 'fkManageCommitteeId', as: 'manageCommittees' });
+        introducedInHouses.belongsTo(models.manageCommitteeRecomendations, { foreignKey: 'fkManageCommitteeRecomendationId', as: 'manageCommitteeRecomendations' });
         introducedInHouses.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkIntroducedInHouseId', as: 'introducedInSenateBills' });
     };
 
