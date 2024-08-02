@@ -109,6 +109,14 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM("From Senate", "From NA"),
             allowNull: false,
         },
+        dateOfJointSitting: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        actNo: {
+            type: Sequelize.STRING,
+            allowNull: true
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });
