@@ -89,14 +89,99 @@ const casesService = {
   // },
 
   // Create Case For the File
+  // createCase: async (data, fileId, createdBy, freshReceiptId) => {
+  //   try {
+  //     const caseModel = await Cases.create({
+  //       fkFileId: fileId,
+  //       createdBy: createdBy,
+  //       fkFreshReceiptId: freshReceiptId ? freshReceiptId : null,
+  //     });
+
+  //     const caseId = caseModel.id;
+  //     const caseNotes = await CaseNotes.create({
+  //       fkBranchId: data.fkBranchId,
+  //       fkFileId: fileId,
+  //       fkCaseId: caseId,
+  //       createdBy: createdBy,
+  //       notingSubject: data.notingSubject,
+  //     });
+
+  //     let paragraphArray = data.paragraphArray;
+  //     if (typeof paragraphArray === "string") {
+  //       try {
+  //         paragraphArray = JSON.parse(paragraphArray);
+  //       } catch (error) {
+  //         throw new Error("Invalid format for paragraphArray");
+  //       }
+  //     }
+
+  //     let allCorrespondencesIds = new Array(paragraphArray.length).fill(null);
+  //     let allFreshReceiptIds = new Array(paragraphArray.length).fill(null);
+
+  //     if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
+  //       await Promise.all(
+  //         paragraphArray.map(async (para, index) => {
+  //           let correspondencesIds = [];
+  //           let freshReceiptIds = [];
+
+  //           para.references.forEach((ref) => {
+  //             if (ref.attachments && Array.isArray(ref.attachments)) {
+  //               ref.attachments.forEach((att) => {
+  //                 if (att.name) {
+  //                   correspondencesIds.push(ref.id);
+  //                 } else if (att.filename) {
+  //                   freshReceiptIds.push(ref.id);
+  //                 }
+  //               });
+  //             }
+  //           });
+
+  //           // Store the first ID found for each type, if any
+  //           if (correspondencesIds.length > 0) {
+  //             allCorrespondencesIds[index] = correspondencesIds[0];
+  //           }
+  //           if (freshReceiptIds.length > 0) {
+  //             allFreshReceiptIds[index] = freshReceiptIds[0];
+  //           }
+
+  //           // add new entry to note paragraph table
+  //           console.log("Created By =====>", createdBy);
+  //           await NoteParagraphs.create({
+  //             fkCaseNoteId: caseNotes.id,
+  //             paragraphTitle: para.title,
+  //             paragraph: para.description,
+  //             createdBy: createdBy,
+  //             flags: para.references.map((ref) => ref.flag).join(","),
+  //           });
+  //         })
+  //       );
+
+  //       await CaseNotes.update(
+  //         {
+  //           fkCorrespondenceIds: allCorrespondencesIds,
+  //           fkFreshReciptIds: allFreshReceiptIds,
+  //         },
+  //         { where: { id: caseNotes.id } }
+  //       );
+  //     }
+
+  //     return caseNotes;
+  //   } catch (error) {
+  //     console.error("Error Creating Case", error);
+  //     throw new Error(error.message || "Error Creating Case");
+  //   }
+  // },
+
   createCase: async (data, fileId, createdBy, freshReceiptId) => {
+    const transaction = await db.sequelize.transaction();
+  
     try {
       const caseModel = await Cases.create({
         fkFileId: fileId,
         createdBy: createdBy,
         fkFreshReceiptId: freshReceiptId ? freshReceiptId : null,
-      });
-
+      }, { transaction });
+  
       const caseId = caseModel.id;
       const caseNotes = await CaseNotes.create({
         fkBranchId: data.fkBranchId,
@@ -104,8 +189,8 @@ const casesService = {
         fkCaseId: caseId,
         createdBy: createdBy,
         notingSubject: data.notingSubject,
-      });
-
+      }, { transaction });
+  
       let paragraphArray = data.paragraphArray;
       if (typeof paragraphArray === "string") {
         try {
@@ -114,16 +199,16 @@ const casesService = {
           throw new Error("Invalid format for paragraphArray");
         }
       }
-
+  
       let allCorrespondencesIds = new Array(paragraphArray.length).fill(null);
       let allFreshReceiptIds = new Array(paragraphArray.length).fill(null);
-
+  
       if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
         await Promise.all(
           paragraphArray.map(async (para, index) => {
             let correspondencesIds = [];
             let freshReceiptIds = [];
-
+  
             para.references.forEach((ref) => {
               if (ref.attachments && Array.isArray(ref.attachments)) {
                 ref.attachments.forEach((att) => {
@@ -135,7 +220,7 @@ const casesService = {
                 });
               }
             });
-
+  
             // Store the first ID found for each type, if any
             if (correspondencesIds.length > 0) {
               allCorrespondencesIds[index] = correspondencesIds[0];
@@ -143,34 +228,46 @@ const casesService = {
             if (freshReceiptIds.length > 0) {
               allFreshReceiptIds[index] = freshReceiptIds[0];
             }
+  
+            // Check for duplicate flags
+            const flagArray = para.references.map((ref) => ref.flag);
+            const uniqueFlags = [...new Set(flagArray)];
+            console.log("uniqueFlags  =====>", uniqueFlags);
 
-            // add new entry to note paragraph table
+            if (uniqueFlags.length !== flagArray.length) {
+              throw new Error(`Duplicate flag found in paragraph titled: ${para.title}`);
+            }
+  
+            // Add new entry to note paragraph table
             console.log("Created By =====>", createdBy);
             await NoteParagraphs.create({
               fkCaseNoteId: caseNotes.id,
               paragraphTitle: para.title,
               paragraph: para.description,
               createdBy: createdBy,
-              flags: para.references.map((ref) => ref.flag).join(","),
-            });
+              flags: uniqueFlags.join(","),
+            }, { transaction });
           })
         );
-
+  
         await CaseNotes.update(
           {
             fkCorrespondenceIds: allCorrespondencesIds,
             fkFreshReciptIds: allFreshReceiptIds,
           },
-          { where: { id: caseNotes.id } }
+          { where: { id: caseNotes.id }, transaction }
         );
       }
-
+  
+      await transaction.commit();
       return caseNotes;
     } catch (error) {
+      await transaction.rollback();
       console.error("Error Creating Case", error);
       throw new Error(error.message || "Error Creating Case");
     }
   },
+  
 
   // Get Cases By File Id
   getCasesByFileId: async (fileId, userId, currentPage, pageSize) => {
@@ -2278,7 +2375,7 @@ const casesService = {
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
         attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy"],
-        order: [["createdAt", "DESC"]],
+        order: [["paragraphTitle", "DESC"]],
         include: [
           {
             model: Users,
