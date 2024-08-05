@@ -404,25 +404,24 @@ const casesService = {
           "fkCorrespondenceIds",
           "createdAt",
         ],
-        order: [["id", "DESC"]],
       });
-
+  
       const casesByCaseId = {};
       allRelevantSections.forEach((section) => {
         const caseData = section.cases;
         const remarks = caseData.casesRemarks || [];
         const createdBy = parseInt(caseData.createdBy);
-
+  
         // Determine visibility and isEditable
         let isVisible = false;
         let isEditable = true;
-
+  
         // Initial visibility is only for the creator
         if (parseInt(userId) === createdBy) {
           isVisible = true;
           isEditable = remarks.length === 0; // Creator can edit if no remarks
         }
-
+  
         // Check remarks for further visibility and editability
         if (remarks.length > 0) {
           const latestRemark = remarks.reduce(
@@ -431,19 +430,17 @@ const casesService = {
             },
             { createdAt: new Date(0), assignedTo: null }
           );
-
+  
           // If there is a latest remark, check if the user is the one it's assigned to
           if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
             isVisible = true; // The assigned user can also see the case
             isEditable = true; // The assigned user can edit the case
           } else {
-            // Ensure the creator retains visibility even when not the latest assigned
-            // isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
             isVisible = false;
             isEditable = false; // Creator cannot edit once assigned to someone else
           }
         }
-
+  
         // Ensuring each case is only added once with the full data structure
         if (isVisible) {
           if (!casesByCaseId[caseData.id]) {
@@ -459,22 +456,18 @@ const casesService = {
               fileRemarksData: section.cases.casesRemarks,
             };
           }
-
-          // Adding section specific data
-          // casesByCaseId[caseData.id][section.sectionType] = {
-          //     description: section.description,
-          //     caseAttachments: section.caseAttachments
-          // };
         }
       });
-
-      const aggregatedCases = Object.values(casesByCaseId);
+  
+      // Convert to array and sort by fkCaseId in descending order
+      const aggregatedCases = Object.values(casesByCaseId).sort((a, b) => b.fkCaseId - a.fkCaseId);
+  
       const paginatedCases = aggregatedCases.slice(
         currentPage * pageSize,
         (currentPage + 1) * pageSize
       );
       const totalPages = Math.ceil(aggregatedCases.length / pageSize);
-
+  
       return {
         cases: paginatedCases,
         count: aggregatedCases.length,
