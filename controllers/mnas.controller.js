@@ -4,22 +4,35 @@ const db = require("../models");
 const MNAs = db.mnas;
 const mnaController = {
 
+
+
     // Create a new MNA
     createMNAs: async (req, res) => {
         try {
-            const mna = await mnaService.createMNAs(req.body);
-            logger.info("mna Created Successfully!");
+            const { mnaData, ministryIds } = req.body;
+
+            // Validate input data
+            if (!mnaData || !ministryIds) {
+                return res.status(400).send({
+                    success: false,
+                    message: "MNA data and Ministry IDs are required"
+                });
+            }
+
+            const result = await mnaService.createMNAs({ mnaData, ministryIds });
+
+            logger.info("MNA and Ministries Associations Created Successfully!");
             return res.status(200).send({
                 success: true,
-                message: "mna Created Successfully!",
-                data: mna,
-            })
+                message: "MNA and Ministries Associations Created Successfully!",
+                data: result,
+            });
         } catch (error) {
             logger.error(error.message);
             return res.status(400).send({
                 success: false,
                 message: error.message
-            })
+            });
         }
     },
 
@@ -58,6 +71,40 @@ const mnaController = {
         }
     },
 
+    // Fetch ministries related to a specific MNA
+    findAllMinistriesByMnaId: async (req, res) => {
+        try {
+            const mnaId = req.params.mnaId;
+            const ministries = await mnaService.findAllMinistriesByMnaId(mnaId);
+
+            logger.info("ministries--->>", ministries)
+
+            if (ministries.length === 0) {
+                logger.info("No data found on this page!")
+                return res.status(200).send({
+                    success: false,
+                    message: 'No data found on this page!'
+                });
+            }
+            else {
+                logger.info("All ministries Fetched Successfully!")
+                return res.status(200).send({
+                    success: true,
+                    message: "All ministries Fetched Successfully!",
+                    data: { ministries }
+                })
+            }
+
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+
+            })
+        }
+    },
+
     // Retrieve Single MNA
     findSinlgeMNA: async (req, res) => {
         try {
@@ -78,30 +125,25 @@ const mnaController = {
         }
     },
 
-    // Update the MNA data
+    // Update MNA Data
     updateMnaData: async (req, res) => {
         try {
-            const mnnaId = req.params.id;
-            const mna = await MNAs.findByPk(mnnaId);
-            if (!mna) {
-                return res.status(200).send({
-                    success: false,
-                    message: "mna Not Found!",
-                })
-            }
-            const updatedMnaData = await mnaService.updateMnaData(req, mnnaId);
-            logger.info("Mna Data Updated Successfully!")
+            const mnaId = req.params.id;
+
+            const updatedMnaData = await mnaService.updateMnaData(req, mnaId);
+
+            logger.info("MNA Data Updated Successfully!");
             return res.status(200).send({
                 success: true,
-                message: "Mna Data Updated Successfully!",
+                message: "MNA Data Updated Successfully!",
                 data: updatedMnaData,
-            })
+            });
         } catch (error) {
-            logger.error(error.message)
+            logger.error(error.message);
             return res.status(400).send({
                 success: false,
                 message: error.message
-            })
+            });
         }
     },
 

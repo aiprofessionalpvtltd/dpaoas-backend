@@ -39,6 +39,7 @@ module.exports = (sequelize, Sequelize) => {
 
     Mnas.associate = function (models) {
         Mnas.belongsTo(models.politicalParties, { foreignKey: 'politicalParty', as: 'politicalParties' });
+        Mnas.belongsToMany(models.ministries, { through: 'mnaMinistries', foreignKey: 'mnaId', as: 'ministries' });
     };
 
     return Mnas;

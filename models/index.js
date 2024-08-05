@@ -414,6 +414,9 @@ db.billDocuments = require("./billDocuments.model.js")(
 // Ordinance Model
 db.ordinances = require("./ordinances.model.js")(sequelize, SequelizeMain);
 
+// mnaMinistries model
+db.mnaMinistries = require("./mnaMinistries.model.js")(sequelize, SequelizeMain);
+
 //db.fileRemarks.belongsTo(db.users, { foreignKey: 'commentBy', as: 'users' });
 db.files.hasMany(db.fileAttachments, {
   as: "fileAttachments",
@@ -1334,6 +1337,13 @@ db.flags.belongsTo(db.branches, {
   foreignKey: "fkBranchId",
   as: "branches",
 });
+
+
+// mnas associations
+db.mnas.belongsToMany(db.ministries, { through: 'mnaMinistries', foreignKey: 'mnaId', as: 'ministries' });
+// ministries associations
+db.ministries.belongsToMany(db.mnas, { through: 'mnaMinistries', foreignKey: 'ministryId', as: 'mnas' });
+
 
 
 db.legislativeBills.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
