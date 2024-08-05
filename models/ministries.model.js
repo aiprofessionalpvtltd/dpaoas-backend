@@ -17,5 +17,9 @@ module.exports = (sequelize, Sequelize) => {
         updatedAt: Sequelize.DATE,
     });
 
+    ministries.associate = function (models) {
+        ministries.belongsToMany(models.mnas, { through: 'mnaMinistries', foreignKey: 'ministryId', as: 'mnas' });
+    };
+
     return ministries;
 };

@@ -8,6 +8,9 @@ router.post("/", mnas.createMNAs);
 // Retrieve all MNAs
 router.get("/", mnas.findAllMNAs);
 
+// Fetch ministries related to a specific MNA
+router.get("/:mnaId/ministries", mnas.findAllMinistriesByMnaId);
+
 // Retrieve Single MNA by its ID
 router.get("/:id", mnas.findSinlgeMNA);
 
