@@ -14,6 +14,8 @@ const Op = db.Sequelize.Op;
 const logger = require("../common/winston");
 const users = db.users;
 const fileAttachments = db.fileAttachments;
+const moment = require('moment');
+
 
 const FileService = {
   // Create A New File
@@ -21,7 +23,10 @@ const FileService = {
     try {
       // Check if serialNumber is already assigned to another file
       const existingSerialNumber = await newFiles.findOne({
-        where: { serialNumber: req.serialNumber },
+        where: {
+          serialNumber: req.serialNumber,
+          fkBranchId: req.fkBranchId,
+        },
       });
 
       if (existingSerialNumber && req.serialNumber !== "") {
@@ -30,7 +35,7 @@ const FileService = {
 
       // Check if fileNumber is already assigned to another file
       const existingFileNumber = await newFiles.findOne({
-        where: { fileNumber: req.fileNumber },
+        where: { fileNumber: req.fileNumber  ,   fkBranchId: req.fkBranchId,},
       });
 
       if (existingFileNumber) {
@@ -218,91 +223,36 @@ const FileService = {
   },
 
   // Get File by ID
-  findSingleFile: async (id) => {
-    try {
-      const result = await File.findOne({
-        raw: false,
-        where: {
-          id: id,
-        },
-        include: [
-          {
-            model: fileRemarks,
-            as: "fileRemarks",
-            // attributes: ['comment', 'commentBy', 'CommentStatus'],
-            include: [
+ // Retrieve Single File
+findSingleFile: async (id) => {
+  try {
+      const result = await newFiles.findOne({
+          where: { id: id },
+          include: [
               {
-                model: users,
-                as: "users",
-                attributes: ["id"],
-                include: [
-                  {
-                    model: employees,
-                    as: "employee",
-                    attributes: [
-                      "firstName",
-                      "lastName",
-                      "fkDepartmentId",
-                      "fkDesignationId",
-                      "id",
-                    ],
-                    include: [
-                      {
-                        model: designations, // Assuming you have a 'designations' model
-                        as: "employeeDesignation",
-                        attributes: ["designationName", "id"],
-                      },
-                    ],
-                  },
-                ],
+                  model: mainHeadingFiles,
+                  as: "mainHeading",
+                  attributes: ["id", "mainHeading", "mainHeadingNumber"],
               },
-            ],
-          },
-          {
-            model: fileAttachments,
-            as: "fileAttachments",
-            // attributes: ['attachment', 'id']
-          },
-          {
-            model: filedairies,
-            as: "filedairies",
-            include: [
               {
-                model: users,
-                as: "users",
-                attributes: ["id"],
-                include: [
-                  {
-                    model: employees,
-                    as: "employee",
-                    attributes: [
-                      "firstName",
-                      "lastName",
-                      "fkDepartmentId",
-                      "fkDesignationId",
-                      "id",
-                    ],
-                    include: [
-                      {
-                        model: departments, // Assuming you have a 'designations' model
-                        as: "departments",
-                        attributes: ["departmentName", "id"],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-            distinct: true,
-          },
-        ],
+                  model: FileRegisters,
+                  as: "fileRegister",
+                  attributes: ["id", "registerSubject", "year", "registerNumber"],
+              }
+          ],
       });
 
+      if (!result) {
+          throw new Error("File not found.");
+      }
+
       return result;
-    } catch (error) {
+  } catch (error) {
       console.error("Error Fetching File request:", error.message);
-    }
-  },
+      throw new Error(error.message || "Error Fetching File request.");
+  }
+},
+
 
   // Updates File
 //   updateFile: async (id, payload) => {
@@ -390,19 +340,20 @@ const FileService = {
 //   },
 
   // Service Function: Update File
-updateFile: async (fileId, req) => {
+  updateFile: async (fileId, req) => {
     try {
         // Check if serialNumber is already assigned to another file
         if (req.serialNumber && req.serialNumber !== "") {
             const existingSerialNumber = await newFiles.findOne({
                 where: {
                     serialNumber: req.serialNumber,
+                    fkBranchId: req.fkBranchId,
                     id: { [Op.ne]: fileId },
                 },
             });
 
             if (existingSerialNumber) {
-                throw new Error("Serial Number already exists.");
+                throw new Error("Serial Number already exists on same branch.");
             }
         }
 
@@ -411,6 +362,7 @@ updateFile: async (fileId, req) => {
             const existingFileNumber = await newFiles.findOne({
                 where: {
                     fileNumber: req.fileNumber,
+                    fkBranchId: req.fkBranchId,
                     id: { [Op.ne]: fileId },
                 },
             });
@@ -420,11 +372,27 @@ updateFile: async (fileId, req) => {
             }
         }
 
+        // Prepare the update data
+        const updateData = { ...req, updatedAt: moment().format() };
+
+
+       // Check if dateOfRecording is an empty string and assign NULL if true
+       if (updateData.dateOfRecording === "") {
+        updateData.dateOfRecording = null;
+    }
+
+    // Validate and format date fields, if any
+    if (updateData.dateOfRecording && !moment(updateData.dateOfRecording, moment.ISO_8601, true).isValid()) {
+        throw new Error("Invalid dateOfRecording date.");
+      }
+      
+
         // Update the File
-        await newFiles.update(req, { where: { id: fileId } });
+        await newFiles.update(updateData, { where: { id: fileId } });
 
         // Fetch the updated file after the update
-        const updatedFile = await newFiles.findOne({
+          // Fetch the updated file after the update
+          const updatedFile = await newFiles.findOne({
             where: { id: fileId },
         });
 
@@ -433,7 +401,6 @@ updateFile: async (fileId, req) => {
         throw { message: error.message || "Error Updating File" };
     }
 },
-
 
   // Deletes/Suspend File
   suspendFile: async (req) => {
@@ -465,7 +432,7 @@ updateFile: async (fileId, req) => {
       const updatedData = { status: "inactive" };
 
       // Update the file register to set its status to inactive
-      const [affectedRows] = await File.update(updatedData, {
+      const [affectedRows] = await newFiles.update(updatedData, {
         where: { id: id },
       });
 
@@ -475,7 +442,7 @@ updateFile: async (fileId, req) => {
       }
 
       // Fetch the updated file register to verify the update
-      const updatedFile = await File.findOne({
+      const updatedFile = await newFiles.findOne({
         where: { id: id },
       });
 

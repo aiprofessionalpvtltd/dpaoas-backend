@@ -79,6 +79,11 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: "fileIn"
 
         },
+        status: {
+            type: Sequelize.ENUM("active", "inactive"),
+            defaultValue: "active"
+
+        },
         // submittedBy: {
         //     type: Sequelize.INTEGER,
         //     allowNull: true,

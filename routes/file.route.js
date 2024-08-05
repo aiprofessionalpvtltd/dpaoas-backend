@@ -119,6 +119,9 @@ router.delete("/delete/:id", files.deleteCorrespondingFile);
 router.get("/:id", files.findSingleFile);
 
 
+router.get("/singleFile/:id", files.findSingleFile)
+
+
 // Update File
 router.put("/update/:id", files.updateFile);
 
