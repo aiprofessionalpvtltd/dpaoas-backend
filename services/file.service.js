@@ -14,6 +14,8 @@ const Op = db.Sequelize.Op;
 const logger = require("../common/winston");
 const users = db.users;
 const fileAttachments = db.fileAttachments;
+const moment = require('moment');
+
 
 const FileService = {
   // Create A New File
@@ -338,14 +340,14 @@ findSingleFile: async (id) => {
 //   },
 
   // Service Function: Update File
-updateFile: async (fileId, req) => {
+  updateFile: async (fileId, req) => {
     try {
         // Check if serialNumber is already assigned to another file
         if (req.serialNumber && req.serialNumber !== "") {
             const existingSerialNumber = await newFiles.findOne({
                 where: {
-                serialNumber: req.serialNumber,
-                fkBranchId: req.fkBranchId,
+                    serialNumber: req.serialNumber,
+                    fkBranchId: req.fkBranchId,
                     id: { [Op.ne]: fileId },
                 },
             });
@@ -359,8 +361,8 @@ updateFile: async (fileId, req) => {
         if (req.fileNumber) {
             const existingFileNumber = await newFiles.findOne({
                 where: {
-                fileNumber: req.fileNumber,
-                     fkBranchId: req.fkBranchId,
+                    fileNumber: req.fileNumber,
+                    fkBranchId: req.fkBranchId,
                     id: { [Op.ne]: fileId },
                 },
             });
@@ -370,11 +372,27 @@ updateFile: async (fileId, req) => {
             }
         }
 
+        // Prepare the update data
+        const updateData = { ...req, updatedAt: moment().format() };
+
+
+       // Check if dateOfRecording is an empty string and assign NULL if true
+       if (updateData.dateOfRecording === "") {
+        updateData.dateOfRecording = null;
+    }
+
+    // Validate and format date fields, if any
+    if (updateData.dateOfRecording && !moment(updateData.dateOfRecording, moment.ISO_8601, true).isValid()) {
+        throw new Error("Invalid dateOfRecording date.");
+      }
+      
+
         // Update the File
-        await newFiles.update(req, { where: { id: fileId } });
+        await newFiles.update(updateData, { where: { id: fileId } });
 
         // Fetch the updated file after the update
-        const updatedFile = await newFiles.findOne({
+          // Fetch the updated file after the update
+          const updatedFile = await newFiles.findOne({
             where: { id: fileId },
         });
 
@@ -383,7 +401,6 @@ updateFile: async (fileId, req) => {
         throw { message: error.message || "Error Updating File" };
     }
 },
-
 
   // Deletes/Suspend File
   suspendFile: async (req) => {
@@ -415,7 +432,7 @@ updateFile: async (fileId, req) => {
       const updatedData = { status: "inactive" };
 
       // Update the file register to set its status to inactive
-      const [affectedRows] = await File.update(updatedData, {
+      const [affectedRows] = await newFiles.update(updatedData, {
         where: { id: id },
       });
 
@@ -425,7 +442,7 @@ updateFile: async (fileId, req) => {
       }
 
       // Fetch the updated file register to verify the update
-      const updatedFile = await File.findOne({
+      const updatedFile = await newFiles.findOne({
         where: { id: id },
       });
 

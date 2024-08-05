@@ -174,23 +174,29 @@ const casesService = {
 
   createCase: async (data, fileId, createdBy, freshReceiptId) => {
     const transaction = await db.sequelize.transaction();
-  
+
     try {
-      const caseModel = await Cases.create({
-        fkFileId: fileId,
-        createdBy: createdBy,
-        fkFreshReceiptId: freshReceiptId ? freshReceiptId : null,
-      }, { transaction });
-  
+      const caseModel = await Cases.create(
+        {
+          fkFileId: fileId,
+          createdBy: createdBy,
+          fkFreshReceiptId: freshReceiptId ? freshReceiptId : null,
+        },
+        { transaction }
+      );
+
       const caseId = caseModel.id;
-      const caseNotes = await CaseNotes.create({
-        fkBranchId: data.fkBranchId,
-        fkFileId: fileId,
-        fkCaseId: caseId,
-        createdBy: createdBy,
-        notingSubject: data.notingSubject,
-      }, { transaction });
-  
+      const caseNotes = await CaseNotes.create(
+        {
+          fkBranchId: data.fkBranchId,
+          fkFileId: fileId,
+          fkCaseId: caseId,
+          createdBy: createdBy,
+          notingSubject: data.notingSubject,
+        },
+        { transaction }
+      );
+
       let paragraphArray = data.paragraphArray;
       if (typeof paragraphArray === "string") {
         try {
@@ -199,27 +205,29 @@ const casesService = {
           throw new Error("Invalid format for paragraphArray");
         }
       }
-  
+
       // Preprocess paragraphArray to check for duplicate flags
       const flagTracker = new Set();
-      paragraphArray.forEach(para => {
-        para.references.forEach(ref => {
+      paragraphArray.forEach((para) => {
+        para.references.forEach((ref) => {
           if (flagTracker.has(ref.flag)) {
-            throw new Error(`The flag '${ref.flag}' is already assigned to '${para.title}'`);
+            throw new Error(
+              `The flag '${ref.flag}' is already assigned to '${para.title}'`
+            );
           }
           flagTracker.add(ref.flag);
         });
       });
-  
+
       let allCorrespondencesIds = new Array(paragraphArray.length).fill(null);
       let allFreshReceiptIds = new Array(paragraphArray.length).fill(null);
-  
+
       if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
         await Promise.all(
           paragraphArray.map(async (para, index) => {
             let correspondencesIds = [];
             let freshReceiptIds = [];
-  
+
             para.references.forEach((ref) => {
               if (ref.attachments && Array.isArray(ref.attachments)) {
                 ref.attachments.forEach((att) => {
@@ -231,7 +239,7 @@ const casesService = {
                 });
               }
             });
-  
+
             // Store the first ID found for each type, if any
             if (correspondencesIds.length > 0) {
               allCorrespondencesIds[index] = correspondencesIds[0];
@@ -239,18 +247,21 @@ const casesService = {
             if (freshReceiptIds.length > 0) {
               allFreshReceiptIds[index] = freshReceiptIds[0];
             }
-  
+
             // Create the NoteParagraph entry
-            await NoteParagraphs.create({
-              fkCaseNoteId: caseNotes.id,
-              paragraphTitle: para.title,
-              paragraph: para.description,
-              createdBy: createdBy,
-              flags: para.references.map((ref) => ref.flag).join(","),
-            }, { transaction });
+            await NoteParagraphs.create(
+              {
+                fkCaseNoteId: caseNotes.id,
+                paragraphTitle: para.title,
+                paragraph: para.description,
+                createdBy: createdBy,
+                flags: para.references.map((ref) => ref.flag).join(","),
+              },
+              { transaction }
+            );
           })
         );
-  
+
         await CaseNotes.update(
           {
             fkCorrespondenceIds: allCorrespondencesIds,
@@ -259,7 +270,7 @@ const casesService = {
           { where: { id: caseNotes.id }, transaction }
         );
       }
-  
+
       await transaction.commit();
       return caseNotes;
     } catch (error) {
@@ -268,9 +279,6 @@ const casesService = {
       throw new Error(error.message || "Error Creating Case");
     }
   },
-  
-  
-  
 
   // Get Cases By File Id
   getCasesByFileId: async (fileId, userId, currentPage, pageSize) => {
@@ -391,6 +399,7 @@ const casesService = {
         attributes: [
           "id",
           "fkCaseId",
+          "caseStatus",
           "notingSubject",
           "fkCorrespondenceIds",
           "createdAt",
@@ -441,6 +450,7 @@ const casesService = {
             casesByCaseId[caseData.id] = {
               id: caseData.id,
               fkCaseId: section.fkCaseId,
+              caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
               createdAt: caseData.createdAt,
               createdBy: caseData.createdBy,
               isEditable: isEditable,
@@ -592,6 +602,7 @@ const casesService = {
         attributes: [
           "id",
           "fkCaseId",
+          "caseStatus", // Include caseStatus from CaseNotes
           "notingSubject",
           "fkCorrespondenceIds",
           "createdAt",
@@ -641,6 +652,7 @@ const casesService = {
             casesByCaseId[caseData.id] = {
               id: caseData.id,
               fkCaseId: section.fkCaseId,
+              caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
               createdAt: caseData.createdAt,
               createdBy: caseData.createdBy,
               isEditable: isEditable,
@@ -797,6 +809,7 @@ const casesService = {
         attributes: [
           "id",
           "fkCaseId",
+          "caseStatus", // Include caseStatus from CaseNotes
           "notingSubject",
           "fkCorrespondenceIds",
           "createdAt",
@@ -812,6 +825,7 @@ const casesService = {
           casesByCaseId[caseData.id] = {
             id: caseData.id,
             fkCaseId: section.fkCaseId,
+            caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
             createdAt: caseData.createdAt,
             createdBy: caseData.createdBy,
             fileData: section.cases.files,
@@ -962,6 +976,7 @@ const casesService = {
         attributes: [
           "id",
           "fkCaseId",
+          "caseStatus", // Include caseStatus from CaseNotes
           "notingSubject",
           "fkCorrespondenceIds",
           "createdAt",
@@ -1012,6 +1027,7 @@ const casesService = {
               casesByCaseId[caseData.id] = {
                 id: caseData.id,
                 fkCaseId: section.fkCaseId,
+                caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
                 createdAt: caseData.createdAt,
                 createdBy: caseData.createdBy,
                 fileData: caseData.files,
@@ -1024,6 +1040,7 @@ const casesService = {
           casesByCaseId[caseData.id] = {
             id: caseData.id,
             fkCaseId: section.fkCaseId,
+            caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
             createdAt: caseData.createdAt,
             createdBy: caseData.createdBy,
             fileData: caseData.files,
@@ -1183,7 +1200,7 @@ const casesService = {
   //Update Case For The File
   updateCase: async (data, caseNotesId) => {
     const transaction = await db.sequelize.transaction();
-  
+
     try {
       // Update existing case notes
       await CaseNotes.update(
@@ -1195,7 +1212,7 @@ const casesService = {
           transaction,
         }
       );
-  
+
       let paragraphArray = data.paragraphArray;
       if (typeof paragraphArray === "string") {
         try {
@@ -1204,54 +1221,66 @@ const casesService = {
           throw new Error("Invalid format for paragraphArray");
         }
       }
-  
+
       console.log("case note id", caseNotesId);
       console.log("Data object:", data); // Log the entire data object to inspect its structure
-  
+
       // Destroy all existing paragraphs only once
-      await NoteParagraphs.destroy({ where: { fkCaseNoteId: caseNotesId }, transaction });
-  
+      await NoteParagraphs.destroy({
+        where: { fkCaseNoteId: caseNotesId },
+        transaction,
+      });
+
       // Declare and initialize allCorrespondencesIds outside of the loop
       let allCorrespondencesIds = [];
-  
-      console.log('paragraphArray.length', paragraphArray.length);
-  
+
+      console.log("paragraphArray.length", paragraphArray.length);
+
       // Preprocess paragraphArray to check for duplicate flags
       const flagTracker = new Set();
-      paragraphArray.forEach(para => {
-        para.references.forEach(ref => {
+      paragraphArray.forEach((para) => {
+        para.references.forEach((ref) => {
           if (flagTracker.has(ref.flag)) {
-            throw new Error(`The flag '${ref.flag}' is already assigned to '${para.title}'`);
+            throw new Error(
+              `The flag '${ref.flag}' is already assigned to '${para.title}'`
+            );
           }
           flagTracker.add(ref.flag);
         });
       });
-  
+
       if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
         const createdParas = await Promise.all(
           paragraphArray.map(async (para, index) => {
             const correspondencesIds = para.references.map((ref) => ref.id);
-            console.log('para.references', para.references);
-  
-            allCorrespondencesIds = allCorrespondencesIds.concat(correspondencesIds);
-  
+            console.log("para.references", para.references);
+
+            allCorrespondencesIds =
+              allCorrespondencesIds.concat(correspondencesIds);
+
             const updateData = {
               fkCorrespondenceIds: allCorrespondencesIds,
             };
-  
-            await CaseNotes.update(updateData, { where: { id: caseNotesId }, transaction });
-  
-            return await NoteParagraphs.create({
-              fkCaseNoteId: caseNotesId,
-              paragraphTitle: para.title,
-              paragraph: para.description,
-              createdBy: para.createdBy,
-              flags: para.references.map((ref) => ref.flag).join(","),
-            }, { transaction });
+
+            await CaseNotes.update(updateData, {
+              where: { id: caseNotesId },
+              transaction,
+            });
+
+            return await NoteParagraphs.create(
+              {
+                fkCaseNoteId: caseNotesId,
+                paragraphTitle: para.title,
+                paragraph: para.description,
+                createdBy: para.createdBy,
+                flags: para.references.map((ref) => ref.flag).join(","),
+              },
+              { transaction }
+            );
           })
         );
       }
-  
+
       await transaction.commit();
       return await CaseNotes.findByPk(caseNotesId);
     } catch (error) {
@@ -1260,7 +1289,6 @@ const casesService = {
       throw new Error(error.message || "Error Updating Case");
     }
   },
-  
 
   updateCaseStatus: async (caseId, newStatus) => {
     try {
@@ -2558,7 +2586,10 @@ const casesService = {
           description: para.paragraph,
           references: references,
           createdBy: para.createdBy,
-          createdByUser: para.createdByUser.employee.firstName + ' ' + para.createdByUser.employee.lastName,
+          createdByUser:
+            para.createdByUser.employee.firstName +
+            " " +
+            para.createdByUser.employee.lastName,
           isSave: true,
         };
       });
