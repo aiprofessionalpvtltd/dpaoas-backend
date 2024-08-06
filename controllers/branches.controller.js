@@ -30,29 +30,27 @@ const branchesController = {
     findAllBranches: async (req, res) => {
         logger.info(`branchesController: findAllBranches`)
         const { query } = req
-        const { page, pageSize } = query;
-        const offset = page * pageSize;
-        let orderType = req.query.order;
-        if (orderType == "ascend") {
-            orderType = "ASC";
-        }
-        else {
-            orderType = "DESC";
-        }
-        const defaultSortColumn = 'id';
-        const order = [[defaultSortColumn, orderType]];
-
-        let whereClause = {};
-        let options = {};
+        const { page, pageSize, order } = query;
+        const offset = page ? page * pageSize : 0;
+        let orderType = order === "ascend" ? "DESC" : "ASC";
+        const defaultSortColumn = 'branchName';
+        const orderOption = [[defaultSortColumn, orderType]];
+    
+        let whereClause = {
+            branchStatus: 'active'
+        };
+        let options = {
+            where: whereClause,
+            order: orderOption
+        };
         if (page && pageSize) {
             options = {
                 ...options,
                 limit: parseInt(pageSize),
-                offset,
+                offset: parseInt(offset),
             };
         }
-        options.order = order;
-
+    
         try {
             const { rows, count } = await branches.findAndCountAll(options);
             return res.status(200).send({
@@ -69,6 +67,7 @@ const branchesController = {
             });
         }
     },
+    
 
     // Retrieve Single Branch
     findSingleBranch: async (req, res) => {

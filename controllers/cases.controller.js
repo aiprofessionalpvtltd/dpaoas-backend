@@ -370,7 +370,9 @@ const casesController = {
       );
       const fileId = req.params.fileId;
       const caseId = req.params.caseId;
-      const cases = await casesService.getSingleCaseDetails(fileId, caseId);
+      const orderBy = req.params.orderBy;
+
+      const cases = await casesService.getSingleCaseDetails(fileId, caseId , orderBy);
       logger.info("Single Case Details Retrieved Successfully!");
       return res.status(200).send({
         success: true,

@@ -220,6 +220,7 @@ const employeeService = {
     try {
       const offset = currentPage * pageSize;
       const limit = pageSize;
+      
       const { count, rows } = await Employee.findAndCountAll({
         include: [
           {
@@ -252,14 +253,17 @@ const employeeService = {
         ],
         offset,
         limit,
-        order: [['id', 'ASC']]
+        where: { employeeStatus: 'active' },
+        order: [['firstName', 'ASC']]
       });
+      
       const totalPages = Math.ceil(count / pageSize);
       return { count, totalPages, employees: rows };
     } catch (error) {
-      throw new Error(error.message || "Error Fetching All Visitors");
+      throw new Error(error.message || "Error Fetching All Employees");
     }
   },
+  
 
   // Retrieve Single Employee
   findSingleEmployee: async (employeeId) => {

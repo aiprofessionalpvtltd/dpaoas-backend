@@ -27,7 +27,7 @@ const rolesService = {
         offset,
         limit,
         order: [
-          ['id','DESC']
+          ['name','ASC']
         ]
       });
 
