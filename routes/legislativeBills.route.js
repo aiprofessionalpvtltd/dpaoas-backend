@@ -16,7 +16,7 @@ router.get("/inNotice", legislativeBills.findAllLegislativeBillsInNotice);
 router.post("/", uploadFile("legislativeBill"), legislativeBills.createLegislativeBill);
 
 // Retrieve Single legislativeBill by its ID
-router.get("/:id", legislativeBills.findSinlgeLegislativeBill);
+router.get("/:id", legislativeBills.findSingleLegislativeBill);
 
 // Update legislativeBill
 router.put("/:id", uploadFile("legislativeBill"), legislativeBills.updateLegislativeBill);

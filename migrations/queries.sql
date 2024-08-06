@@ -28,5 +28,8 @@
 -- CREATE TYPE file_status AS ENUM ('active', 'inactive');
 -- ALTER TABLE "newFiles" ADD COLUMN "status" file_status DEFAULT 'active' NOT NULL;
 
+ALTER TABLE public."legislativeBills" ADD diary_number varchar NULL;
+
+
 
 

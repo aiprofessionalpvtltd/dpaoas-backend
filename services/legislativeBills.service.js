@@ -4,6 +4,7 @@ const Sessions = db.sessions;
 const BillStatuses = db.billStatuses;
 const { Op } = require('sequelize');
 const logger = require('../common/winston');
+const moment = require('moment');
 
 const legislativeBillService = {
 
@@ -113,8 +114,73 @@ const legislativeBillService = {
     }
 },
     // Retrieve Single LegislativeBill
-    findSinlgeLegislativeBill: async (legislativeBillId) => {
+    // findSinlgeLegislativeBill: async (legislativeBillId) => {
+    //     try {
+    //         const legislativeBill = await LegislativeBills.findOne({
+    //             where: { id: legislativeBillId },
+    //             order: [['id', 'ASC']],
+    //             include: [
+    //                 {
+    //                     model: Sessions,
+    //                     as: 'session',
+    //                     attributes: ['id', 'sessionName']
+    //                 },
+    //                 {
+    //                     model: BillStatuses,
+    //                     as: 'billStatuses'
+    //                 }
+    //             ],
+    //         });
+    //         if (!legislativeBill) {
+    //             throw ({ message: "legislative Bill Not Found!" })
+    //         }
+    //         return legislativeBill;
+    //     }
+    //     catch (error) {
+    //         throw { message: error.message || "Error Fetching Single legislative Bill" };
+    //     }
+    // },
+ 
+      generateDiaryNumber  : async () => {
+        // Determine the current session year
+        const currentDate = moment();
+        const currentYear = currentDate.year();
+        const sessionStartDate = moment(`${currentYear}-03-12`);
+        const nextYear = currentYear + 1;
+        const sessionEndDate = moment(`${nextYear}-03-11`);
+    
+        let sessionYear;
+        if (currentDate.isBetween(sessionStartDate, sessionEndDate, null, '[]')) {
+            sessionYear = currentYear;
+        } else {
+            sessionYear = currentYear - 1;
+        }
+    
+        // Generate the new diary number
+        const lastDiaryNumber = await LegislativeBills.findOne({
+            where: {
+                diary_number: {
+                    [Op.like]: `%(${sessionYear})`
+                }
+            },
+            order: [['diary_number', 'DESC']],
+            attributes: ['diary_number']
+        });
+    
+        let newDiaryNumber;
+        if (lastDiaryNumber) {
+            const lastDiaryNumberValue = parseInt(lastDiaryNumber.diary_number.split('-')[0]);
+            newDiaryNumber = `${String(lastDiaryNumberValue + 1).padStart(2, '0')}-(${sessionYear})`;
+        } else {
+            newDiaryNumber = `01-(${sessionYear})`;
+        }
+    
+        return newDiaryNumber;
+    } ,
+    
+     findSingleLegislativeBill : async (legislativeBillId) => {
         try {
+            // Fetch the legislative bill
             const legislativeBill = await LegislativeBills.findOne({
                 where: { id: legislativeBillId },
                 order: [['id', 'ASC']],
@@ -130,15 +196,24 @@ const legislativeBillService = {
                     }
                 ],
             });
+    
             if (!legislativeBill) {
-                throw ({ message: "legislative Bill Not Found!" })
+                throw ({ message: "Legislative Bill Not Found!" });
             }
+    
+             // Check if the legislative bill already has a diary number
+             if (!legislativeBill.diary_number) {
+                // Generate the new diary number
+                const newDiaryNumber = await module.exports.generateDiaryNumber();
+                legislativeBill.diary_number = newDiaryNumber;
+                // await legislativeBill.save(); // Save the new diary number to the database
+            }
+    
             return legislativeBill;
+        } catch (error) {
+            throw { message: error.message || "Error Fetching Single Legislative Bill" };
         }
-        catch (error) {
-            throw { message: error.message || "Error Fetching Single legislative Bill" };
-        }
-    },
+    } ,
 
     // Retrieve all LegislativeBill by web_id
     findAllLegislativeBillsByWebId: async (webId) => {
@@ -171,7 +246,22 @@ const legislativeBillService = {
     // Update LegislativeBill
     updateLegislativeBill: async (legislativeBillId, req) => {
         try {
-            // console.log("req", req.body)
+            // Check if diary_number is provided in the request body
+            if (req.body.diary_number) {
+                // Check for duplicate diary_number
+                const duplicateDiaryNumber = await LegislativeBills.findOne({
+                    where: { 
+                        diary_number: req.body.diary_number,
+                        id: { [Op.ne]: legislativeBillId } // Exclude current legislative bill
+                    }
+                });
+
+                if (duplicateDiaryNumber) {
+                    throw { message: "Duplicate diary number exists!" };
+                }
+            }
+
+            // Update the legislative bill
             await LegislativeBills.update(req.body, { where: { id: legislativeBillId } });
 
             const updatedLegislativeBill = await LegislativeBills.findOne({
@@ -179,7 +269,6 @@ const legislativeBillService = {
             }, { raw: true });
 
             return updatedLegislativeBill;
-
         } catch (error) {
             throw { message: error.message || 'Error updating LegislativeBill' };
         }

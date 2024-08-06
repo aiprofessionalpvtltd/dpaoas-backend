@@ -1503,24 +1503,30 @@ const manageSessionsService = {
 
             // sessionName
             page.drawText('SESSION:', { x: 400 + 10, y: yCoordinate + verticalGap - 30, font: fontBold, ...textOptions1 });
-            page.drawText(`${fetchedSession.session.sessionName}`, { x: 430 + 50, y: yCoordinate + verticalGap - 30, ...textOptions, })
+            page.drawText(`${fetchedSession.session.sessionName}`, { x: 450 + 50, y: yCoordinate + verticalGap - 30, ...textOptions, })
             // sittingStartTime
             page.drawText('Commenced at:', { x: 400 + 10, y: yCoordinate + verticalGap - 50, font: fontBold, ...textOptions1 });
-            page.drawText(`${fetchedSession.sittingStartTime}`, { x: 430 + 50, y: yCoordinate + verticalGap - 50, ...textOptions, })
-            // sessionAdjourned
-            page.drawText('Adjourned:', { x: 400 + 10, y: yCoordinate + verticalGap - 70, font: fontBold, ...textOptions1 });
-            page.drawText(`${fetchedSession.sessionAdjourned}`, { x: 430 + 50, y: yCoordinate + verticalGap - 70, ...textOptions, })
+            page.drawText(`${fetchedSession.sittingStartTime}`, { x: 450 + 50, y: yCoordinate + verticalGap - 50, ...textOptions, })
+            // // sessionAdjourned
+            // page.drawText('Adjourned:', { x: 400 + 10, y: yCoordinate + verticalGap - 70, font: fontBold, ...textOptions1 });
+            // page.drawText(`${fetchedSession.sessionAdjourned}`, { x: 450 + 50, y: yCoordinate + verticalGap - 70, ...textOptions, })
 
+              // sittingStartTime
+              page.drawText('Sitting Start Time:', { x: 400 + 10, y: yCoordinate + verticalGap - 70, font: fontBold, ...textOptions1 });
+              page.drawText(`${fetchedSession.sittingStartTime}`, { x: 450 + 50, y: yCoordinate + verticalGap - 70, ...textOptions, })
+ 
+
+             // sittingEndTime
+             page.drawText('Sitting End Time:', { x: 400 + 10, y: yCoordinate + verticalGap - 90, font: fontBold, ...textOptions1 });
+             page.drawText(`${fetchedSession.sittingEndTime}`, { x: 450 + 50, y: yCoordinate + verticalGap - 90, ...textOptions, })
+
+            
             const sittingDate = new Date(fetchedSession.sittingDate);
             const formattedDate = sittingDate.toLocaleDateString('en-GB').replace(/\//g, '-'); // 'en-GB' for the desired format
 
             console.log(formattedDate);
             // Subject Text
-            page.drawText(`Province-wise Attendance of Senators during the Senate Session held on ${formattedDate}`, { x: 110, y: yCoordinate + verticalGap - 100, font: fontBold, ...textOptions1 });
-
-
-
-
+            page.drawText(`Province-wise Attendance of Senators during the Senate Session held on ${formattedDate}`, { x: 110, y: yCoordinate + verticalGap - 120, font: fontBold, ...textOptions1 });
 
 
             // ...

@@ -63,6 +63,10 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
             allowNull: true
         },
+        diary_number: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });
