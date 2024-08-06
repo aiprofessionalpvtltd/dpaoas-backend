@@ -14,8 +14,7 @@ const Op = db.Sequelize.Op;
 const logger = require("../common/winston");
 const users = db.users;
 const fileAttachments = db.fileAttachments;
-const moment = require('moment');
-
+const moment = require("moment");
 
 const FileService = {
   // Create A New File
@@ -26,20 +25,26 @@ const FileService = {
         where: {
           serialNumber: req.serialNumber,
           fkBranchId: req.fkBranchId,
+          fkMainHeadingId: req.fkMainHeadingId,
         },
       });
 
       if (existingSerialNumber && req.serialNumber !== "") {
-        throw new Error("Serial Number already exists.");
+        throw new Error(
+          "Serial Number already exists within the same branch and main heading."
+        );
       }
 
-      // Check if fileNumber is already assigned to another file
+      // Check if fileNumber is already assigned to another file within the same branch
       const existingFileNumber = await newFiles.findOne({
-        where: { fileNumber: req.fileNumber  ,   fkBranchId: req.fkBranchId,},
+        where: {
+          fileNumber: req.fileNumber,
+          fkBranchId: req.fkBranchId,
+        },
       });
 
       if (existingFileNumber) {
-        throw new Error("File Number already exists.");
+        throw new Error("File Number already exists within the same branch.");
       }
 
       // Create the File
@@ -223,184 +228,187 @@ const FileService = {
   },
 
   // Get File by ID
- // Retrieve Single File
-findSingleFile: async (id) => {
-  try {
+  // Retrieve Single File
+  findSingleFile: async (id) => {
+    try {
       const result = await newFiles.findOne({
-          where: { id: id },
-          include: [
-              {
-                  model: mainHeadingFiles,
-                  as: "mainHeading",
-                  attributes: ["id", "mainHeading", "mainHeadingNumber"],
-              },
-              {
-                  model: FileRegisters,
-                  as: "fileRegister",
-                  attributes: ["id", "registerSubject", "year", "registerNumber"],
-              }
-          ],
+        where: { id: id },
+        include: [
+          {
+            model: mainHeadingFiles,
+            as: "mainHeading",
+            attributes: ["id", "mainHeading", "mainHeadingNumber"],
+          },
+          {
+            model: FileRegisters,
+            as: "fileRegister",
+            attributes: ["id", "registerSubject", "year", "registerNumber"],
+          },
+        ],
       });
 
       if (!result) {
-          throw new Error("File not found.");
+        throw new Error("File not found.");
       }
 
       return result;
-  } catch (error) {
+    } catch (error) {
       console.error("Error Fetching File request:", error.message);
       throw new Error(error.message || "Error Fetching File request.");
-  }
-},
-
+    }
+  },
 
   // Updates File
-//   updateFile: async (id, payload) => {
-//     try {
-//       let {
-//         fileNumber,
-//         submittedBy,
-//         receivedOn,
-//         fileType,
-//         fkBranchId,
-//         fkdepartmentId,
-//         fkMinistryId,
-//         fileSubject,
-//         notingDescription,
-//         correspondingDescription,
-//         year,
-//         priority,
-//         fileStatus,
-//         assignedTo,
-//         comment,
-//         commentBy,
-//         CommentStatus,
-//       } = payload;
-//       const result = await File.findOne({
-//         raw: false,
-//         where: {
-//           id: id,
-//         },
-//       });
+  //   updateFile: async (id, payload) => {
+  //     try {
+  //       let {
+  //         fileNumber,
+  //         submittedBy,
+  //         receivedOn,
+  //         fileType,
+  //         fkBranchId,
+  //         fkdepartmentId,
+  //         fkMinistryId,
+  //         fileSubject,
+  //         notingDescription,
+  //         correspondingDescription,
+  //         year,
+  //         priority,
+  //         fileStatus,
+  //         assignedTo,
+  //         comment,
+  //         commentBy,
+  //         CommentStatus,
+  //       } = payload;
+  //       const result = await File.findOne({
+  //         raw: false,
+  //         where: {
+  //           id: id,
+  //         },
+  //       });
 
-//       const UpdateFile = await File.update(
-//         {
-//           fileNumber,
-//           submittedBy,
-//           assignedTo,
-//           receivedOn,
-//           fileType,
-//           fkBranchId,
-//           fkdepartmentId,
-//           fkMinistryId,
-//           fileSubject,
-//           notingDescription,
-//           correspondingDescription,
-//           year,
-//           priority,
-//           fileStatus,
-//         },
-//         {
-//           where: { id: id },
-//         }
-//       );
-//       const remarks = await fileRemarks.create({
-//         comment,
-//         commentBy: commentBy,
-//         fkFileId: id,
-//         CommentStatus: CommentStatus,
-//       });
+  //       const UpdateFile = await File.update(
+  //         {
+  //           fileNumber,
+  //           submittedBy,
+  //           assignedTo,
+  //           receivedOn,
+  //           fileType,
+  //           fkBranchId,
+  //           fkdepartmentId,
+  //           fkMinistryId,
+  //           fileSubject,
+  //           notingDescription,
+  //           correspondingDescription,
+  //           year,
+  //           priority,
+  //           fileStatus,
+  //         },
+  //         {
+  //           where: { id: id },
+  //         }
+  //       );
+  //       const remarks = await fileRemarks.create({
+  //         comment,
+  //         commentBy: commentBy,
+  //         fkFileId: id,
+  //         CommentStatus: CommentStatus,
+  //       });
 
-//       const filedairyRecord = await filedairies.findOne({
-//         raw: false,
-//         where: {
-//           fkUserId: assignedTo || null,
-//         },
-//         order: [["id", "DESC"]],
-//         limit: 1,
-//       });
-//       let fileInDairyNumber;
-//       if (filedairyRecord) {
-//         fileInDairyNumber = filedairyRecord.fileInDairyNumber + 1;
-//       } else {
-//         fileInDairyNumber = 1;
-//       }
+  //       const filedairyRecord = await filedairies.findOne({
+  //         raw: false,
+  //         where: {
+  //           fkUserId: assignedTo || null,
+  //         },
+  //         order: [["id", "DESC"]],
+  //         limit: 1,
+  //       });
+  //       let fileInDairyNumber;
+  //       if (filedairyRecord) {
+  //         fileInDairyNumber = filedairyRecord.fileInDairyNumber + 1;
+  //       } else {
+  //         fileInDairyNumber = 1;
+  //       }
 
-//       const fileDairy = await filedairies.create({
-//         fkFileId: id,
-//         fkBranchId: fkBranchId,
-//         fkDepartmentId: fkdepartmentId,
-//         fkUserId: assignedTo,
-//         fileInDairyNumber: fileInDairyNumber,
-//       });
-//       return fileDairy;
-//     } catch (error) {
-//       throw { message: error.message || "Error Updating File" };
-//     }
-//   },
+  //       const fileDairy = await filedairies.create({
+  //         fkFileId: id,
+  //         fkBranchId: fkBranchId,
+  //         fkDepartmentId: fkdepartmentId,
+  //         fkUserId: assignedTo,
+  //         fileInDairyNumber: fileInDairyNumber,
+  //       });
+  //       return fileDairy;
+  //     } catch (error) {
+  //       throw { message: error.message || "Error Updating File" };
+  //     }
+  //   },
 
   // Service Function: Update File
   updateFile: async (fileId, req) => {
     try {
-        // Check if serialNumber is already assigned to another file
-        if (req.serialNumber && req.serialNumber !== "") {
-            const existingSerialNumber = await newFiles.findOne({
-                where: {
-                    serialNumber: req.serialNumber,
-                    fkBranchId: req.fkBranchId,
-                    id: { [Op.ne]: fileId },
-                },
-            });
-
-            if (existingSerialNumber) {
-                throw new Error("Serial Number already exists on same branch.");
-            }
-        }
-
-        // Check if fileNumber is already assigned to another file
-        if (req.fileNumber) {
-            const existingFileNumber = await newFiles.findOne({
-                where: {
-                    fileNumber: req.fileNumber,
-                    fkBranchId: req.fkBranchId,
-                    id: { [Op.ne]: fileId },
-                },
-            });
-
-            if (existingFileNumber) {
-                throw new Error("File Number already exists.");
-            }
-        }
-
-        // Prepare the update data
-        const updateData = { ...req, updatedAt: moment().format() };
-
-
-       // Check if dateOfRecording is an empty string and assign NULL if true
-       if (updateData.dateOfRecording === "") {
-        updateData.dateOfRecording = null;
-    }
-
-    // Validate and format date fields, if any
-    if (updateData.dateOfRecording && !moment(updateData.dateOfRecording, moment.ISO_8601, true).isValid()) {
-        throw new Error("Invalid dateOfRecording date.");
-      }
-      
-
-        // Update the File
-        await newFiles.update(updateData, { where: { id: fileId } });
-
-        // Fetch the updated file after the update
-          // Fetch the updated file after the update
-          const updatedFile = await newFiles.findOne({
-            where: { id: fileId },
+      // Check if serialNumber is already assigned to another file within the same branch and main heading
+      if (req.serialNumber && req.serialNumber !== "") {
+        const existingSerialNumber = await newFiles.findOne({
+          where: {
+            serialNumber: req.serialNumber,
+            fkBranchId: req.fkBranchId,
+            fkMainHeadingId: req.fkMainHeadingId,
+            id: { [Op.ne]: fileId },
+          },
         });
 
-        return updatedFile;
+        if (existingSerialNumber) {
+          throw new Error(
+            "Serial Number already exists within the same branch and main heading."
+          );
+        }
+      }
+
+      // Check if fileNumber is already assigned to another file within the same branch
+      if (req.fileNumber) {
+        const existingFileNumber = await newFiles.findOne({
+          where: {
+            fileNumber: req.fileNumber,
+            fkBranchId: req.fkBranchId,
+            id: { [Op.ne]: fileId },
+          },
+        });
+
+        if (existingFileNumber) {
+          throw new Error("File Number already exists within the same branch.");
+        }
+      }
+
+      // Prepare the update data
+      const updateData = { ...req, updatedAt: moment().format() };
+
+      // Check if dateOfRecording is an empty string and assign NULL if true
+      if (updateData.dateOfRecording === "") {
+        updateData.dateOfRecording = null;
+      }
+
+      // Validate and format date fields, if any
+      if (
+        updateData.dateOfRecording &&
+        !moment(updateData.dateOfRecording, moment.ISO_8601, true).isValid()
+      ) {
+        throw new Error("Invalid dateOfRecording date.");
+      }
+
+      // Update the File
+      await newFiles.update(updateData, { where: { id: fileId } });
+
+      // Fetch the updated file after the update
+      // Fetch the updated file after the update
+      const updatedFile = await newFiles.findOne({
+        where: { id: fileId },
+      });
+
+      return updatedFile;
     } catch (error) {
-        throw { message: error.message || "Error Updating File" };
+      throw { message: error.message || "Error Updating File" };
     }
-},
+  },
 
   // Deletes/Suspend File
   suspendFile: async (req) => {

@@ -26,7 +26,7 @@ const designationsService = {
                 offset,
                 limit,
                 order: [
-                    ['id','DESC']
+                    ['designationName','ASC']
                 ]
             });
 

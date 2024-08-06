@@ -2281,7 +2281,7 @@ const casesService = {
   //   }
   // },
 
-  getSingleCaseDetails: async (fileId, caseId) => {
+  getSingleCaseDetails: async (fileId, caseId, orderBy = 'DESC') => {
     try {
       const caseNotes = await CaseNotes.findOne({
         where: {
@@ -2413,7 +2413,7 @@ const casesService = {
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
         attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy"],
-        order: [["paragraphTitle", "DESC"]],
+        order: [["paragraphTitle",  orderBy]],
         include: [
           {
             model: Users,
@@ -2526,7 +2526,7 @@ const casesService = {
         });
       });
 
-      console.log("ccccccc", flagIdMap);
+      console.log("flagIdMap", flagIdMap);
 
       const paragraphArray = noteParas.map((para) => {
         const flags = para.flags ? para.flags.split(",") : [];

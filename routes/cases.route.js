@@ -253,7 +253,7 @@ router.post(
  *       '200':
  *         description: A successful response
  */
-router.get("/getCaseDetails/:fileId/:caseId", cases.getSingleCaseDetails);
+router.get("/getCaseDetails/:fileId/:caseId/:orderBy", cases.getSingleCaseDetails);
 
 // Update Case
 // router.put("/updateCase/:fileId/:caseId", uploadFile('case'), cases.updateCase);
