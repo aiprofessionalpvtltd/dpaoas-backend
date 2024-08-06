@@ -191,10 +191,11 @@ const legislativeBillController = {
         }
     },
     // Retrieve Single legislativeBill
-    findSinlgeLegislativeBill: async (req, res) => {
+    findSingleLegislativeBill: async (req, res) => {
         try {
             const legislativeBillId = req.params.id
-            const legislativeBills = await legislativeBillService.findSinlgeLegislativeBill(legislativeBillId);
+            const legislativeBills = await legislativeBillService.findSingleLegislativeBill(legislativeBillId);
+            // console.log('legislativeBills' , legislativeBills); return false;
             logger.info("Single legislative Bill Fetched Successfully!")
             return res.status(200).send({
                 success: true,
