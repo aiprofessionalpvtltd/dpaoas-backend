@@ -489,16 +489,21 @@ const MotionController = {
      pdfMotionList: async (req, res) => {
         try {
 
-            const motionIds = req.body;
+             const { motionsIds, motionListId } = req.body;
 
-            if (!Array.isArray(motionIds) || motionIds.length === 0) {
+            // Now you have motionsIds and motionListId as separate constants
+            // console.log('motionsIds:', motionsIds);  
+            // console.log('motionListId:', motionListId); 
+
+            // return false;
+            if (!Array.isArray(motionsIds) || motionsIds.length === 0) {
                 return res.status(400).send({
                     success: false,
                     message: "Invalid motion IDs array!"
                 });
             }
 
-            const motions = await motionService.pdfMotionList(motionIds);
+            const motions = await motionService.pdfMotionList(motionsIds,motionListId);
 
             if (motions.length === 0) {
                 logger.info("No data found for the provided motion IDs!")

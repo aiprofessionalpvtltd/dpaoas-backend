@@ -53,9 +53,12 @@ const mnaService = {
                         model: db.ministries,
                         as: 'ministries',
                         through: { attributes: [] }, // Exclude the join table attributes
-                        attributes: ['ministryName', 'ministryStatus'],
+                        attributes: ['id','ministryName', 'ministryStatus'],
                     }
-                ]
+                ],
+                order: [
+                    ['id', 'DESC'],
+                ],
             });
 
             const totalPages = Math.ceil(count / pageSize);
@@ -67,15 +70,15 @@ const mnaService = {
     },
 
     // Fetch ministries related to a specific MNA
-    findAllMinistriesByMnaId: async (mnaId) => {
+    findAllMinistriesByMinisterID: async (ministerID) => {
         try {
 
-            const ministries = await db.mnas.findByPk(mnaId, {
+            const ministries = await db.mnas.findByPk(ministerID, {
                 include: [{
                     model: db.ministries,
                     as: 'ministries',
                     through: { attributes: [] }, // Exclude the join table attributes
-                    attributes: ['ministryName', 'ministryStatus'],
+                    attributes: ['id','ministryName', 'ministryStatus'],
                 }]
             });
 
@@ -89,7 +92,7 @@ const mnaService = {
     },
 
     // Retrieve Single MNA
-    findSinlgeMNA: async (mnnaId) => {
+    findSingleMNA: async (mnnaId) => {
         try {
             const mna = await MNAs.findOne({
                 where: { id: mnnaId },
@@ -103,7 +106,7 @@ const mnaService = {
                         model: db.ministries,
                         as: 'ministries',
                         through: { attributes: [] }, // Exclude the join table attributes
-                        attributes: ['ministryName', 'ministryStatus'],
+                        attributes: ['id','ministryName', 'ministryStatus'],
                     }
                 ]
             });

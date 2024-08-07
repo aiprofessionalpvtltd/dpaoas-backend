@@ -713,7 +713,7 @@ const motionService = {
 
 
      // Retrieve motions by IDs
-     pdfMotionList: async (motionIds) => {
+     pdfMotionList: async (motionIds , motionListId) => {
         try {
 
             const orderCases = motionIds.map((id, index) => {
@@ -774,6 +774,51 @@ const motionService = {
             });
 
 
+            const motionList = await db.motionLists.findOne({
+                where: { id: motionListId },
+                include: [
+                    {
+                        model: db.motions,
+                        as: 'motions',
+                        through: {
+                            attributes: []
+                        },
+                        include: [
+                            {
+                                model: db.motionMovers,
+                                as: 'motionMovers',
+                                include: [
+                                    {
+                                        model: db.members,
+                                        as: 'members',
+                                        attributes: ['id', 'memberName']
+                                    }
+                                ]
+                            },
+                            {
+                                model: motionMinistries,
+                                as: 'motionMinistries',
+                                include: [
+                                    {
+                                        model: db.ministries,
+                                        as: 'ministries',
+                                        attributes: ['id', 'ministryName']
+                                    }
+                                ]
+                            },
+                            {
+                                model: db.motionStatuses,
+                                as: 'motionStatuses',
+                                attributes: ['statusName']
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            
+            // console.log('motionList' , motionList); return false;
+
             // Check if all requested motionids are present in the fetched motions
             const fetchedMotionIds = motions.map(res => res.id);
             const missingIds = motionIds.filter(id => !fetchedMotionIds.includes(id));
@@ -800,7 +845,16 @@ const motionService = {
                 { where: { id: motionIds } }
             );
 
-            return motions;
+
+             // Prepare the response data
+             const responseData = {
+                ...motionList.toJSON(),
+               motions
+            };
+
+            return responseData;
+
+            // return motions;
 
 
         } catch (error) {

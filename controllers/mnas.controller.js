@@ -43,7 +43,7 @@ const mnaController = {
             const pageSize = parseInt(req.query.pageSize);
             const { count, totalPages, mnas } = await mnaService.findAllMNAs(currentPage, pageSize);
 
-            logger.info("mnas--->>", mnas)
+            logger.info("Ministers--->>", mnas)
 
             if (mnas.length === 0) {
                 logger.info("No data found on this page!")
@@ -53,10 +53,10 @@ const mnaController = {
                 });
             }
             else {
-                logger.info("All mnas Fetched Successfully!")
+                logger.info("All Ministers Fetched Successfully!")
                 return res.status(200).send({
                     success: true,
-                    message: "All mnas Fetched Successfully!",
+                    message: "All Ministers Fetched Successfully!",
                     data: { mnas, totalPages, count }
                 })
             }
@@ -72,10 +72,10 @@ const mnaController = {
     },
 
     // Fetch ministries related to a specific MNA
-    findAllMinistriesByMnaId: async (req, res) => {
+    findAllMinistriesByMinisterID: async (req, res) => {
         try {
-            const mnaId = req.params.mnaId;
-            const ministries = await mnaService.findAllMinistriesByMnaId(mnaId);
+            const ministerID = req.params.mnaId;
+            const ministries = await mnaService.findAllMinistriesByMinisterID(ministerID);
 
             logger.info("ministries--->>", ministries)
 
@@ -106,14 +106,14 @@ const mnaController = {
     },
 
     // Retrieve Single MNA
-    findSinlgeMNA: async (req, res) => {
+    findSingleMNA: async (req, res) => {
         try {
             const mnnaId = req.params.id
-            const mnna = await mnaService.findSinlgeMNA(mnnaId);
-            logger.info("Single mnna Fetched Successfully!")
+            const mnna = await mnaService.findSingleMNA(mnnaId);
+            logger.info("Single Minister Fetched Successfully!")
             return res.status(200).send({
                 success: true,
-                message: "Single mnna Fetched Successfully!",
+                message: "Single Minister Fetched Successfully!",
                 data: [mnna],
             })
         } catch (error) {
@@ -132,10 +132,10 @@ const mnaController = {
 
             const updatedMnaData = await mnaService.updateMnaData(req, mnaId);
 
-            logger.info("MNA Data Updated Successfully!");
+            logger.info("Ministers Data Updated Successfully!");
             return res.status(200).send({
                 success: true,
-                message: "MNA Data Updated Successfully!",
+                message: "Ministers Data Updated Successfully!",
                 data: updatedMnaData,
             });
         } catch (error) {
@@ -174,6 +174,7 @@ const mnaController = {
             })
         }
     }
+    
 }
 
 module.exports = mnaController;
