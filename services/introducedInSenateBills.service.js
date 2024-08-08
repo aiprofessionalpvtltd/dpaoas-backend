@@ -551,6 +551,16 @@ const senateBillService = {
             if (!senateBill) {
                 throw ({ message: "senate Bill Not Found!" })
             }
+
+        // Parse the files in the billDocuments
+        if (senateBill.billDocuments && senateBill.billDocuments.length > 0) {
+            senateBill.billDocuments.forEach(doc => {
+                if (doc.file) {
+                    doc.file = doc.file.map(file => JSON.parse(file));
+                }
+            });
+        }
+        
             return senateBill;
         }
         catch (error) {
@@ -659,23 +669,54 @@ const senateBillService = {
                 }
             }
 
-            if (IntroducedInSenateBill) {
-                const existingBillDocument = await BillDocuments.findOne({ where: { fkBillDocumentId: senateBillId } });
-                if (existingBillDocument) {
-                    await BillDocuments.update({
-                        documentType: updatedData.documentType,
-                        documentDate: updatedData.documentDate,
-                        documentDiscription: updatedData.documentDiscription
-                    }, { where: { fkBillDocumentId: senateBillId } });
-                } else {
-                    await BillDocuments.create({
-                        fkBillDocumentId: senateBillId,
-                        documentType: updatedData.documentType,
-                        documentDate: updatedData.documentDate,
-                        documentDiscription: updatedData.documentDiscription
-                    });
+            // if (IntroducedInSenateBill) {
+            //     const existingBillDocument = await BillDocuments.findOne({ where: { fkBillDocumentId: senateBillId } });
+            //     if (existingBillDocument) {
+            //         await BillDocuments.update({
+            //             documentType: updatedData.documentType,
+            //             documentDate: updatedData.documentDate,
+            //             documentDiscription: updatedData.documentDiscription
+            //         }, { where: { fkBillDocumentId: senateBillId } });
+            //     } else {
+            //         await BillDocuments.create({
+            //             fkBillDocumentId: senateBillId,
+            //             documentType: updatedData.documentType,
+            //             documentDate: updatedData.documentDate,
+            //             documentDiscription: updatedData.documentDiscription
+            //         });
+            //     }
+            // }
+
+
+            // Update or create bill documents
+        if (IntroducedInSenateBill) {
+            const existingBillDocument = await BillDocuments.findOne({ 
+                where: { 
+                    fkBillDocumentId: senateBillId, 
+                    documentType: updatedData.documentType 
                 }
+            });
+
+            if (existingBillDocument) {
+                await BillDocuments.update({
+                    documentType: updatedData.documentType,
+                    documentDate: updatedData.documentDate,
+                    documentDiscription: updatedData.documentDiscription,
+                }, {
+                    where: { 
+                        fkBillDocumentId: senateBillId,
+                        documentType: updatedData.documentType
+                    }
+                });
+            } else {
+                await BillDocuments.create({
+                    fkBillDocumentId: senateBillId,
+                    documentType: updatedData.documentType,
+                    documentDate: updatedData.documentDate,
+                    documentDiscription: updatedData.documentDiscription,
+                });
             }
+        }
 
 
             // Return the updated Senate bill data
