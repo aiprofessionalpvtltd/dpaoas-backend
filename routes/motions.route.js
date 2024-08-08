@@ -14,6 +14,8 @@ router.get('/motionLists', motionController.getAllMotionLists);
 router.delete('/motionlists/:id', motionController.deleteMotionList);
 router.get('/getSingleMotionData/:id', motionController.getSingleMotionData);
 router.post("/pdfMotionList", motionController.pdfMotionList);
+// get data for motion dashboard
+router.get('/motion-dashboard-stats', motionController.motionDashboardStats);
 
 
 /**
@@ -478,6 +480,9 @@ router.get('/:id', motionController.getMotionById);
 *         description: A successful response
 */
 router.get('/motionStatuses', motionController.getMotionStatuses);
+
+
+
 
 
 module.exports = router;
