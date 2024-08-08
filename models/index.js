@@ -256,6 +256,8 @@ db.tonerInstallations = require("./tonerInstallation.model")(
 
 // Question Management
 db.tenures = require("./tenures.model")(sequelize, SequelizeMain);
+db.years = require("./years.model")(sequelize, SequelizeMain);
+
 db.terms = require("./terms.model")(sequelize, SequelizeMain);
 db.politicalParties = require("./politicalParties.model")(
   sequelize,

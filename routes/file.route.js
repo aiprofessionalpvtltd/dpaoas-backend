@@ -3,6 +3,7 @@ const router = express.Router();
 const files = require('../controllers/file.controller');
 const { uploadFile } = require('../common/upload');
 const { uploadMultipleFiles } = require('../common/upload');
+const years = require('../controllers/years.controller');
 
 // Create a new File
 /**
@@ -103,7 +104,8 @@ router.get("/byFileRegister", files.findFilesByRegisterId)
  *       '200':
  *         description: A successful response
  */
-router.get('/years',files.retrieveFormattedYears)
+// router.get('/years',files.retrieveFormattedYears)
+router.get('/years',years.getAllYears)
 
 // Retrieve all File
 router.get("/", files.findAllFiles);
