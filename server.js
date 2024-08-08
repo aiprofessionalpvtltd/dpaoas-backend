@@ -305,6 +305,10 @@ const flagRoutes = require('./routes/flagRoutes.route');
 // Flag Module Routes
 app.use('/api/flags', flagRoutes);
 
+const yearsRouter = require("./routes/years.route")
+app.use('/api/years', yearsRouter);
+
+
 const PORT = process.env.LOCAL_PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
