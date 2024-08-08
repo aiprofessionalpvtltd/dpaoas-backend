@@ -1227,7 +1227,7 @@ db.introducedInSenateBills.hasOne(db.memberPassages, {
   foreignKey: "fkMemberPassageId",
   as: "memberPassages",
 });
-db.introducedInSenateBills.hasOne(db.billDocuments, {
+db.introducedInSenateBills.hasMany(db.billDocuments, {
   foreignKey: "fkBillDocumentId",
   as: "billDocuments",
 });

@@ -25,5 +25,8 @@ router.put("/update/:id", uploadFile("billdocument"), introducedInSenateBills.up
 // Suspend/Delete Senate Bill
 router.delete("/delete/:id", introducedInSenateBills.deleteIntroducedInSenateBill);
 
+// Example route setup (adjust according to your setup)
+router.put('/:id/file', introducedInSenateBills.deleteFile);
+
 module.exports = router
 

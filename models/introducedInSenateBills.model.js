@@ -130,7 +130,7 @@ module.exports = (sequelize, Sequelize) => {
         IntroducedInSenateBill.hasMany(models.senateBillMnaMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillMnaMovers' });
         IntroducedInSenateBill.hasOne(models.introducedInHouses, { foreignKey: 'fkIntroducedInHouseId', as: 'introducedInHouses' });
         IntroducedInSenateBill.hasOne(models.memberPassages, { foreignKey: 'fkMemberPassageId', as: 'memberPassages' });
-        IntroducedInSenateBill.hasOne(models.billDocuments, { foreignKey: 'fkBillDocumentId', as: 'billDocuments' });
+        IntroducedInSenateBill.hasMany(models.billDocuments, { foreignKey: 'fkBillDocumentId', as: 'billDocuments' });
         IntroducedInSenateBill.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'user' });
     };
 
