@@ -123,7 +123,7 @@ const questionListController = {
         message: "Single Question List Fetched Successfully!",
         questionList:questionList,
         data: singleQuestionList.questions,
-        memberQuestionCount: [singleQuestionList.memberQuestionCount]
+        memberQuestionCount: singleQuestionList.memberQuestionCount
       })
     } catch (error) {
       logger.error(error.message)
