@@ -462,6 +462,7 @@ const questionsController = {
     try {
       logger.info(`questionsController: updateQuestion id ${JSON.stringify(req.params.id)} and body ${JSON.stringify(req.body)}`)
       const questionId = req.params.id;
+      // console.log(questionId); return false;
       const question = await Questions.findByPk(questionId);
       if (!question) {
         return res.status(200).send({
