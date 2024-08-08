@@ -645,19 +645,27 @@ const questionListService = {
       // Flatten the array of arrays to get a single-level array
       const flattenedQuestions = allQuestionsData.flat();
 
-      // Aggregate question counts by member
-      const memberQuestionCount = {};
-      flattenedQuestions.forEach((question) => {
-        const memberName = question.dataValues.member
-          ? question.dataValues.member.memberName
-          : null;
-        if (memberName) {
-          if (!memberQuestionCount[memberName]) {
-            memberQuestionCount[memberName] = 0;
-          }
-          memberQuestionCount[memberName]++;
-        }
-      });
+    
+        // Aggregate question counts by member
+        const memberQuestionCountMap = {};
+        flattenedQuestions.forEach((question) => {
+            const memberName = question.dataValues.member
+                ? question.dataValues.member.memberName
+                : null;
+            if (memberName) {
+                if (!memberQuestionCountMap[memberName]) {
+                    memberQuestionCountMap[memberName] = 0;
+                }
+                memberQuestionCountMap[memberName]++;
+            }
+        });
+
+        // Transform the memberQuestionCountMap into the desired format
+        const memberQuestionCount = Object.keys(memberQuestionCountMap).map(name => ({
+            name: name,
+            count: memberQuestionCountMap[name]
+        }));
+
 
       return { questions: flattenedQuestions, memberQuestionCount };
     } catch (error) {
