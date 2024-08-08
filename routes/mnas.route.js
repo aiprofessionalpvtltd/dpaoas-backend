@@ -9,10 +9,10 @@ router.post("/", mnas.createMNAs);
 router.get("/", mnas.findAllMNAs);
 
 // Fetch ministries related to a specific MNA
-router.get("/:mnaId/ministries", mnas.findAllMinistriesByMnaId);
+router.get("/:mnaId/ministries", mnas.findAllMinistriesByMinisterID);
 
 // Retrieve Single MNA by its ID
-router.get("/:id", mnas.findSinlgeMNA);
+router.get("/:id", mnas.findSingleMNA);
 
 // Update MNA
 router.put("/update/:id", mnas.updateMnaData)
@@ -21,4 +21,3 @@ router.put("/update/:id", mnas.updateMnaData)
 router.delete("/delete/:id", mnas.deleteMna);
 
 module.exports = router
-
