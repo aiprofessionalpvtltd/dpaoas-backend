@@ -1253,10 +1253,12 @@ const motionService = {
         attributes: [
           "motionType",
           [db.Sequelize.fn("COUNT", db.Sequelize.col("motionType")), "count"],
-        ],
+          ],
+          
         where: {
           motionSentStatus: motionSentStatus,
-        },
+          },
+        
         group: ["motionType"],
       });
 
@@ -1270,27 +1272,74 @@ const motionService = {
       // Initialize the response structure with all motion types as keys in an object
       const motionTypeData = {};
       allMotionTypes.forEach((motionType) => {
-        const motionTypeKey = motionType.replace(/ /g, "-");
+        const motionTypeKey = motionType.replace(/ /g, '');
         motionTypeData[motionTypeKey] = {
           count: 0,
           motions: [],
         };
       });
 
-      // Update the counts and motions data based on the actual data fetched
-      for (const record of motionTypeCounts) {
+         // Update the counts and motions data based on the actual data fetched
+    for (const record of motionTypeCounts) {
         const motionType = record.motionType;
-        const motionTypeKey = motionType.replace(/ /g, "-");
-        const count = record.get("count");
-
+        const motionTypeKey = motionType.replace(/ /g, '');
+        const count = record.get('count');
+  
         // Fetch the motion data for the current motionType
         const motionsData = await motions.findAll({
           where: {
             motionSentStatus: motionSentStatus,
             motionType: motionType,
           },
+          include: [
+            {
+              model: sessions,
+              as: 'sessions',
+              attributes: ['id', 'sessionName'],
+            },
+            {
+              model: motionMovers,
+              as: 'motionMovers',
+              attributes: ['fkMemberId', 'fkMotionId', 'id'],
+              include: [
+                {
+                  model: Members,
+                  as: 'members',
+                  attributes: ['id', 'memberName'],
+                },
+              ],
+            },
+            {
+              model: motionMinistries,
+              as: 'motionMinistries',
+              attributes: ['fkMinistryId', 'fkMotionId', 'id'],
+            },
+            {
+              model: noticeOfficeDairies,
+              as: 'noticeOfficeDairies',
+              attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
+            },
+            {
+              model: motionStatuses,
+              as: 'motionStatuses',
+              attributes: ['statusName', 'id'],
+            },
+            {
+              model: motionStatusHistories,
+              as: 'motionStatusHistories',
+              attributes: ['fkMotionId', 'fkMotionStatusId', 'id'],
+              include: [
+                {
+                  model: motionStatuses,
+                  as: 'motionStatuses',
+                  attributes: ['statusName', 'id'],
+                },
+              ],
+              distinct: true,
+            },
+          ],
         });
-
+  
         motionTypeData[motionTypeKey].count = count;
         motionTypeData[motionTypeKey].motions = motionsData;
       }
