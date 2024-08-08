@@ -218,6 +218,7 @@ const questionListController = {
       logger.info(`questionListController: generateSupplementaryList id ${JSON.stringify(req.params.id)} & body ${JSON.stringify(req.body)}`);
       const questionListId = req.params.id;
       const questionList = await QuestionList.findByPk(questionListId);
+
       if (!questionList) {
         throw ({ message: "Question List Not Found!" })
       }

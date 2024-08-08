@@ -1507,19 +1507,21 @@ const manageSessionsService = {
             // sittingStartTime
             page.drawText('Commenced at:', { x: 400 + 10, y: yCoordinate + verticalGap - 50, font: fontBold, ...textOptions1 });
             page.drawText(`${fetchedSession.sittingStartTime}`, { x: 450 + 50, y: yCoordinate + verticalGap - 50, ...textOptions, })
-            // // sessionAdjourned
-            // page.drawText('Adjourned:', { x: 400 + 10, y: yCoordinate + verticalGap - 70, font: fontBold, ...textOptions1 });
-            // page.drawText(`${fetchedSession.sessionAdjourned}`, { x: 450 + 50, y: yCoordinate + verticalGap - 70, ...textOptions, })
+            
+              // sittingEndTime
+              page.drawText('Sitting End Time:', { x: 400 + 10, y: yCoordinate + verticalGap - 70, font: fontBold, ...textOptions1 });
+              page.drawText(`${fetchedSession.sittingEndTime}`, { x: 450 + 50, y: yCoordinate + verticalGap - 70, ...textOptions, })
+ 
+            //  sessionAdjourned
+            page.drawText('Adjourned:', { x: 400 + 10, y: yCoordinate + verticalGap - 90, font: fontBold, ...textOptions1 });
+            page.drawText(`${fetchedSession.sessionAdjourned}`, { x: 450 + 50, y: yCoordinate + verticalGap - 90, ...textOptions, })
 
               // sittingStartTime
-              page.drawText('Sitting Start Time:', { x: 400 + 10, y: yCoordinate + verticalGap - 70, font: fontBold, ...textOptions1 });
-              page.drawText(`${fetchedSession.sittingStartTime}`, { x: 450 + 50, y: yCoordinate + verticalGap - 70, ...textOptions, })
+            //   page.drawText('Sitting Start Time:', { x: 400 + 10, y: yCoordinate + verticalGap - 70, font: fontBold, ...textOptions1 });
+            //   page.drawText(`${fetchedSession.sittingStartTime}`, { x: 450 + 50, y: yCoordinate + verticalGap - 70, ...textOptions, })
  
 
-             // sittingEndTime
-             page.drawText('Sitting End Time:', { x: 400 + 10, y: yCoordinate + verticalGap - 90, font: fontBold, ...textOptions1 });
-             page.drawText(`${fetchedSession.sittingEndTime}`, { x: 450 + 50, y: yCoordinate + verticalGap - 90, ...textOptions, })
-
+           
             
             const sittingDate = new Date(fetchedSession.sittingDate);
             const formattedDate = sittingDate.toLocaleDateString('en-GB').replace(/\//g, '-'); // 'en-GB' for the desired format

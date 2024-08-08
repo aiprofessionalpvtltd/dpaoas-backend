@@ -788,6 +788,7 @@ const questionsService = {
                 noticeOfficeDiaryTime: req.noticeOfficeDiaryTime,
                 businessType: "Question"
             }
+            // console.log(updatedNoticeOffice); return false;
 
             await NoticeOfficeDairy.update(updatedNoticeOffice, { where: { businessId: questionId } });
 
@@ -810,6 +811,7 @@ const questionsService = {
                 submittedBy: req.submittedBy,
                 questionActive: req.questionActive
             }
+
 
             const updatedQuestion = await Questions.update(questionFileData, { where: { id: questionId } });
             if (updatedQuestion) {
