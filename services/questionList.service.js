@@ -952,8 +952,17 @@ const questionListService = {
           memberQuestionCount[memberName]++;
         }
       });
+      const responseObject = {
+          questions : flattenedQuestions,
+         memberQuestionCount: [memberQuestionCount], 
+        
+      };
 
-      return { questions: flattenedQuestions, memberQuestionCount };
+      // Return the response object
+          return responseObject;
+          
+
+ 
 
       // const question = await SupplementaryListJoin.findAll({
       //     where: { fkSupplementaryListId: supplementaryListId },
