@@ -1,20 +1,25 @@
 const db = require("../models");
-const Years = db.years;
+const Year = db.years;
 const Op = db.Sequelize.Op;
 const logger = require('../common/winston');
 
 const yearsService = {
 
     // Create Year
-    createYear: async (req) => {
+    createYear: async (yearData) => {
         try {
-            // Create the Year and save it in the database
-            const year = await Years.create(req);
+            // Check if the year already exists
+            const existingYear = await Year.findOne({ where: { year: yearData.year } });
+            if (existingYear) {
+              throw new Error('Year already exists!');
+            }
+        
+            // Create and save the new year
+            const year = await Year.create(yearData);
             return year;
-        } catch (error) {
+          } catch (error) {
             throw { message: error.message || "Error Creating Year!" };
-
-        }
+          }
     },
 
     // Get All Years
@@ -22,7 +27,7 @@ const yearsService = {
         try {
             const offset = currentPage * pageSize;
             const limit = pageSize;
-            const { count, rows } = await Years.findAndCountAll({
+            const { count, rows } = await Year.findAndCountAll({
                 offset,
                 limit,
                 order: [
@@ -41,7 +46,7 @@ const yearsService = {
     getSingleYear: async (yearId) => {
         try {
 
-            const year = await Years.findOne({ where: { id: yearId }
+            const year = await Year.findOne({ where: { id: yearId }
              });
             if (!year) {
                 throw ({ message: "Year Not Found!" })
@@ -54,15 +59,23 @@ const yearsService = {
     },
 
     // Update Year
-    updateYear: async (req, yearId) => {
+    updateYear: async (yearData, yearId) => {
         try {
-            await Years.update(req, { where: { id: yearId } });
+            // Check if the new year value already exists for another record
+            const existingYear = await Year.findOne({ where: { year: yearData.year, id: { [Op.ne]: yearId } } });
+            if (existingYear) {
+              throw new Error('Year already exists!');
+            }
+        
+            // Update the year
+            await Year.update(yearData, { where: { id: yearId } });
+        
             // Fetch the updated year after the update
-            const updatedYear = await Years.findOne({ where: { id: yearId } });
+            const updatedYear = await Year.findOne({ where: { id: yearId } });
             return updatedYear;
-        } catch (error) {
+          } catch (error) {
             throw { message: error.message || "Error Updating Year!" };
-        }
+          }
     },
 
     // Delete Year
@@ -72,9 +85,9 @@ const yearsService = {
             {
                 status: "inactive"
             }
-            await Years.update(updatedData, { where: { id: yearId } });
+            await Year.update(updatedData, { where: { id: yearId } });
             // Fetch the updated tenur after the update
-            const deletedYear = await Years.findOne({ where: { id: yearId } });
+            const deletedYear = await Year.findOne({ where: { id: yearId } });
             return deletedYear;
         } catch (error) {
             throw { message: error.message || "Error Deleting Year!" };
