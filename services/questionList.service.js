@@ -645,26 +645,26 @@ const questionListService = {
       // Flatten the array of arrays to get a single-level array
       const flattenedQuestions = allQuestionsData.flat();
 
-    
-        // Aggregate question counts by member
-        const memberQuestionCountMap = {};
-        flattenedQuestions.forEach((question) => {
-            const memberName = question.dataValues.member
-                ? question.dataValues.member.memberName
-                : null;
-            if (memberName) {
-                if (!memberQuestionCountMap[memberName]) {
-                    memberQuestionCountMap[memberName] = 0;
-                }
-                memberQuestionCountMap[memberName]++;
-            }
-        });
 
-        // Transform the memberQuestionCountMap into the desired format
-        const memberQuestionCount = Object.keys(memberQuestionCountMap).map(name => ({
-            name: name,
-            count: memberQuestionCountMap[name]
-        }));
+      // Aggregate question counts by member
+      const memberQuestionCountMap = {};
+      flattenedQuestions.forEach((question) => {
+        const memberName = question.dataValues.member
+          ? question.dataValues.member.memberName
+          : null;
+        if (memberName) {
+          if (!memberQuestionCountMap[memberName]) {
+            memberQuestionCountMap[memberName] = 0;
+          }
+          memberQuestionCountMap[memberName]++;
+        }
+      });
+
+      // Transform the memberQuestionCountMap into the desired format
+      const memberQuestionCount = Object.keys(memberQuestionCountMap).map(name => ({
+        name: name,
+        count: memberQuestionCountMap[name]
+      }));
 
 
       return { questions: flattenedQuestions, memberQuestionCount };
@@ -879,7 +879,7 @@ const questionListService = {
 
   // Get Single Supplementary List By SupplementaryListId
   getSingleSupplementaryList: async (supplementaryListId) => {
-      try {
+    try {
       const question = await SupplementaryListJoin.findAll({
         where: { id: supplementaryListId },
         include: [
@@ -896,7 +896,7 @@ const questionListService = {
           },
         ],
       });
-    //   console.log(question); return false;
+      //   console.log(question); return false;
 
       const questions = question.map(async (question) => {
         const filteredQuestions = await Questions.findAll({
@@ -947,87 +947,41 @@ const questionListService = {
       // Flatten the array of arrays to get a single-level array
       const flattenedQuestions = allQuestionsData.flat();
 
+      // const memberQuestionCount = {};
+      // flattenedQuestions.forEach((question) => {
+      //   const memberName = question.dataValues.member
+      //     ? question.dataValues.member.memberName
+      //     : null;
+      //   if (memberName) {
+      //     if (!memberQuestionCount[memberName]) {
+      //       memberQuestionCount[memberName] = 0;
+      //     }
+      //     memberQuestionCount[memberName]++;
+      //   }
+      // });
+
       // Aggregate question counts by member
-      const memberQuestionCount = {};
+      const memberQuestionCountMap = {};
       flattenedQuestions.forEach((question) => {
         const memberName = question.dataValues.member
           ? question.dataValues.member.memberName
           : null;
         if (memberName) {
-          if (!memberQuestionCount[memberName]) {
-            memberQuestionCount[memberName] = 0;
+          if (!memberQuestionCountMap[memberName]) {
+            memberQuestionCountMap[memberName] = 0;
           }
-          memberQuestionCount[memberName]++;
+          memberQuestionCountMap[memberName]++;
         }
       });
-      const responseObject = {
-          questions : flattenedQuestions,
-         memberQuestionCount: [memberQuestionCount], 
-        
-      };
 
-      // Return the response object
-          return responseObject;
-          
+      // Transform the memberQuestionCountMap into the desired format
+      const memberQuestionCount = Object.keys(memberQuestionCountMap).map(name => ({
+        name: name,
+        count: memberQuestionCountMap[name]
+      }));
 
- 
+      return { questions: flattenedQuestions, memberQuestionCount };
 
-      // const question = await SupplementaryListJoin.findAll({
-      //     where: { fkSupplementaryListId: supplementaryListId },
-      //     include: [
-      //         {
-      //             model: SupplementaryList,
-      //             as: 'questionSuppList',
-      //             attributes: ['id', 'listName', 'houseLayDate', 'fkUserId', 'supplementaryListStatus']
-      //         }
-      //     ]
-      // });
-
-      // const questions = question.map(async (question) => {
-      //     const filteredQuestions = await Questions.findAll({
-      //         where: { id: question.fkQuestionId },
-      //         include: [
-      //             {
-      //                 model: Sessions,
-      //                 attributes: ['id', 'sessionName'],
-      //             },
-      //             {
-      //                 model: QuestionStatus,
-      //                 as: 'questionStatuses',
-      //                 attributes: ['id', 'questionStatus'],
-      //             },
-      //             {
-      //                 model: Members,
-      //                 attributes: ['id', 'memberName'],
-      //             },
-      //             {
-      //                 model: QuestionDiary,
-      //                 attributes: ['id', 'questionID', 'questionDiaryNo'],
-      //             },
-      //             {
-      //                 model: NoticeOfficeDairy,
-      //                 as: 'noticeOfficeDiary',
-      //                 attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
-      //             },
-      //             {
-      //                 model: Divisions,
-      //                 as: 'divisions',
-      //                 attributes: ['id', 'divisionName']
-      //             },
-      //             {
-      //                 model: Groups,
-      //                 as: 'groups',
-      //                 attributes: ['id', 'groupNameStarred', 'groupNameUnstarred']
-      //             },
-      //         ],
-      //     });
-      //     return filteredQuestions;
-      // });
-      // const allQuestionsData = await Promise.all(questions);
-
-      // // Flatten the array of arrays to get a single-level array
-      // const flattenedQuestions = allQuestionsData.flat();
-      // return flattenedQuestions;
     } catch (error) {
       throw new Error(error.message || "Error Fetching Question");
     }
