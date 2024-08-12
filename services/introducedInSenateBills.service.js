@@ -689,7 +689,7 @@ const senateBillService = {
 
 
             // Update or create bill documents
-        if (IntroducedInSenateBill) {
+        if (IntroducedInSenateBill && updatedData.documentType) {
             const existingBillDocument = await BillDocuments.findOne({ 
                 where: { 
                     fkBillDocumentId: senateBillId, 
