@@ -150,6 +150,15 @@ const senateBillService = {
                 distinct: true,
             });
 
+            // Parse the files in the billDocuments
+            if (rows.billDocuments && rows.billDocuments.length > 0) {
+                rows.billDocuments.forEach(doc => {
+                    if (doc.file) {
+                        doc.file = doc.file.map(file => JSON.parse(file));
+                    }
+                });
+            }
+
             const totalPages = Math.ceil(count / pageSize);
 
             return { count, totalPages, senateBills: rows };
@@ -168,7 +177,7 @@ const senateBillService = {
             if (billCategory) {
                 whereClause.billCategory = billCategory;
             }
-            if(billFrom) {
+            if (billFrom) {
                 whereClause.billFrom = billFrom;
             }
 
@@ -176,9 +185,9 @@ const senateBillService = {
                 offset,
                 limit,
                 order: [
-                // Order by the numeric part between slashes
-                [db.sequelize.literal(`CAST(REGEXP_REPLACE("introducedInSenateBills"."fileNumber", '^\\d+/\\((\\d+)\\)/\\d+$', '\\1') AS INTEGER)`), 'ASC']
-            ],
+                    // Order by the numeric part between slashes
+                    [db.sequelize.literal(`CAST(REGEXP_REPLACE("introducedInSenateBills"."fileNumber", '^\\d+/\\((\\d+)\\)/\\d+$', '\\1') AS INTEGER)`), 'ASC']
+                ],
                 where: whereClause,
                 include: [
                     {
@@ -248,6 +257,15 @@ const senateBillService = {
                 ],
                 distinct: true,
             });
+
+             // Parse the files in the billDocuments
+             if (rows.billDocuments && rows.billDocuments.length > 0) {
+                rows.billDocuments.forEach(doc => {
+                    if (doc.file) {
+                        doc.file = doc.file.map(file => JSON.parse(file));
+                    }
+                });
+            }
 
             const totalPages = Math.ceil(count / pageSize);
 
@@ -552,15 +570,15 @@ const senateBillService = {
                 throw ({ message: "senate Bill Not Found!" })
             }
 
-        // Parse the files in the billDocuments
-        if (senateBill.billDocuments && senateBill.billDocuments.length > 0) {
-            senateBill.billDocuments.forEach(doc => {
-                if (doc.file) {
-                    doc.file = doc.file.map(file => JSON.parse(file));
-                }
-            });
-        }
-        
+            // Parse the files in the billDocuments
+            if (senateBill.billDocuments && senateBill.billDocuments.length > 0) {
+                senateBill.billDocuments.forEach(doc => {
+                    if (doc.file) {
+                        doc.file = doc.file.map(file => JSON.parse(file));
+                    }
+                });
+            }
+
             return senateBill;
         }
         catch (error) {
@@ -689,34 +707,34 @@ const senateBillService = {
 
 
             // Update or create bill documents
-        if (IntroducedInSenateBill && updatedData.documentType) {
-            const existingBillDocument = await BillDocuments.findOne({ 
-                where: { 
-                    fkBillDocumentId: senateBillId, 
-                    documentType: updatedData.documentType 
-                }
-            });
-
-            if (existingBillDocument) {
-                await BillDocuments.update({
-                    documentType: updatedData.documentType,
-                    documentDate: updatedData.documentDate,
-                    documentDiscription: updatedData.documentDiscription,
-                }, {
-                    where: { 
+            if (IntroducedInSenateBill && updatedData.documentType) {
+                const existingBillDocument = await BillDocuments.findOne({
+                    where: {
                         fkBillDocumentId: senateBillId,
                         documentType: updatedData.documentType
                     }
                 });
-            } else {
-                await BillDocuments.create({
-                    fkBillDocumentId: senateBillId,
-                    documentType: updatedData.documentType,
-                    documentDate: updatedData.documentDate,
-                    documentDiscription: updatedData.documentDiscription,
-                });
+
+                if (existingBillDocument) {
+                    await BillDocuments.update({
+                        documentType: updatedData.documentType,
+                        documentDate: updatedData.documentDate,
+                        documentDiscription: updatedData.documentDiscription,
+                    }, {
+                        where: {
+                            fkBillDocumentId: senateBillId,
+                            documentType: updatedData.documentType
+                        }
+                    });
+                } else {
+                    await BillDocuments.create({
+                        fkBillDocumentId: senateBillId,
+                        documentType: updatedData.documentType,
+                        documentDate: updatedData.documentDate,
+                        documentDiscription: updatedData.documentDiscription,
+                    });
+                }
             }
-        }
 
 
             // Return the updated Senate bill data
