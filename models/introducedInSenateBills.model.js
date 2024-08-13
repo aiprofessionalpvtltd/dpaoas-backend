@@ -85,7 +85,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: true
         },
-        dateOfReceiptMessageFromNA: {
+        dateOfCirculationOfBill: {
             type: Sequelize.DATE,
             allowNull: true
         },
