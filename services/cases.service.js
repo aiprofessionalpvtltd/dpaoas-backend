@@ -285,7 +285,9 @@ const casesService = {
     try {
       const allRelevantSections = await CaseNotes.findAll({
         where: {
-          caseStatus: "pending",
+          caseStatus: {
+            [Op.or]: ["draft", "pending"],
+          },
         },
         include: [
           {
@@ -412,30 +414,49 @@ const casesService = {
         const caseData = section.cases;
         const remarks = caseData.casesRemarks || [];
         const createdBy = parseInt(caseData.createdBy);
+        const createdByUser = caseData.createdByUser;
   
         // Determine visibility and isEditable
         let isVisible = false;
         let isEditable = true;
-  
+        let caseStatus = "draft"; // Default status
+        let latestRemark;
+
         // Initial visibility is only for the creator
-        if (parseInt(userId)) { // i remove this one (=== createdBy)
+        if (parseInt(userId) === createdBy || parseInt(latestRemark?.submittedBy) === parseInt(userId)) { // i remove this one (=== createdBy)
           isVisible = true;
           isEditable = remarks.length === 0; // Creator can edit if no remarks
         }
-  
+
         // Check remarks for further visibility and editability
         if (remarks.length > 0) {
-          const latestRemark = remarks.reduce(
+          latestRemark = remarks.reduce(
             (latest, remark) => {
               return latest.createdAt > remark.createdAt ? latest : remark;
             },
             { createdAt: new Date(0), assignedTo: null }
           );
+
+          console.log("latestRemark", latestRemark)
   
           // If there is a latest remark, check if the user is the one it's assigned to
+          // Determine caseStatus based on assigned user
           if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
-            isVisible = true; // The assigned user can also see the case
-            isEditable = true; // The assigned user can edit the case
+            caseStatus = "pending"; // Assigned to current user
+            isVisible = true; 
+            isEditable = true; 
+          } else if(parseInt(latestRemark.submittedBy) !== parseInt(userId) && parseInt(latestRemark.assignedTo) !== parseInt(userId)){
+            caseStatus = "sent"
+            // Hide case if the current user is not involved in the latest remark
+                if (parseInt(userId) !== createdBy) { // But still show if the user is the creator
+                  caseStatus = "sent"
+                  isVisible = false;
+                  isEditable = false;
+              }
+          } else {
+            caseStatus = "sent"; // Assigned to another user
+            isVisible = true;
+            isEditable = false; 
           }
           // else {
             // isVisible = false;
@@ -449,9 +470,15 @@ const casesService = {
             casesByCaseId[caseData.id] = {
               id: caseData.id,
               fkCaseId: section.fkCaseId,
-              caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
+              caseStatus: caseStatus, // Include caseStatus from CaseNotes
               createdAt: caseData.createdAt,
               createdBy: caseData.createdBy,
+              createdByUser: {
+                id: createdByUser.id,
+                firstName: createdByUser.employee.firstName,
+                lastName: createdByUser.employee.lastName,
+                designation: createdByUser.employee.designations.designationName,
+              },
               isEditable: isEditable,
               fileData: section.cases.files,
               freshReceiptData: section.cases.freshReceipts,
@@ -481,206 +508,202 @@ const casesService = {
   },
 
   // Get Case History On The Basis of Created User
-  getCasesHistory: async (fileId, userId, branchId, currentPage, pageSize) => {
-    try {
-      const allRelevantSections = await CaseNotes.findAll({
-        include: [
-          {
-            model: Cases,
-            as: "cases",
-            required: true,
-            attributes: [
-              "id",
-              "fkFileId",
-              "isEditable",
-              "createdBy",
-              "createdAt",
-              "updatedAt",
-            ],
-            ...(fileId ? { where: { fkFileId: fileId } } : {}),
-            include: [
-              {
-                model: Files,
-                as: "files",
-                where: { fkBranchId: branchId },
-              },
-              {
-                model: FreshReceipts,
-                as: "freshReceipts",
-                include: [
-                  {
-                    model: FreshReceiptAttachments,
-                    as: "freshReceiptsAttachments",
-                    attributes: ["id", "filename"],
-                  },
-                ],
-              },
-              {
-                model: Users,
-                as: "createdByUser",
-                attributes: ["id"],
-                include: [
-                  {
-                    model: Employees,
-                    as: "employee",
-                    attributes: ["id", "firstName", "lastName"],
-                    include: [
-                      {
-                        model: Designations,
-                        as: "designations",
-                        attributes: ["id", "designationName"],
-                      },
-                    ],
-                  },
-                ],
-              },
-              {
-                model: FileRemarks,
-                as: "casesRemarks",
-                separate: true,
-                attributes: [
-                  "id",
-                  "assignedTo",
-                  "submittedBy",
-                  "fkFileId",
-                  "fkCaseId",
-                  "comment",
-                  "CommentStatus",
-                  "createdAt",
-                  "updatedAt",
-                ],
-                include: [
-                  {
-                    model: Users,
-                    as: "submittedUser",
-                    attributes: ["id"],
-                    include: [
-                      {
-                        model: Employees,
-                        as: "employee",
-                        attributes: ["id", "firstName", "lastName"],
-                        include: [
-                          {
-                            model: Designations,
-                            as: "designations",
-                            attributes: ["id", "designationName"],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    model: Users,
-                    as: "assignedUser",
-                    attributes: ["id"],
-                    include: [
-                      {
-                        model: Employees,
-                        as: "employee",
-                        attributes: ["id", "firstName", "lastName"],
-                        include: [
-                          {
-                            model: Designations,
-                            as: "designations",
-                            attributes: ["id", "designationName"],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-                order: [["createdAt", "DESC"]],
-              },
-            ],
-          },
-        ],
-        attributes: [
-          "id",
-          "fkCaseId",
-          "caseStatus", // Include caseStatus from CaseNotes
-          "notingSubject",
-          "fkCorrespondenceIds",
-          "createdAt",
-        ],
-        order: [["id", "DESC"]],
-      });
-
-      const casesByCaseId = {};
-      allRelevantSections.forEach((section) => {
-        const caseData = section.cases;
-        const remarks = caseData.casesRemarks || [];
-        const createdBy = parseInt(caseData.createdBy);
-
-        // Determine visibility and isEditable
-        let isVisible = false;
-        let isEditable = true;
-
-        // Initial visibility is only for the creator
-        if (parseInt(userId) === createdBy) {
-          isVisible = true;
-          isEditable = remarks.length === 0; // Creator can edit if no remarks
-        }
-
-        // Check remarks for further visibility and editability
-        if (remarks.length > 0) {
-          const latestRemark = remarks.reduce(
-            (latest, remark) => {
-              return latest.createdAt > remark.createdAt ? latest : remark;
+getCasesHistory: async (fileId, userId, branchId, currentPage, pageSize) => {
+  try {
+    const allRelevantSections = await CaseNotes.findAll({
+      include: [
+        {
+          model: Cases,
+          as: "cases",
+          required: true,
+          attributes: [
+            "id",
+            "fkFileId",
+            "isEditable",
+            "createdBy",
+            "createdAt",
+            "updatedAt",
+          ],
+          ...(fileId ? { where: { fkFileId: fileId } } : {}),
+          include: [
+            {
+              model: Files,
+              as: "files",
+              where: { fkBranchId: branchId },
             },
-            { createdAt: new Date(0), assignedTo: null }
-          );
+            {
+              model: FreshReceipts,
+              as: "freshReceipts",
+              include: [
+                {
+                  model: FreshReceiptAttachments,
+                  as: "freshReceiptsAttachments",
+                  attributes: ["id", "filename"],
+                },
+              ],
+            },
+            {
+              model: Users,
+              as: "createdByUser",
+              attributes: ["id"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["id", "firstName", "lastName"],
+                  include: [
+                    {
+                      model: Designations,
+                      as: "designations",
+                      attributes: ["id", "designationName"],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              model: FileRemarks,
+              as: "casesRemarks",
+              separate: true,
+              attributes: [
+                "id",
+                "assignedTo",
+                "submittedBy",
+                "fkFileId",
+                "fkCaseId",
+                "comment",
+                "CommentStatus",
+                "createdAt",
+                "updatedAt",
+              ],
+              include: [
+                {
+                  model: Users,
+                  as: "submittedUser",
+                  attributes: ["id"],
+                  include: [
+                    {
+                      model: Employees,
+                      as: "employee",
+                      attributes: ["id", "firstName", "lastName"],
+                      include: [
+                        {
+                          model: Designations,
+                          as: "designations",
+                          attributes: ["id", "designationName"],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  model: Users,
+                  as: "assignedUser",
+                  attributes: ["id"],
+                  include: [
+                    {
+                      model: Employees,
+                      as: "employee",
+                      attributes: ["id", "firstName", "lastName"],
+                      include: [
+                        {
+                          model: Designations,
+                          as: "designations",
+                          attributes: ["id", "designationName"],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+              order: [["createdAt", "DESC"]],
+            },
+          ],
+        },
+      ],
+      attributes: [
+        "id",
+        "fkCaseId",
+        "caseStatus", // Include caseStatus from CaseNotes
+        "notingSubject",
+        "fkCorrespondenceIds",
+        "createdAt",
+      ],
+      order: [["id", "DESC"]],
+    });
 
-          // If there is a latest remark, check if the user is the one it's assigned to
-          if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
-            isVisible = false; // The assigned user cannot show the case
-            isEditable = true; // The assigned user can edit the case
-          } else {
-            // Ensure the creator retains visibility even when not the latest assigned
-            isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
-            isEditable = false; // Creator cannot edit once assigned to someone else
-          }
+    const casesByCaseId = {};
+    allRelevantSections.forEach((section) => {
+      const caseData = section.cases;
+      const remarks = caseData.casesRemarks || [];
+      const createdBy = parseInt(caseData.createdBy);
+      const createdByUser = caseData.createdByUser;
+
+      // Determine visibility and isEditable
+      let isVisible = parseInt(userId) === createdBy;
+      let isEditable = true;
+      let caseStatus = "draft"; // Default status
+      let latestRemark;
+
+      if (remarks.length > 0) {
+        latestRemark = remarks.reduce(
+          (latest, remark) => {
+            return latest.createdAt > remark.createdAt ? latest : remark;
+          },
+          { createdAt: new Date(0), assignedTo: null }
+        );
+
+        // Update visibility and editability based on remarks
+        if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
+          caseStatus = "pending"; // Assigned to current user
+          isVisible = true;
+          isEditable = true;
+        } else {
+          isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
+          isEditable = false;
         }
+      }
 
-        // Ensuring each case is only added once with the full data structure
-        if (isVisible) {
-          if (!casesByCaseId[caseData.id]) {
-            casesByCaseId[caseData.id] = {
-              id: caseData.id,
-              fkCaseId: section.fkCaseId,
-              caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
-              createdAt: caseData.createdAt,
-              createdBy: caseData.createdBy,
-              isEditable: isEditable,
-              fileData: section.cases.files,
-              freshReceiptData: section.cases.freshReceipts,
-              fileRemarksData: section.cases.casesRemarks,
-            };
-          }
-
-          // Adding section specific data
-          // casesByCaseId[caseData.id][section.sectionType] = {
-          //     description: section.description,
-          //     caseAttachments: section.caseAttachments
-          // };
+      if (isVisible) {
+        if (!casesByCaseId[caseData.id]) {
+          casesByCaseId[caseData.id] = {
+            id: caseData.id,
+            fkCaseId: section.fkCaseId,
+            caseStatus: caseStatus, // Include caseStatus from CaseNotes
+            createdAt: caseData.createdAt,
+            createdBy: caseData.createdBy,
+            createdByUser: {
+              id: createdByUser.id,
+              firstName: createdByUser.employee.firstName,
+              lastName: createdByUser.employee.lastName,
+              designation: createdByUser.employee.designations.designationName,
+            },
+            isEditable: isEditable,
+            fileData: section.cases.files,
+            freshReceiptData: section.cases.freshReceipts,
+            fileRemarksData: section.cases.casesRemarks,
+          };
         }
-      });
+      }
+    });
 
-      const aggregatedCases = Object.values(casesByCaseId);
-      const paginatedCases = aggregatedCases.slice(
-        currentPage * pageSize,
-        (currentPage + 1) * pageSize
-      );
-      const totalPages = Math.ceil(aggregatedCases.length / pageSize);
+    const aggregatedCases = Object.values(casesByCaseId);
+    const paginatedCases = aggregatedCases.slice(
+      currentPage * pageSize,
+      (currentPage + 1) * pageSize
+    );
+    const totalPages = Math.ceil(aggregatedCases.length / pageSize);
 
-      return {
-        cases: paginatedCases,
-        count: aggregatedCases.length,
-        totalPages,
-      };
-    } catch (error) {
-      throw new Error(error.message || "Error Fetching Cases");
-    }
-  },
+    return {
+      cases: paginatedCases,
+      count: aggregatedCases.length,
+      totalPages,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Error Fetching Cases");
+  }
+},
+
 
   getAllCasesHistory: async (
     fileId,
@@ -813,16 +836,42 @@ const casesService = {
       });
 
       const casesByCaseId = {};
+      let latestRemark;
       allRelevantSections.forEach((section) => {
         const caseData = section.cases;
+        const remarks = caseData.casesRemarks || [];
+        const createdByUser = caseData.createdByUser;
+        
+
+           // Determine the case status based on the assigned user
+      let status = "draft";
+      if (remarks.length > 0) {
+        latestRemark = remarks.reduce(
+          (latest, remark) =>
+            latest.createdAt > remark.createdAt ? latest : remark,
+          { createdAt: new Date(0), assignedTo: null }
+        );
+
+        if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
+          status = "pending";
+        } else {
+          status = "sent";
+        }
+      }
 
         if (!casesByCaseId[caseData.id]) {
           casesByCaseId[caseData.id] = {
             id: caseData.id,
             fkCaseId: section.fkCaseId,
-            caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
+            caseStatus: status, // Include caseStatus from CaseNotes
             createdAt: caseData.createdAt,
             createdBy: caseData.createdBy,
+            createdByUser: {
+              id: createdByUser.id,
+              firstName: createdByUser.employee.firstName,
+              lastName: createdByUser.employee.lastName,
+              designation: createdByUser.employee.designations.designationName,
+            },
             fileData: section.cases.files,
             freshReceiptData: section.cases.freshReceipts,
             fileRemarksData: section.cases.casesRemarks,
@@ -982,9 +1031,11 @@ const casesService = {
       const casesByCaseId = {};
       allRelevantSections.forEach((section) => {
         const caseData = section.cases;
+        const createdByUser = caseData.createdByUser;
         if (userId) {
           const remarks = caseData.casesRemarks || [];
           const createdBy = parseInt(caseData.createdBy);
+         
 
           // Determine visibility and isEditable
           let isVisible = false;
@@ -1038,6 +1089,12 @@ const casesService = {
             caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
             createdAt: caseData.createdAt,
             createdBy: caseData.createdBy,
+            createdByUser: {
+              id: createdByUser.id,
+              firstName: createdByUser.employee.firstName,
+              lastName: createdByUser.employee.lastName,
+              designation: createdByUser.employee.designations.designationName,
+            },
             fileData: caseData.files,
             freshReceiptData: caseData.freshReceipts,
             fileRemarksData: caseData.casesRemarks,
