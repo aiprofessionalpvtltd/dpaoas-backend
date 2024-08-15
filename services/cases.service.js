@@ -1031,9 +1031,11 @@ getCasesHistory: async (fileId, userId, branchId, currentPage, pageSize) => {
       const casesByCaseId = {};
       allRelevantSections.forEach((section) => {
         const caseData = section.cases;
+        const createdByUser = caseData.createdByUser;
         if (userId) {
           const remarks = caseData.casesRemarks || [];
           const createdBy = parseInt(caseData.createdBy);
+         
 
           // Determine visibility and isEditable
           let isVisible = false;
@@ -1087,6 +1089,12 @@ getCasesHistory: async (fileId, userId, branchId, currentPage, pageSize) => {
             caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
             createdAt: caseData.createdAt,
             createdBy: caseData.createdBy,
+            createdByUser: {
+              id: createdByUser.id,
+              firstName: createdByUser.employee.firstName,
+              lastName: createdByUser.employee.lastName,
+              designation: createdByUser.employee.designations.designationName,
+            },
             fileData: caseData.files,
             freshReceiptData: caseData.freshReceipts,
             fileRemarksData: caseData.casesRemarks,
