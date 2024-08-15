@@ -42,9 +42,14 @@ module.exports = (sequelize, Sequelize) => {
             }
         },
         CommentStatus: {
-            type: Sequelize.ENUM("Put Up For", "Please Link", "For Perusal Please", "Submitted For Approval"),
-            allowNull: true
+            type: Sequelize.ENUM("Please Put Up","Please Link","For Perusal Please","Submitted For Approval"),
+            allowNull: true 
         },
+        priority: {
+            type: Sequelize.ENUM('Confidential', 'Immediate', 'Routine'),
+            defaultValue: 'Immediate',  // optional: set default value
+            allowNull: false
+          },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });
