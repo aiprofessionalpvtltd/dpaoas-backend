@@ -348,6 +348,7 @@ const casesService = {
                   "fkCaseId",
                   "comment",
                   "CommentStatus",
+                  "priority",
                   "createdAt",
                   "updatedAt",
                 ],
@@ -435,10 +436,11 @@ const casesService = {
           if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
             isVisible = true; // The assigned user can also see the case
             isEditable = true; // The assigned user can edit the case
-          } else {
-            isVisible = false;
-            isEditable = false; // Creator cannot edit once assigned to someone else
           }
+          // else {
+            // isVisible = false;
+            // isEditable = false; // Creator cannot edit once assigned to someone else
+          // }
         }
   
         // Ensuring each case is only added once with the full data structure
@@ -1398,6 +1400,7 @@ const casesService = {
         fkCaseId: caseId,
         submittedBy: req.submittedBy,
         assignedTo: req.assignedTo,
+        priority: req.priority,
         CommentStatus: req.CommentStatus ? req.CommentStatus : null,
         comment: req.comment ? req.comment : null,
       });

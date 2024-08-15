@@ -163,6 +163,7 @@ const freshReceiptService = {
             const limit = pageSize;
             const currentUserPosition = await freshReceiptService.getCurrentUserPosition(userId);
             const currentUserBranch = await freshReceiptService.getCurrentUserBranch(userId);
+
             const { count, rows } = await FreshReceipts.findAndCountAll({
                 where: {
                     fkUserBranchId: currentUserBranch.id,
@@ -277,9 +278,9 @@ const freshReceiptService = {
                 // let isEditable = isVisible && remarks.length === 0;
     
                  // Initial visibility is only for the creator
-        if (parseInt(userId) === createdBy) {
-            isVisible = true;
-            isEditable = remarks.length === 0; // Creator can edit if no remarks
+                if (parseInt(userId) === createdBy) {
+                    isVisible = true;
+                    isEditable = remarks.length === 0; // Creator can edit if no remarks
                 }
 
                 
@@ -309,12 +310,14 @@ const freshReceiptService = {
                     if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
                       isVisible = true; // The assigned user can also see the case
                       isEditable = true; // The assigned user can edit the case
-                    } else {
+                    }
+                    
+                    // else {
                       // Ensure the creator retains visibility even when not the latest assigned
                       // isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
-                      isVisible = false;
-                      isEditable = false; // Creator cannot edit once assigned to someone else
-                    }
+                    //   isVisible = false;
+                    //   isEditable = false; // Creator cannot edit once assigned to someone else
+                    // }
                   }
     
                 return { isVisible, isEditable };
@@ -729,6 +732,7 @@ const freshReceiptService = {
                 submittedBy: req.submittedBy,
                 assignedTo: req.assignedTo,
                 CommentStatus: req.CommentStatus ? req.CommentStatus : null,
+                priority: req.priority ? req.priority : 'Immediate',
                 comment: req.comment ? req.comment : null
             });
 

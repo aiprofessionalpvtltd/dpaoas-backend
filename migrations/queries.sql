@@ -28,7 +28,25 @@
 -- CREATE TYPE file_status AS ENUM ('active', 'inactive');
 -- ALTER TABLE "newFiles" ADD COLUMN "status" file_status DEFAULT 'active' NOT NULL;
 
-ALTER TABLE public."legislativeBills" ADD diary_number varchar NULL;
+-- ALTER TABLE public."legislativeBills" ADD diary_number varchar NULL;
+
+ALTER TYPE public."enum_freshReceiptRemarks_CommentStatus" RENAME VALUE 'Put Up For' TO 'Please Put Up';
+
+CREATE TYPE public.enum_freshReceiptRemarks_priority AS ENUM ('Confidential', 'Immediate', 'Routine');
+
+
+ALTER TABLE public."freshReceiptRemarks"
+ADD COLUMN priority public.enum_freshReceiptRemarks_priority;
+
+
+ALTER TABLE public."freshReceiptRemarks"
+ALTER COLUMN priority SET DEFAULT 'Immediate';
+
+
+UPDATE public."freshReceiptRemarks"
+SET priority = 'Immediate' 
+WHERE priority IS NULL;
+
 
 
 

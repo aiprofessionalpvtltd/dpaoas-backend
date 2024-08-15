@@ -75,255 +75,413 @@ const filesDashboardService = {
     },
 
     // Stats For Files Sent And Received
+    // getFileSentAndReceivedStats: async (userId) => {
+    //     try {
+
+    //         const today = moment().format('YYYY-MM-DD');
+    //         // Count sent files where sumittedBy is the userId
+    //         const sentFiles = await FileRemarks.findAndCountAll({
+    //             where: {
+    //                 submittedBy: userId,
+    //                 createdAt: {
+    //                     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+    //                 }
+    //             },
+    //             include: [
+    //                 {
+    //                     model: Users,
+    //                     as: 'submittedUser',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName'],
+    //                         include: [{
+    //                             model: Designations,
+    //                             as: 'designations',
+    //                             attributes: ['id', 'designationName']
+    //                         }]
+    //                     }]
+    //                 },
+    //                 {
+    //                     model: Users,
+    //                     as: 'assignedUser',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName'],
+    //                         include: [{
+    //                             model: Designations,
+    //                             as: 'designations',
+    //                             attributes: ['id', 'designationName']
+    //                         }]
+    //                     }]
+    //                 },
+    //                 {
+    //                     model: Files,
+    //                     as: 'file',
+    //                     include: [
+    //                         {
+    //                             model: FilesRegisters,
+    //                             as: 'fileRegister',
+    //                             attributes: ['id', 'registerNumber', 'year', 'registerSubject'],
+    //                         },
+    //                         {
+    //                             model: mainHeadingFiles,
+    //                             as: 'mainHeading',
+    //                             attributes: ['id', 'mainHeading', 'mainHeadingNumber']
+    //                         }
+    //                     ]
+    //                 }
+    //             ]
+    //         });
+
+    //         // Count received files where assignedTo is the userId
+    //         const receivedFiles = await FileRemarks.findAndCountAll({
+    //             where: {
+    //                 assignedTo: userId,
+    //                 createdAt: {
+    //                     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+    //                 }
+    //             },
+    //             include: [
+    //                 {
+    //                     model: Users,
+    //                     as: 'submittedUser',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName'],
+    //                         include: [{
+    //                             model: Designations,
+    //                             as: 'designations',
+    //                             attributes: ['id', 'designationName']
+    //                         }]
+    //                     }]
+    //                 },
+    //                 {
+    //                     model: Users,
+    //                     as: 'assignedUser',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName'],
+    //                         include: [{
+    //                             model: Designations,
+    //                             as: 'designations',
+    //                             attributes: ['id', 'designationName']
+    //                         }]
+    //                     }]
+    //                 },
+    //                 {
+    //                     model: Files,
+    //                     as: 'file',
+    //                     include: [
+    //                         {
+    //                             model: FilesRegisters,
+    //                             as: 'fileRegister',
+    //                             attributes: ['id', 'registerNumber', 'year', 'registerSubject'],
+    //                         },
+
+    //                         {
+    //                             model: mainHeadingFiles,
+    //                             as: 'mainHeading',
+    //                             attributes: ['id', 'mainHeading', 'mainHeadingNumber']
+    //                         }
+    //                     ]
+    //                 }
+    //             ]
+    //         });
+
+
+    //         const totalFiles = sentFiles.count + receivedFiles.count;
+
+    //         // Create the stats object
+    //         const stats = {
+    //             sentFiles: { count: sentFiles.count, rows: sentFiles.rows },
+    //             receivedFiles: { count: receivedFiles.count, rows: receivedFiles.rows },
+    //             totalFiles: totalFiles
+    //         };
+
+    //         return stats;
+    //     } catch (error) {
+    //         throw new Error(error.message || "Error Retrieving Files Approval Stats");
+    //     }
+    // },
+
     getFileSentAndReceivedStats: async (userId) => {
         try {
-
             const today = moment().format('YYYY-MM-DD');
-            // Count sent files where sumittedBy is the userId
-            const sentFiles = await FileRemarks.findAndCountAll({
+    
+            // Define all possible priorities
+            const priorities = ['Confidential', 'Immediate', 'Routine'];
+    
+            // Count sent files where submittedBy is the userId and group by priority
+            const sentFiles = await FileRemarks.findAll({
                 where: {
                     submittedBy: userId,
-                    createdAt: {
-                        [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
-                    }
+                    // Uncomment the createdAt filter if needed
+                    // createdAt: {
+                    //     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+                    // }
                 },
-                include: [
-                    {
-                        model: Users,
-                        as: 'submittedUser',
-                        attributes: ['id'],
-                        include: [{
-                            model: Employees,
-                            as: 'employee',
-                            attributes: ['id', 'firstName', 'lastName'],
-                            include: [{
-                                model: Designations,
-                                as: 'designations',
-                                attributes: ['id', 'designationName']
-                            }]
-                        }]
-                    },
-                    {
-                        model: Users,
-                        as: 'assignedUser',
-                        attributes: ['id'],
-                        include: [{
-                            model: Employees,
-                            as: 'employee',
-                            attributes: ['id', 'firstName', 'lastName'],
-                            include: [{
-                                model: Designations,
-                                as: 'designations',
-                                attributes: ['id', 'designationName']
-                            }]
-                        }]
-                    },
-                    {
-                        model: Files,
-                        as: 'file',
-                        include: [
-                            {
-                                model: FilesRegisters,
-                                as: 'fileRegister',
-                                attributes: ['id', 'registerNumber', 'year', 'registerSubject'],
-                            },
-                            {
-                                model: mainHeadingFiles,
-                                as: 'mainHeading',
-                                attributes: ['id', 'mainHeading', 'mainHeadingNumber']
-                            }
-                        ]
-                    }
-                ]
+                attributes: ['priority', [db.sequelize.fn('COUNT', db.sequelize.col('priority')), 'count']],
+                group: ['priority']
             });
-
-            // Count received files where assignedTo is the userId
-            const receivedFiles = await FileRemarks.findAndCountAll({
+    
+            // Count received files where assignedTo is the userId and group by priority
+            const receivedFiles = await FileRemarks.findAll({
                 where: {
                     assignedTo: userId,
-                    createdAt: {
-                        [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
-                    }
+                    // Uncomment the createdAt filter if needed
+                    // createdAt: {
+                    //     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+                    // }
                 },
-                include: [
-                    {
-                        model: Users,
-                        as: 'submittedUser',
-                        attributes: ['id'],
-                        include: [{
-                            model: Employees,
-                            as: 'employee',
-                            attributes: ['id', 'firstName', 'lastName'],
-                            include: [{
-                                model: Designations,
-                                as: 'designations',
-                                attributes: ['id', 'designationName']
-                            }]
-                        }]
-                    },
-                    {
-                        model: Users,
-                        as: 'assignedUser',
-                        attributes: ['id'],
-                        include: [{
-                            model: Employees,
-                            as: 'employee',
-                            attributes: ['id', 'firstName', 'lastName'],
-                            include: [{
-                                model: Designations,
-                                as: 'designations',
-                                attributes: ['id', 'designationName']
-                            }]
-                        }]
-                    },
-                    {
-                        model: Files,
-                        as: 'file',
-                        include: [
-                            {
-                                model: FilesRegisters,
-                                as: 'fileRegister',
-                                attributes: ['id', 'registerNumber', 'year', 'registerSubject'],
-                            },
-
-                            {
-                                model: mainHeadingFiles,
-                                as: 'mainHeading',
-                                attributes: ['id', 'mainHeading', 'mainHeadingNumber']
-                            }
-                        ]
-                    }
-                ]
+                attributes: ['priority', [db.sequelize.fn('COUNT', db.sequelize.col('priority')), 'count']],
+                group: ['priority']
             });
-
-
-            const totalFiles = sentFiles.count + receivedFiles.count;
-
-            // Create the stats object
+    
+            // Initialize counts for each priority
+            const sentPriorityCounts = priorities.reduce((acc, priority) => {
+                acc[priority] = 0;
+                return acc;
+            }, {});
+    
+            const receivedPriorityCounts = priorities.reduce((acc, priority) => {
+                acc[priority] = 0;
+                return acc;
+            }, {});
+    
+            // Update with actual counts from the query results
+            sentFiles.forEach(file => {
+                sentPriorityCounts[file.priority] = parseInt(file.dataValues.count);
+            });
+    
+            receivedFiles.forEach(file => {
+                receivedPriorityCounts[file.priority] = parseInt(file.dataValues.count);
+            });
+    
+            // Calculate total counts
+            const totalSentFiles = Object.values(sentPriorityCounts).reduce((acc, count) => acc + count, 0);
+            const totalReceivedFiles = Object.values(receivedPriorityCounts).reduce((acc, count) => acc + count, 0);
+            const totalFiles = totalSentFiles + totalReceivedFiles;
+    
+            // Format the stats object
             const stats = {
-                sentFiles: { count: sentFiles.count, rows: sentFiles.rows },
-                receivedFiles: { count: receivedFiles.count, rows: receivedFiles.rows },
+                sentFiles: {
+                    totalCount: totalSentFiles,
+                    priorityCounts: sentPriorityCounts
+                },
+                receivedFiles: {
+                    totalCount: totalReceivedFiles,
+                    priorityCounts: receivedPriorityCounts
+                },
                 totalFiles: totalFiles
             };
-
+    
             return stats;
         } catch (error) {
             throw new Error(error.message || "Error Retrieving Files Approval Stats");
         }
     },
+    
 
     // Stats For FRs Sent And Received
+    // getFRSentAndReceivedStats: async (userId) => {
+    //     try {
+
+    //         const today = moment().format('YYYY-MM-DD');
+    //         // Count sent files where sumittedBy is the userId
+    //         const sentFRs = await FRRemarks.findAndCountAll({
+    //             where: {
+    //                 submittedBy: userId,
+    //                 createdAt: {
+    //                     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+    //                 }
+    //             },
+    //             include: [
+    //                 {
+    //                     model: FreshReceipts,
+    //                     as: 'freshReceipt'
+    //                 },
+    //                 {
+    //                     model: Users,
+    //                     as: 'submittedUser',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName'],
+    //                         include: [{
+    //                             model: Designations,
+    //                             as: 'designations',
+    //                             attributes: ['id', 'designationName']
+    //                         }]
+    //                     }]
+    //                 },
+    //                 {
+    //                     model: Users,
+    //                     as: 'assignedUser',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName'],
+    //                         include: [{
+    //                             model: Designations,
+    //                             as: 'designations',
+    //                             attributes: ['id', 'designationName']
+    //                         }]
+    //                     }]
+    //                 },
+    //             ]
+    //         });
+
+    //         // Count received files where assignedTo is the userId
+    //         const receivedFRs = await FRRemarks.findAndCountAll({
+    //             where: {
+    //                 assignedTo: userId,
+    //                 createdAt: {
+    //                     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+    //                 }
+    //             },
+    //             include: [
+    //                 {
+    //                     model: FreshReceipts,
+    //                     as: 'freshReceipt'
+    //                 },
+    //                 {
+    //                     model: Users,
+    //                     as: 'submittedUser',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName'],
+    //                         include: [{
+    //                             model: Designations,
+    //                             as: 'designations',
+    //                             attributes: ['id', 'designationName']
+    //                         }]
+    //                     }]
+    //                 },
+    //                 {
+    //                     model: Users,
+    //                     as: 'assignedUser',
+    //                     attributes: ['id'],
+    //                     include: [{
+    //                         model: Employees,
+    //                         as: 'employee',
+    //                         attributes: ['id', 'firstName', 'lastName'],
+    //                         include: [{
+    //                             model: Designations,
+    //                             as: 'designations',
+    //                             attributes: ['id', 'designationName']
+    //                         }]
+    //                     }]
+    //                 },
+    //             ]
+    //         });
+
+
+    //         const totalFRs = sentFRs.count + receivedFRs.count;
+
+    //         // Create the stats object
+    //         const stats = {
+    //             sentFRs: { count: sentFRs.count, rows: sentFRs.rows },
+    //             receivedFRs: { count: receivedFRs.count, rows: receivedFRs.rows },
+    //             totalFRs: totalFRs
+    //         };
+
+    //         return stats;
+    //     } catch (error) {
+    //         throw new Error(error.message || "Error Retrieving Files Approval Stats");
+    //     }
+    // },
+
     getFRSentAndReceivedStats: async (userId) => {
         try {
-
             const today = moment().format('YYYY-MM-DD');
-            // Count sent files where sumittedBy is the userId
-            const sentFRs = await FRRemarks.findAndCountAll({
+    
+            // Define all possible priorities
+            const priorities = ['Confidential', 'Immediate', 'Routine'];
+    
+            // Count sent files where submittedBy is the userId and group by priority
+            const sentFRs = await FRRemarks.findAll({
                 where: {
                     submittedBy: userId,
-                    createdAt: {
-                        [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
-                    }
+                    // Uncomment the createdAt filter if needed
+                    // createdAt: {
+                    //     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+                    // }
                 },
-                include: [
-                    {
-                        model: FreshReceipts,
-                        as: 'freshReceipt'
-                    },
-                    {
-                        model: Users,
-                        as: 'submittedUser',
-                        attributes: ['id'],
-                        include: [{
-                            model: Employees,
-                            as: 'employee',
-                            attributes: ['id', 'firstName', 'lastName'],
-                            include: [{
-                                model: Designations,
-                                as: 'designations',
-                                attributes: ['id', 'designationName']
-                            }]
-                        }]
-                    },
-                    {
-                        model: Users,
-                        as: 'assignedUser',
-                        attributes: ['id'],
-                        include: [{
-                            model: Employees,
-                            as: 'employee',
-                            attributes: ['id', 'firstName', 'lastName'],
-                            include: [{
-                                model: Designations,
-                                as: 'designations',
-                                attributes: ['id', 'designationName']
-                            }]
-                        }]
-                    },
-                ]
+                attributes: ['priority', [db.sequelize.fn('COUNT', db.sequelize.col('priority')), 'count']],
+                group: ['priority']
             });
-
-            // Count received files where assignedTo is the userId
-            const receivedFRs = await FRRemarks.findAndCountAll({
+    
+            // Count received files where assignedTo is the userId and group by priority
+            const receivedFRs = await FRRemarks.findAll({
                 where: {
                     assignedTo: userId,
-                    createdAt: {
-                        [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
-                    }
+                    // Uncomment the createdAt filter if needed
+                    // createdAt: {
+                    //     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+                    // }
                 },
-                include: [
-                    {
-                        model: FreshReceipts,
-                        as: 'freshReceipt'
-                    },
-                    {
-                        model: Users,
-                        as: 'submittedUser',
-                        attributes: ['id'],
-                        include: [{
-                            model: Employees,
-                            as: 'employee',
-                            attributes: ['id', 'firstName', 'lastName'],
-                            include: [{
-                                model: Designations,
-                                as: 'designations',
-                                attributes: ['id', 'designationName']
-                            }]
-                        }]
-                    },
-                    {
-                        model: Users,
-                        as: 'assignedUser',
-                        attributes: ['id'],
-                        include: [{
-                            model: Employees,
-                            as: 'employee',
-                            attributes: ['id', 'firstName', 'lastName'],
-                            include: [{
-                                model: Designations,
-                                as: 'designations',
-                                attributes: ['id', 'designationName']
-                            }]
-                        }]
-                    },
-                ]
+                attributes: ['priority', [db.sequelize.fn('COUNT', db.sequelize.col('priority')), 'count']],
+                group: ['priority']
             });
-
-
-            const totalFRs = sentFRs.count + receivedFRs.count;
-
-            // Create the stats object
+    
+            // Initialize counts for each priority
+            const sentPriorityCounts = priorities.reduce((acc, priority) => {
+                acc[priority] = 0;
+                return acc;
+            }, {});
+    
+            const receivedPriorityCounts = priorities.reduce((acc, priority) => {
+                acc[priority] = 0;
+                return acc;
+            }, {});
+    
+            // Update with actual counts from the query results
+            sentFRs.forEach(fr => {
+                sentPriorityCounts[fr.priority] = parseInt(fr.dataValues.count);
+            });
+    
+            receivedFRs.forEach(fr => {
+                receivedPriorityCounts[fr.priority] = parseInt(fr.dataValues.count);
+            });
+    
+            // Calculate total counts
+            const totalSentFRs = Object.values(sentPriorityCounts).reduce((acc, count) => acc + count, 0);
+            const totalReceivedFRs = Object.values(receivedPriorityCounts).reduce((acc, count) => acc + count, 0);
+            const totalFRs = totalSentFRs + totalReceivedFRs;
+    
+            // Format the stats object
             const stats = {
-                sentFRs: { count: sentFRs.count, rows: sentFRs.rows },
-                receivedFRs: { count: receivedFRs.count, rows: receivedFRs.rows },
+                sentFRs: {
+                    totalCount: totalSentFRs,
+                    priorityCounts: sentPriorityCounts
+                },
+                receivedFRs: {
+                    totalCount: totalReceivedFRs,
+                    priorityCounts: receivedPriorityCounts
+                },
                 totalFRs: totalFRs
             };
-
+    
             return stats;
+    
         } catch (error) {
             throw new Error(error.message || "Error Retrieving Files Approval Stats");
         }
     },
+    
+    
 
     // Stats For File Approved and Disapproved
     getFileApprovalStats: async (userId) => {
@@ -458,6 +616,10 @@ const filesDashboardService = {
 
             }));
 
+            // Sort the arrays by date in descending order
+            formattedPendingFiles.sort((a, b) => new Date(b.date) - new Date(a.date));
+            formattedPendingFRs.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
             return {
                 filesCount: formattedPendingFiles.length, 
                 files: formattedPendingFiles,
