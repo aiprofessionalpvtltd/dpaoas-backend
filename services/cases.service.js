@@ -418,7 +418,7 @@ const casesService = {
         let isEditable = true;
   
         // Initial visibility is only for the creator
-        if (parseInt(userId) === createdBy) {
+        if (parseInt(userId)) { // i remove this one (=== createdBy)
           isVisible = true;
           isEditable = remarks.length === 0; // Creator can edit if no remarks
         }
