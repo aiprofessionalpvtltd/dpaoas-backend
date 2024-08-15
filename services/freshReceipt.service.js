@@ -180,7 +180,7 @@ const freshReceiptService = {
                         model: FreshReceiptRemarks,
                         as: 'freshReceipt',
                         separate: true,
-                        attributes: ['id', 'CommentStatus', 'comment', 'submittedBy', 'assignedTo', 'createdAt', 'updatedAt'],
+                        attributes: ['id', 'CommentStatus', 'comment', 'submittedBy', 'assignedTo', 'priority', 'createdAt', 'updatedAt'],
                        
                         order: [
                             ['id', 'DESC']
