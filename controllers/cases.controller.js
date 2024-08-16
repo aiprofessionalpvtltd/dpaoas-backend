@@ -165,7 +165,7 @@ const casesController = {
         return res.status(200).send({
           success: true,
           message: "No Data Found!",
-          data: [],
+          data: {cases: cases},
         });
       } else {
         return res.status(200).send({
@@ -282,6 +282,42 @@ const casesController = {
         return res.status(200).send({
           success: true,
           message: `Cases History Fetched Successfully!`,
+          data: { cases, count, totalPages },
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  getPendingCases: async (req, res) => {
+    try {
+      console.log("sdfsdfsdfsd")
+      const userId = req.query.userId;
+      const branchId = req.query.branchId;
+      const currentPage = req.query.currentPage;
+      const pageSize = req.query.pageSize;
+      const { cases, count, totalPages } =
+        await casesService.getPendingCases(
+          userId,
+          branchId,
+          currentPage,
+          pageSize
+        );
+      if (cases.length === 0) {
+        return res.status(200).send({
+          success: true,
+          message: "No Data Found!",
+          data: {cases: cases},
+        });
+      } else {
+        return res.status(200).send({
+          success: true,
+          message: `Cases Fetched Successfully!`,
           data: { cases, count, totalPages },
         });
       }

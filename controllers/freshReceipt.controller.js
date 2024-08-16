@@ -12,8 +12,8 @@ const Op = db.Sequelize.Op;
 
 const freshReceiptController = {
 
-      // Creater External Ministry
-      createExternalMinistry: async (req, res) => {
+    // Creater External Ministry
+    createExternalMinistry: async (req, res) => {
         try {
             logger.info(`freshReceiptController: createExternalMinistry  body ${JSON.stringify(req.body)}`);
             const externalMinistries = await freshReceiptService.createExternalMinistry(req.body);
@@ -110,6 +110,43 @@ const freshReceiptController = {
             });
         }
     },
+    
+    // Get All Fresh Receipts (FR) On User Basis
+    getAllPendingFRs: async (req, res) => {
+        try {
+            logger.info(`freshReceiptController: getAllFRs query ${JSON.stringify(req.query)}`);
+            const currentPage = req.query.currentPage;
+            const pageSize = req.query.pageSize;
+            const userId = req.params.id;
+            const { count, totalPages, freshReceipts } = await freshReceiptService.getAllPendingFRs(currentPage, pageSize, userId);
+            if (freshReceipts.length === 0) {
+                logger.info(`No Data Found On This Page!`);
+                return res.status(200).send({
+                    success: true,
+                    message: "No Data Found On This Page!",
+                    data: []
+                });
+            }
+            else {
+                logger.info(`Fresh Receipts (FRs) Retrieved Successfully!`);
+                return res.status(200).send({
+                    success: true,
+                    message: "Fresh Receipts (FRs) Retrieved Successfully!",
+                    data: {
+                        freshReceipts,
+                        count,
+                        totalPages
+                    }
+                });
+            }
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+            });
+        }
+    },
 
     // Retrieve External Ministry
     getAllExternalMinistries: async (req, res) => {
@@ -177,7 +214,42 @@ const freshReceiptController = {
             const userId = req.params.userId
             const currentPage = req.query.currentPage;
             const pageSize = req.query.pageSize;
-            const { count, totalPages, freshReceipts } = await freshReceiptService.getFRsHistory(branchId,userId, currentPage, pageSize)
+            const { count, totalPages, freshReceipts } = await freshReceiptService.getFRsHistory(branchId, userId, currentPage, pageSize)
+            if (freshReceipts.length === 0) {
+                return res.status(200).send({
+                    success: true,
+                    message: "No Data Found!",
+                    data: []
+                })
+            }
+            else {
+                return res.status(200).send({
+                    success: true,
+                    message: `FRs Fetched Successfully!`,
+                    data: { freshReceipts, count, totalPages },
+                })
+            }
+        }
+        catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+
+
+        }
+    },
+
+    // Get FRs On The Basis of Branch
+    getFRsUpperHerarchyHistory: async (req, res) => {
+        try {
+            logger.info(`freshReceiptController: getFRsHistory query ${JSON.stringify(req.query)}`);
+            const branchId = req.params.branchId
+            const userId = req.params.userId
+            const currentPage = req.query.currentPage;
+            const pageSize = req.query.pageSize;
+            const { count, totalPages, freshReceipts } = await freshReceiptService.getFRsUpperHerarchyHistory(branchId, userId, currentPage, pageSize)
             if (freshReceipts.length === 0) {
                 return res.status(200).send({
                     success: true,
