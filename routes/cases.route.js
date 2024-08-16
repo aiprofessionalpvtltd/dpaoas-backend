@@ -7,6 +7,11 @@ const { uploadMultipleFiles } = require("../common/upload");
 // Create Case
 //router.post("/createCase/:fileId/:createdBy/:fkFreshReceiptId", uploadFile('case'), cases.createCase)
 
+router.get(
+  "/getAllPendingCases",
+  cases.getPendingCases
+);
+
 router.post(
   "/createCase/:fileId/:createdBy/:fkFreshReceiptId",
   cases.createCase
@@ -87,6 +92,8 @@ router.get(
   "/getAllCasesHistory/:fileId/:branchId/:userId",
   cases.getAllCasesHistory
 );
+
+
 
 /**
  * @swagger

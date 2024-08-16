@@ -248,7 +248,8 @@ const userService = {
 
         if (check === 'locked') {
           await UserSession.createSession(user, ipAddress, null, false);
-          throw ({ message: "Your account has been locked!" })
+          // throw ({ message: "Your account has been locked!" })
+          throw ({ message: "Invalid username or password" })
         }
         else {
           await UserSession.createSession(user, ipAddress, null, false);
