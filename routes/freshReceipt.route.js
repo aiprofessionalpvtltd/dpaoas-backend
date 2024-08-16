@@ -141,6 +141,8 @@ router.post('/uploadMultipleFRs/:id', uploadFile('freshReceipt') ,freshReceipts.
  */
 router.get('/:id', freshReceipts.getAllFRs)
 
+router.get('/getAllPendingFRs/:id', freshReceipts.getAllPendingFRs)
+
 
 
 // Get All FRs on Branch Basis
@@ -196,7 +198,7 @@ router.get('/ByBranch/:id', freshReceipts.getAllFRsByBranch)
  */
 router.get('/frsHistory/:branchId/:userId', freshReceipts.getFRsHistory)
 
-
+router.get('/frsUpperHerarchyHistory/:branchId/:userId', freshReceipts.getFRsUpperHerarchyHistory)
 
 // Get Single FR
 /**

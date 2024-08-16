@@ -86,6 +86,11 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: true
         },
 
+        caseStatus: {
+            type: Sequelize.ENUM("draft", "pending", "approved", "rejected"),
+            defaultValue: "draft",
+        },
+
         status: {
             type: Sequelize.ENUM("active", "inactive"),
             defaultValue: "active"
