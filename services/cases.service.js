@@ -654,13 +654,16 @@ const casesService = {
           );
 
           // Update visibility and editability based on remarks
-          if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
-            console.log("dsfsdfs")
+          if (parseInt(latestRemark.assignedTo) === parseInt(userId) && section?.dataValues?.caseStatus !== "approved") {
             caseStatus = "pending"; // Assigned to current user
             isVisible = true;
             isEditable = true;
+          } else if (parseInt(latestRemark.submittedBy) === parseInt(userId)  && section?.dataValues?.caseStatus !== "approved") {
+            caseStatus = "sent";
+            isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
+            isEditable = false;
           } else {
-            console.log("dsfsdfs ---")
+            caseStatus = section?.dataValues?.caseStatus;
             isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
             isEditable = false;
           }
@@ -854,10 +857,15 @@ const casesService = {
             { createdAt: new Date(0), assignedTo: null }
           );
 
-          if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
+          if (parseInt(latestRemark.assignedTo) === parseInt(userId) && section?.dataValues?.caseStatus !== "approved") {
             status = "pending";
-          } else {
+          } else if (parseInt(latestRemark.submittedBy) === parseInt(userId)  && section?.dataValues?.caseStatus !== "approved") {
             status = "sent";
+            // isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
+            isEditable = false;
+          }
+          else {
+            status = section?.dataValues?.caseStatus;
           }
         }
 
@@ -1066,7 +1074,7 @@ const casesService = {
         }
 
         // Add only if the case is pending and visible
-        if (caseStatus === "pending" && isVisible) {
+        if (caseStatus === "pending" && isVisible && section.dataValues.caseStatus !== "approved") {
           if (!pendingCasesByCaseId[caseData.id]) {
             pendingCasesByCaseId[caseData.id] = {
               id: caseData.id,
