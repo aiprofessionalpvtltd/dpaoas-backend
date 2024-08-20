@@ -28,6 +28,8 @@ const divisions = require('../controllers/divisions.controller');
  */
 router.post("/create", divisions.createDivision)
 
+router.get("/group-by-division/:divisionId", divisions.groupByDivision)
+
 // Get All Divisions 
  /**
  * @swagger

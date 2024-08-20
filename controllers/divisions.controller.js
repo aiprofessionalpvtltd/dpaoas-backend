@@ -28,6 +28,25 @@ const divisionController = {
             })
         }
     },
+    // Route to get group by division ID 
+    groupByDivision: async (req, res) => {
+        try {
+            const { divisionId } = req.params;
+            const groupDevision = await divisionsService.groupByDivision(divisionId);
+            logger.info("group by division fetech Successfully!")
+            return res.status(200).send({
+                success: true,
+                message: "group by division fetech Successfully!",
+                data: groupDevision,
+            })
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            })
+        }
+    },
 
     //Retrive All Divisions
     getAllDivisions: async (req, res) => {

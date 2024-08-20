@@ -16,7 +16,7 @@ module.exports = (sequelize, Sequelize) => {
         },
 
         fkGroupId: {
-            type: Sequelize.INTEGER,
+            type: Sequelize.INTEGER, 
             allowNull: false,
             references: {
                 model: 'groups',
@@ -39,7 +39,7 @@ module.exports = (sequelize, Sequelize) => {
 
     groupsDivisions.associate = function(models) {
         groupsDivisions.belongsTo(models.divisions, { foreignKey: 'fkDivisionId'});
-        groupsDivisions.belongsTo(models.groups , { foreignKey: 'fkGroupId'});
+        groupsDivisions.belongsTo(models.groups , { foreignKey: 'fkGroupId', as: 'group'});
         groupsDivisions.belongsTo(models.sessions , { foreignKey: 'fkSessionId'})
     };
 

@@ -45,12 +45,16 @@ module.exports = (sequelize, Sequelize) => {
         },
 
         governmentType: {
-            type: Sequelize.ENUM("Opposition", "Government", "Independent", "Minister"),
+            type: Sequelize.ENUM("Opposition", "Government", "Independent", "Minister", "Treasury", "Anyside", "Joint Resolution"),
             allowNull: true
         },
 
         memberProvince: {
             type: Sequelize.ENUM("Balochistan", "Punjab","Khyber Pakhtunkhwa","Sindh","Erstwhile FATA", "Federal Capital Area Islamabad"),
+            allowNull: true
+        },
+        religion: {
+            type: Sequelize.ENUM("Islam", "Christianity","Hinduism","Sikh","Other"),
             allowNull: true
         },
         isMinister: {

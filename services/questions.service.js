@@ -9,7 +9,7 @@ const Members = db.members;
 const QuestionStatus = db.questionStatus;
 const QuestionDiary = db.questionDiary
 const Divisions = db.divisions;
-const Groups = db.groups;
+const Groups = db.groups; 
 const QuestionFile = db.questionFile
 const QuestionRevival = db.questionRevival
 const QuestionDefer = db.questionDefer
@@ -43,6 +43,8 @@ const questionsService = {
                 web_id: req.web_id ? req.web_id : null,
                 submittedBy: req.submittedBy ? req.submittedBy : null,
                 questionSentStatus: req.questionSentStatus ? req.questionSentStatus : 'inNotice',
+                fkGroupId: req.fkGroupId ? req.fkGroupId : null,
+                fkDivisionId: req.fkDivisionId ? req.fkDivisionId : null,
             });
 
             const noticeOfficeDiary = await NoticeOfficeDairy.create({
@@ -59,8 +61,16 @@ const questionsService = {
                 questionStatusDate: db.sequelize.literal('CURRENT_TIMESTAMP')
             });
 
+            const questionDiary =  await QuestionDiary.create({
+                questionID: question.id,
+                questionDiaryNo: req.questionDiaryNo,
+            });
+
             await Questions.update(
-                { fkNoticeDiary: noticeOfficeDiary.id },
+                { 
+                 fkNoticeDiary: noticeOfficeDiary.id ,
+                 fkQuestionDiaryId: questionDiary.id 
+                },
                 { where: { id: question.id } }
             );
 
@@ -629,7 +639,7 @@ const questionsService = {
                     {
                         model: Members,
                         as: 'member',
-                        attributes: ['id', 'memberName'],
+                        attributes: ['id', 'memberName', 'gender', 'governmentType', 'religion'],
                     },
                     {
                         model: Users,
@@ -685,8 +695,21 @@ const questionsService = {
                         { urduText: { [Op.iLike]: `%${searchCriteria.keyword}%` } },
                     ];
                 }
+                if (key === 'gender') {
+                    queryOptions.where['$member.gender$'] = { [Op.eq]: searchCriteria[key] };
+                }
                 if (key === 'memberName') {
                     queryOptions.where['$member.id$'] = { [Op.eq]: searchCriteria[key] };
+                }
+                if (key === 'memberPosition') {
+                    queryOptions.where['$member.governmentType$'] = { [Op.eq]: searchCriteria[key] };
+                }
+                if (key === 'Joint Resolution') {
+                    queryOptions.where['$member.governmentType$'] = { [Op.in]: ["Treasury", "Opposition", "Independent", "Anyside"]  };
+                    // query["$memberPosition$"] = { [Op.in]: ["Treasury", "Opposition", "Independent", "Anyside"] };
+                } 
+                if (key === 'religion') {
+                    queryOptions.where['$member.religion$'] = { [Op.eq]: searchCriteria[key] };
                 }
                 if (key === 'questionCategory') {
                     queryOptions.where['$questionCategory$'] = { [Op.eq]: searchCriteria[key] };
@@ -725,9 +748,9 @@ const questionsService = {
                 if (key === 'questionSentDate') {
                     queryOptions.where['$questionSentDate$'] = { [Op.eq]: searchCriteria[key] };
                 }
-                if (key === 'memberPosition') {
-                    queryOptions.where['$memberPosition$'] = { [Op.eq]: searchCriteria[key] };
-                }
+                // if (key === 'memberPosition') {
+                //     queryOptions.where['$memberPosition$'] = { [Op.eq]: searchCriteria[key] };
+                // }
             }
 
             // queryOptions.where = whereClause
@@ -777,6 +800,7 @@ const questionsService = {
                         questionID: question.id,
                         questionDiaryNo: req.questionDiaryNo,
                     });
+                    updatedQuesDiary = await QuestionDiary.update(updatedQuestionDiaryId, { where: { id: question.fkQuestionDiaryId } })
                 }
             } else {
                 throw ({ message: "Question Not Found!" })
@@ -809,7 +833,11 @@ const questionsService = {
                 web_id: req.web_id,
                 description: req.description,
                 submittedBy: req.submittedBy,
-                questionActive: req.questionActive
+                questionActive: req.questionActive,
+                fileStatus: req.fileStatus ? req.fileStatus : null,
+                fkGroupId: req.fkGroupId,
+                fkDivisionId: req.fkDivisionId,
+                fkQuestionDiaryId: updatedQuestionDiaryId.id,
             }
 
 

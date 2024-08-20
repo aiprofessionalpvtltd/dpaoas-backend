@@ -1235,7 +1235,7 @@ const motionService = {
   // Get Motion Statuses
   motionDashboardStats: async () => {
     try {
-      const motionSentStatus = "inMotion";
+      const motionSentStatus = "toMotion";
 
       const allMotionTypes = [
         "Adjournment Motion",
