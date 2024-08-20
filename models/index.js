@@ -1050,7 +1050,7 @@ db.tenures.hasMany(db.members, { foreignKey: "fkTenureId", as: "members" });
 db.parliamentaryYears.belongsTo(db.tenures, { foreignKey: "fkTenureId" });
 db.terms.belongsTo(db.tenures, { foreignKey: "fkTenureId" });
 db.groupsDivisions.belongsTo(db.divisions, { foreignKey: "fkDivisionId" });
-db.groupsDivisions.belongsTo(db.groups, { foreignKey: "fkGroupId" });
+db.groupsDivisions.belongsTo(db.groups, { foreignKey: "fkGroupId" , as: 'group' });
 db.groupsDivisions.belongsTo(db.sessions, { foreignKey: "fkSessionId" });
 // Associations
 db.groups.hasMany(db.groupsDivisions, { foreignKey: "fkGroupId" });

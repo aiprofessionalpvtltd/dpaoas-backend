@@ -1,6 +1,8 @@
 const db = require("../models");
 const Divisions = db.divisions;
-const Ministries = db.ministries
+const Groups = db.groups;
+const GroupsDivisions = db.groupsDivisions;
+const Ministries = db.ministries;
 const Op = db.Sequelize.Op;
 const logger = require('../common/winston');
 
@@ -18,6 +20,26 @@ const divisionsService = {
         }
     },
 
+    // Route to get group by division ID 
+    groupByDivision: async (divisionId) => {
+        try {
+            // Fetch the group associated with the division
+            const groupDivision = await GroupsDivisions.findOne({
+                where: { fkDivisionId: divisionId },
+                include: [{
+                    model: Groups,
+                    as: 'group'
+                }]
+            });
+            return groupDivision;
+        } catch (error) {
+            throw { message: error.message || 'An error occurred while fetching the group' };
+
+        }
+    },
+
+
+
     // Get All Divisions
     getAllDivisions: async (currentPage, pageSize) => {
         try {
@@ -27,7 +49,7 @@ const divisionsService = {
                 include: [
                     {
                         model: Ministries,
-                        attributes: ['id','ministryName']
+                        attributes: ['id', 'ministryName']
                     }
                 ],
                 offset,
@@ -48,13 +70,15 @@ const divisionsService = {
     getSingleDivision: async (divisionId) => {
         try {
 
-            const division = await Divisions.findOne({ where: { id: divisionId },
-            include: [
-                {
-                    model: Ministries,
-                    attributes: ['id','ministryName']
-                }
-            ] });
+            const division = await Divisions.findOne({
+                where: { id: divisionId },
+                include: [
+                    {
+                        model: Ministries,
+                        attributes: ['id', 'ministryName']
+                    }
+                ]
+            });
             if (!division) {
                 throw ({ message: "Division Not Found!" })
             }
