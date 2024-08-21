@@ -7,6 +7,7 @@ const { uploadFile } = require('../common/upload');
 
 //get Questions By Status
 router.get("/questionsByStatus", questions.getQuestionsByStatus);
+router.get("/questionDiaryNumber/generate", questions.questionDiaryNumberGenerate);
 
 // Create Question
 /**

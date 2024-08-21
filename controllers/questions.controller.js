@@ -836,7 +836,24 @@ const questionsController = {
 
   },
 
+      // Retrieves counts and data of questions by status
+      questionDiaryNumberGenerate: async (req, res) => {
+        try {
+            const result = await questionsService.questionDiaryNumberGenerate();
 
+            return res.status(200).send({
+                success: true,
+                message: "Questions new noticeOfficeDiaryNo fetched successfully!",
+                data: result
+            });
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
 
 }
 
