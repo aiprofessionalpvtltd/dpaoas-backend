@@ -5,6 +5,7 @@ const noticeOfficeDairies = db.noticeOfficeDairies;
 const resolutionDiaries = db.resolutionDiaries;
 const resolutionMovers = db.resolutionMovers;
 const resolutionStatus = db.resolutionStatus;
+const Questions = db.questions;
 const members = db.members;
 const sessions = db.sessions;
 const sequelize = require('sequelize');
@@ -903,6 +904,223 @@ const resolutionService = {
         }
 
     },
+
+    // Get Resolution, Motion, and Question Statuses count summary
+    findAllSummary: async (fromSessionId, toSessionId) => {
+        try {
+            // Query to fetch session names for fromSessionId and toSessionId
+            const sessions = await db.sessions.findAll({
+                where: {
+                    id: {
+                        [db.Sequelize.Op.in]: [fromSessionId, toSessionId]
+                    }
+                },
+                attributes: ['id', 'sessionName']
+            });
+
+            // Map the session IDs to their names
+            const sessionMap = {};
+            sessions.forEach(session => {
+                sessionMap[session.id] = session.sessionName;
+            });
+
+            const whereClauseResolution = {
+                fkSessionNo: {
+                    [db.Sequelize.Op.between]: [fromSessionId, toSessionId]
+                }
+            };
+
+            const whereClause = {
+                fkSessionId: {
+                    [db.Sequelize.Op.between]: [fromSessionId, toSessionId]
+                }
+            };
+
+            // Fetch the resolution data
+            const resolutionStatusCounts = await db.resolutions.findAll({
+                where: whereClauseResolution,
+                attributes: [
+                    [db.Sequelize.literal('"resolutionStatus"."resolutionStatus"'), 'statusName'],
+                    [db.Sequelize.fn('COUNT', 'id'), 'statusCount']
+                ],
+                include: [{
+                    model: db.resolutionStatus,
+                    as: 'resolutionStatus',
+                    attributes: []
+                }],
+                group: ['resolutionStatus.id']
+            });
+
+            // Fetch the data
+            const motionStatusCounts = await db.motions.findAndCountAll({
+                where: whereClause,
+                attributes: [
+                    [db.Sequelize.literal('"motionStatuses"."statusName"'), "statusName"],
+                    [db.Sequelize.fn("COUNT", "id"), "statusCount"],
+                ],
+                include: [
+                    {
+                        model: db.motionStatuses,
+                        as: "motionStatuses",
+                        attributes: [],
+                    },
+                ],
+                group: ["motionStatuses.id"],
+                // offset: currentPage * pageSize,
+                // limit: pageSize,
+            });
+
+            // Fetch the data for "Motion Under Rule 60"
+            const motionTypeCounts = await db.motions.findAndCountAll({
+                where: {
+                    ...whereClause,
+                    motionType: 'Motion Under Rule 60'
+                },
+                attributes: [
+                    [db.Sequelize.literal('"motionStatuses"."statusName"'), "statusName"],
+                    [db.Sequelize.fn("COUNT", "id"), "statusCount"],
+                ],
+                include: [
+                    {
+                        model: db.motionStatuses,
+                        as: "motionStatuses",
+                        attributes: [],
+                    },
+                ],
+                group: ["motionStatuses.id"],
+            });
+
+            // Fetch the question data by category
+            const questionCategories = ['Starred', 'Un-Starred'];
+            const questionCategoryCounts = {};
+
+            for (const category of questionCategories) {
+                const questionStatusCounts = await Questions.findAndCountAll({
+                    where: {
+                        ...whereClause,
+                        questionCategory: category
+                    },
+                    attributes: [
+                        [db.Sequelize.literal('"questionStatus"."questionStatus"'), 'status'],
+                        [db.Sequelize.fn('COUNT', 'id'), 'statusCount']
+                    ],
+                    include: [{
+                        model: db.questionStatus,
+                        as: 'questionStatus',
+                        attributes: []
+                    }],
+                    group: ['questionStatus.id']
+                });
+
+                let totalQuestionCount = 0;
+                for (const status of questionStatusCounts.rows) {
+                    totalQuestionCount += parseInt(status.dataValues.statusCount, 10);
+                }
+
+                questionCategoryCounts[category] = {
+                    questionStatusCounts: questionStatusCounts.rows.concat({ statusName: "Total Questions", statusCount: totalQuestionCount })
+                };
+            }
+
+            // Calculate total counts
+            let totalResolutionCount = 0;
+            let totalMotionCount = 0;
+            let totalMotionTypeCount = 0;
+
+
+            // Sum the counts for resolutions
+            for (const status of resolutionStatusCounts) {
+                totalResolutionCount += parseInt(status.dataValues.statusCount, 10);
+            }
+
+            // Sum the counts for motions
+            for (const status of motionStatusCounts.rows) {
+                totalMotionCount += parseInt(status.dataValues.statusCount, 10);
+            }
+
+            // Sum the counts for "Motion Under Rule 60"
+            for (const status of motionTypeCounts.rows) {
+                totalMotionTypeCount += parseInt(status.dataValues.statusCount, 10);
+            }
+
+            const modifiedResponse = {
+                sessionNames: {
+                    fromSessionName: sessionMap[fromSessionId] || 'Unknown',
+                    toSessionName: sessionMap[toSessionId] || 'Unknown'
+                },
+                resolutionStatusCounts: resolutionStatusCounts.concat({ statusName: "Total Resolutions", statusCount: totalResolutionCount }),
+                // motionStatusCounts: motionStatusCounts.rows.concat({ statusName: "Total Motions", statusCount: totalMotionCount }),
+                motionTypeCounts: motionTypeCounts.rows.concat({ statusName: "Total Motions Under Rule 60", statusCount: totalMotionTypeCount }),
+                questionCategoryCounts: questionCategoryCounts
+            };
+
+            return { ...modifiedResponse };
+        } catch (error) {
+            console.error(error);
+        }
+    },
+
+    // generateDynamicHtml: async (data) => {
+    //     return `
+    //     <!DOCTYPE html>
+    //     <html lang="en">
+    //       <head>
+    //         <meta charset="utf-8" />
+    //         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    //         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    //         <title></title>
+    //       </head>
+
+    //       <body style="background: #fff; font-family: Arial, Helvetica, sans-serif">
+    //         <div class="template" style="width: 940px; margin: 0 auto">
+    //           <div class="template-head">
+    //             <h1 style="text-align: center; font-size: 20px; text-decoration: underline">SENATE SECRETARIAT</h1>
+    //             <p style="text-align: center; font-size: 20px; margin-top: 10px; margin-bottom: 10px">(Questions Branch)</p>
+    //             <p style="text-align: center">*****</p>
+    //             <p style="font-weight: bold; text-decoration: underline">
+    //               STATEMENT SHOWING THE POSITION OF STARRED AND UN-STARRED QUESTIONS AND RESOLUTIONS DURING THE 21<sup>st</sup>
+    //               PARLIAMENTARY YEAR (326<sup>th</sup> TO 335<sup>th</sup> SESSIONS) TILLDATE.
+    //             </p>
+    //           </div>
+    //           <div class="template-detail">
+    //             <p style="text-align: center; font-weight: bold; margin-top: 25px; text-decoration: underline">
+    //               STARRED QUESTIONS
+    //             </p>
+    //             <div style="margin: 0 25px">
+    //               <p style="float: left; width: 60%; margin: 10px 0">
+    //                 Total Questions <span style="float: right; margin-right: 25px; font-weight: bold">:</span>
+    //               </p>
+    //               <p style="float: right; text-align: right; margin: 10px 0">${data.starred.totalQuestions}</p>
+    //               <div style="clear: both"></div>
+    //               <p style="float: left; width: 60%; margin: 10px 0">
+    //                 Admitted <span style="float: right; margin-right: 25px; font-weight: bold">:</span>
+    //               </p>
+    //               <p style="float: right; text-align: right; margin: 10px 0">${data.starred.admitted}</p>
+    //               <!-- Add more fields similarly -->
+    //               <div style="clear: both"></div>
+    //             </div>
+    //           </div>
+    //           <!-- Add similar sections for un-starred questions, resolutions, etc. -->
+    //         </div>
+    //       </body>
+    //     </html>
+    //     `;
+    // },
+
+    // generatePdf: async (htmlContent) => {
+    //     const browser = await puppeteer.launch();
+    //     const page = await browser.newPage();
+    //     await page.setContent(htmlContent);
+    //     const pdfPath = path.join(__dirname, 'pdfs', `summary-${Date.now()}.pdf`);
+    //     await page.pdf({ path: pdfPath, format: 'A4' });
+    //     await browser.close();
+    //     return pdfPath;
+    // },
+
+
+
+
+
 
     // Get all resolutions list
     getAllResolutionLists: async (currentPage, pageSize) => {

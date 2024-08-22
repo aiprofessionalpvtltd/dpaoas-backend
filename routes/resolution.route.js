@@ -93,6 +93,7 @@ router.post("/create", uploadFile("resolution"), resolution.createResolution);
 router.get("/", resolution.findAllResolutionsByWebId);
 
 router.get("/summary", resolution.findAllResolutionsSummary);
+router.get("/findAllSummary", resolution.findAllSummary);
 
 router.post("/resolution-lists", resolution.createResolutionListAndAssociateResolutions);
 router.post("/generateResolutionListData", resolution.generateResolutionListData);

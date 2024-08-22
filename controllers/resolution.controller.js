@@ -37,7 +37,7 @@ const resolutionController = {
                 );
                 const updatedResolution = await Resolution.findOne({ where: { id: resolution.id } });
 
-                console.log("updatedResolution-----",updatedResolution)
+                console.log("updatedResolution-----", updatedResolution)
                 logger.info("Resolution submitted!")
                 return res.status(200).send({
                     success: true,
@@ -370,6 +370,30 @@ const resolutionController = {
             })
         }
     },
+
+    // findAllSummary status summary
+    findAllSummary: async (req, res) => {
+        try {
+            const { fromSessionId, toSessionId } = req.query;
+            const findAllSummary = await resolutionService.findAllSummary(fromSessionId, toSessionId);
+
+    
+            logger.info("PDF generated and status counts fetched successfully!");
+            return res.status(200).send({
+                success: true,
+                message: "PDF generated and status counts fetched successfully!",
+                data: findAllSummary
+            });
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+
+
 
     getAllResolutionLists: async (req, res) => {
         try {
@@ -841,7 +865,7 @@ const resolutionController = {
     findAllResolutionsBySessionRange: async (req, res) => {
         try {
             const { fromSessionId, toSessionId, currentPage, pageSize } = req.query;
-            console.log("data comes this ",fromSessionId, toSessionId, currentPage, pageSize );
+            console.log("data comes this ", fromSessionId, toSessionId, currentPage, pageSize);
             const resolutionData = await resolutionService.findAllResolutionsBySessionRange(fromSessionId, toSessionId, currentPage, pageSize);
             logger.info("Resolution data fetched successfully!");
             return res.status(200).send({
