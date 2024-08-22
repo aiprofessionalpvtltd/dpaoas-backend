@@ -366,7 +366,7 @@ updateEmployee: async (employee, req) => {
     try {
       const userPayload = {
         email: req.body.email,
-        password: req.body.password,
+        // password: req.body.password,
         fkRoleId: req.body.fkRoleId
       };
 
