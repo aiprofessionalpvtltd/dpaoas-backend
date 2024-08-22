@@ -923,5 +923,25 @@ const MotionController = {
       });
     }
   },
+    
+    
+      // Retrieves counts and data of motions by status
+  motionDiaryNumberGenerate: async (req, res) => {
+         try {
+            const result = await motionService.motionDiaryNumberGenerate();
+
+            return res.status(200).send({
+                success: true,
+                message: "Motions new noticeOfficeDiaryNo fetched successfully!",
+                data: result
+            });
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
 };
 module.exports = MotionController;

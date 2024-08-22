@@ -1357,6 +1357,68 @@ const motionService = {
       throw new Error("Error Fetching Motion Statuses");
     }
   },
+
+
+  motionDiaryNumberGenerate: async () => {
+    try {
+        // Determine the current session year
+        const currentDate = moment();
+        const currentYear = currentDate.year();
+        const sessionStartDate = moment(`${currentYear}-03-12`);
+        const nextYear = currentYear + 1;
+        const sessionEndDate = moment(`${nextYear}-03-11`);
+        
+        // Static session end date for testing
+        // const sessionEndDate = '2024-08-20';
+         
+
+        // Fetch the latest question
+        const latestMotion= await motions.findOne({
+            include: [
+              {
+                model: noticeOfficeDairies,
+                as: 'noticeOfficeDairies',
+                attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
+              },
+            ],
+            order: [["createdAt", "DESC"]],
+        });
+
+        let newNoticeOfficeDiaryNo;
+
+        if (latestMotion && latestMotion.noticeOfficeDairies) {
+            const currentDateMoment = moment(currentDate, 'YYYY-MM-DD');
+            const sessionEndDateMoment = moment(sessionEndDate, 'YYYY-MM-DD').startOf('day'); // Make sure it's in 'day' precision
+
+            console.log('sessionEndDate', sessionEndDateMoment);
+            console.log('currentDateMoment', currentDateMoment);
+
+             // Check if the latest diary date is after the session end date
+            if (currentDateMoment.isAfter(sessionEndDateMoment, 'day')) {
+                // If noticeOfficeDiaryDate is after sessionEndDate, start from "01"
+                newNoticeOfficeDiaryNo = "01";
+            } else {
+                // If noticeOfficeDiaryDate is on or before sessionEndDate, increment the number
+                const latestNo = parseInt(latestMotion.noticeOfficeDairies.noticeOfficeDiaryNo, 10);
+                newNoticeOfficeDiaryNo = String(latestNo + 1).padStart(2, "0");
+            }
+        } else {
+            // If no noticeOfficeDiaryNo is found, start from "01"
+            newNoticeOfficeDiaryNo = "01";
+        }
+
+        console.log('newNoticeOfficeDiaryNo', newNoticeOfficeDiaryNo);
+ 
+        const result = {
+            noticeOfficeDiaryNo : newNoticeOfficeDiaryNo, // Include the new noticeOfficeDiaryNo
+        };
+
+        return result;
+    } catch (error) {
+        throw { message: error.message || "Error Fetching Questions by Status!" };
+    }
+  },
+  
 };
 
 module.exports = motionService;

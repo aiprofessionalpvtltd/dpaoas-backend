@@ -2359,6 +2359,62 @@ const resolutionService = {
         }
     },
 
+    resolutionDiaryNumberGenerate: async () => {
+        try {
+            // Determine the current session year
+            const currentDate = moment();
+            const currentYear = currentDate.year();
+            const sessionStartDate = moment(`${currentYear}-03-12`);
+            const nextYear = currentYear + 1;
+            const sessionEndDate = moment(`${nextYear}-03-11`);
+    
+            // Fetch the latest resolution
+            const latestResolution = await resolution.findOne({
+                include: [
+                    {
+                        model: db.noticeOfficeDairies,
+                        as: 'noticeDiary',
+                        attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
+                    },
+                ],
+                order: [["createdAt", "DESC"]],
+            });
+    
+            let newNoticeOfficeDiaryNo;
+    
+            if (latestResolution && latestResolution.noticeDiary) {
+                const latestDiaryDateMoment = moment(latestResolution.noticeDiary.noticeOfficeDiaryDate).startOf('day');
+                const sessionEndDateMoment = sessionEndDate.startOf('day');
+    
+                console.log('sessionEndDate', sessionEndDateMoment.format('YYYY-MM-DD'));
+                console.log('latestDiaryDate', latestDiaryDateMoment.format('YYYY-MM-DD'));
+    
+                // Check if the current date is after the session end date
+                if (latestDiaryDateMoment.isAfter(sessionEndDateMoment, 'day')) {
+                    // If noticeOfficeDiaryDate is after sessionEndDate, start from "01"
+                    newNoticeOfficeDiaryNo = "01";
+                } else {
+                    // If noticeOfficeDiaryDate is on or before sessionEndDate, increment the number
+                    const latestNo = parseInt(latestResolution.noticeDiary.noticeOfficeDiaryNo, 10);
+                    newNoticeOfficeDiaryNo = String(latestNo + 1).padStart(2, "0");
+                }
+            } else {
+                // If no noticeOfficeDiaryNo is found, start from "01"
+                newNoticeOfficeDiaryNo = "01";
+            }
+    
+            console.log('newNoticeOfficeDiaryNo', newNoticeOfficeDiaryNo);
+    
+            const result = {
+                noticeOfficeDiaryNo: newNoticeOfficeDiaryNo, // Include the new noticeOfficeDiaryNo
+            };
+    
+            return result;
+        } catch (error) {
+            throw { message: error.message || "Error Fetching Resolutions by Status!" };
+        }
+    },
+    
 
 
 
