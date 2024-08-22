@@ -1,204 +1,392 @@
-const ordinanceService = require('../services/ordinances.service');
-const logger = require('../common/winston');
+const ordinanceService = require("../services/ordinances.service");
+const logger = require("../common/winston");
 const db = require("../models");
 const Ordinances = db.ordinances;
 const ordinanceController = {
-
-    // Create a new Ordinance
-    createOrdinance: async (req, res) => {
-        try {
-            const ordinanceData = req.body;
-            const createdOrdinanceData = await ordinanceService.createOrdinance(ordinanceData);
-            logger.info("Ordinance Created Successfully!");
-            return res.status(200).send({
-                success: true,
-                message: "Ordinance Created Successfully!",
-                data: createdOrdinanceData,
-            })
-        } catch (error) {
-            logger.error(error.message);
-            return res.status(400).send({
-                success: false,
-                message: error.message
-            })
-        }
-    },
-
-    // Retrieves All Ordinances
-    findAllOrdinances: async (req, res) => {
-        try {
-            const currentPage = parseInt(req.query.currentPage);
-            const pageSize = parseInt(req.query.pageSize);
-            const { count, totalPages, ordinance } = await ordinanceService.findAllOrdinances(currentPage, pageSize);
-
-            logger.info("ordinance--->>", ordinance)
-
-            if (ordinance.length === 0) {
-                logger.info("No data found on this page!")
-                return res.status(200).send({
-                    success: true,
-                    message: 'No data found on this page!'
-                });
-            }
-            else {
-                logger.info("All ordinances Fetched Successfully!")
-                return res.status(200).send({
-                    success: true,
-                    message: "All ordinances Fetched Successfully!",
-                    data: { ordinance, totalPages, count }
-                })
-            }
-
-        } catch (error) {
-            logger.error(error.message)
-            return res.status(400).send({
-                success: false,
-                message: error.message,
-
-            })
-        }
-    },
-
-    // search All Ordinances
-    searchAllOrdinance: async (req, res) => {
-        try {
-            const currentPage = parseInt(req.query.currentPage);
-            const pageSize = parseInt(req.query.pageSize);
-            const { count, totalPages, ordinance } = await ordinanceService.searchAllOrdinance(req.query, currentPage, pageSize);
-
-            logger.info("ordinance--->>", ordinance)
-
-            if (ordinance.length === 0) {
-                logger.info("No data found on this page!")
-                return res.status(200).send({
-                    success: true,
-                    message: 'No data found on this page!'
-                });
-            }
-            else {
-                logger.info("All ordinances Fetched Successfully!")
-                return res.status(200).send({
-                    success: true,
-                    message: "All ordinances Fetched Successfully!",
-                    data: { ordinance, totalPages, count }
-                })
-            }
-
-        } catch (error) {
-            logger.error(error.message)
-            return res.status(400).send({
-                success: false,
-                message: error.message,
-
-            })
-        }
-    },
-
-    // Retrieve Single Ordinance
-    findSinlgeOrdinance: async (req, res) => {
-        try {
-            const ordinanceId = req.params.id
-            const ordinance = await ordinanceService.findSinlgeOrdinance(ordinanceId);
-            logger.info("Single Ordinance Fetched Successfully!")
-            return res.status(200).send({
-                success: true,
-                message: "Single Ordinance Fetched Successfully!",
-                data: [ordinance],
-            })
-        } catch (error) {
-            logger.error(error.message)
-            return res.status(400).send({
-                success: false,
-                message: error.message
-            })
-        }
-    },
-
-    // Update Ordinance
-    updateOrdinance: async (req, res) => {
-        try {
-            const ordinanceId = req.params.id;
-            const updatedData = req.body;
-            const ordinance = await Ordinances.findByPk(ordinanceId);
-            if (!ordinance) {
-                return res.status(200).send({
-                    success: true,
-                    message: "Ordinance Not Found!",
-                })
-            }
-            const updatedOrdinance = await ordinanceService.updateOrdinance(updatedData, ordinanceId);
-            if (updatedOrdinance) {
-                if (req.files && req.files.length > 0) {
-                    const newAttachmentObjects = req.files.map((file, index) => {
-                        const path = file.destination.replace('./public/', '/public/') + file.originalname;
-                        const id = index + 1;
-                        return JSON.stringify({ id, path });
-                    });
-
-                    // Merge existing image objects with the new ones
-                    const updatedImages = [...newAttachmentObjects];
-
-                    const [numberOfAffectedRows, affectedRows] = await Ordinances.update(
-                        {
-                            file: updatedImages,
-                        },
-                        {
-                            where: { id: ordinanceId }
-                        }
-                    );
-
-                }
-
-                const updatedOrdinance = await Ordinances.findOne({ where: { id: ordinanceId } });
-
-                if (updatedOrdinance && updatedOrdinance.file) {
-                    updatedOrdinance.file = updatedOrdinance.file.map(imageString => JSON.parse(imageString));
-                }
-
-
-                logger.info("Ordinance Updated Successfully!")
-                return res.status(200).send({
-                    success: true,
-                    message: "Ordinance Updated Successfully!",
-                    data: updatedOrdinance,
-                })
-            }
-        } catch (error) {
-            logger.error(error.message)
-            return res.status(400).send({
-                success: false,
-                message: error.message
-            })
-        }
-    },
-
-    // Delets/Suspend the Ordinance
-    deleteOrdinance: async (req, res) => {
-        try {
-            const ordinanceId = req.params.id;
-            const ordinance = await Ordinances.findByPk(ordinanceId);
-            if (!ordinance) {
-                return res.status(200).send({
-                    success: true,
-                    message: "senate Bill Not Found!",
-                })
-            }
-            const deletedOrdinance = await ordinanceService.deleteOrdinance(ordinanceId);
-
-            logger.info("Senate Ordinance Deleted Successfully!")
-            return res.status(200).send({
-                success: true,
-                message: "Senate Ordinance Deleted Successfully!",
-                data: deletedOrdinance,
-            })
-        } catch (error) {
-            logger.error(error.message)
-            return res.status(400).send({
-                success: false,
-                message: error.message
-            })
-        }
+  // Create a new Ordinance
+  createOrdinance: async (req, res) => {
+    try {
+      const ordinanceData = req.body;
+      const createdOrdinanceData = await ordinanceService.createOrdinance(
+        ordinanceData
+      );
+      logger.info("Ordinance Created Successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "Ordinance Created Successfully!",
+        data: createdOrdinanceData,
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
     }
-}
+  },
+
+  // Retrieves All Ordinances
+  findAllOrdinances: async (req, res) => {
+    try {
+      const currentPage = parseInt(req.query.currentPage);
+      const pageSize = parseInt(req.query.pageSize);
+      const { count, totalPages, ordinance } =
+        await ordinanceService.findAllOrdinances(currentPage, pageSize);
+
+      logger.info("ordinance--->>", ordinance);
+
+      if (ordinance.length === 0) {
+        logger.info("No data found on this page!");
+        return res.status(200).send({
+          success: true,
+          message: "No data found on this page!",
+        });
+      } else {
+        logger.info("All ordinances Fetched Successfully!");
+        return res.status(200).send({
+          success: true,
+          message: "All ordinances Fetched Successfully!",
+          data: { ordinance, totalPages, count },
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  // search All Ordinances
+  searchAllOrdinance: async (req, res) => {
+    try {
+      const currentPage = parseInt(req.query.currentPage);
+      const pageSize = parseInt(req.query.pageSize);
+      const { count, totalPages, ordinance } =
+        await ordinanceService.searchAllOrdinance(
+          req.query,
+          currentPage,
+          pageSize
+        );
+
+      logger.info("ordinance--->>", ordinance);
+
+      if (ordinance.length === 0) {
+        logger.info("No data found on this page!");
+        return res.status(200).send({
+          success: true,
+          message: "No data found on this page!",
+        });
+      } else {
+        logger.info("All ordinances Fetched Successfully!");
+        return res.status(200).send({
+          success: true,
+          message: "All ordinances Fetched Successfully!",
+          data: { ordinance, totalPages, count },
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  // Retrieve Single Ordinance
+  findSinlgeOrdinance: async (req, res) => {
+    try {
+      const ordinanceId = req.params.id;
+      const ordinance = await ordinanceService.findSinlgeOrdinance(ordinanceId);
+      logger.info("Single Ordinance Fetched Successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "Single Ordinance Fetched Successfully!",
+        data: [ordinance],
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  // Update Ordinance
+  updateOrdinance: async (req, res) => {
+    try {
+      const ordinanceId = req.params.id;
+      const updatedData = req.body;
+      const ordinance = await Ordinances.findByPk(ordinanceId);
+
+      if (!ordinance) {
+        return res.status(200).send({
+          success: true,
+          message: "Ordinance Not Found!",
+        });
+      }
+
+      const updatedOrdinance = await ordinanceService.updateOrdinance(
+        updatedData,
+        ordinanceId
+      );
+
+      if (updatedOrdinance) {
+          if (req.files && req.files.length > 0) {
+            const currentDate = new Date().toISOString(); // Get the current date
+
+          const newAttachmentObjects = req.files.map((file, index) => {
+            const path =
+              file.destination.replace("./public/", "/public/") +
+              file.originalname;
+            return { id: null, path , date: updatedData.documentDate ,type : 'Ordinance' }; // IDs will be handled later
+          });
+
+          const existingDocument = await Ordinances.findOne({
+            where: { id: ordinanceId },
+          });
+
+          let updatedImages = newAttachmentObjects;
+
+          if (
+            existingDocument &&
+            existingDocument.file &&
+            existingDocument.file.length > 0
+          ) {
+            // Parse existing files
+            const existingFiles = existingDocument.file
+              .map((fileString) => {
+                try {
+                  return JSON.parse(fileString);
+                } catch (e) {
+                  console.error("Error parsing JSON:", e);
+                  return null;
+                }
+              })
+              .filter((file) => file !== null);
+
+            const existingFileIds = existingFiles.map((file) => file.id);
+            const nextId = Math.max(...existingFileIds, 0) + 1;
+
+            // Assign IDs to new files starting from nextId
+            newAttachmentObjects.forEach((file, index) => {
+              file.id = nextId + index;
+            });
+
+            // Merge existing files with new attachments
+            updatedImages = existingFiles.concat(newAttachmentObjects);
+          } else {
+            // If no existing files, assign IDs starting from 1
+            newAttachmentObjects.forEach((file, index) => {
+              file.id = index + 1;
+            });
+            updatedImages = newAttachmentObjects;
+          }
+
+          const documentData = {
+            file: updatedImages.map((file) => JSON.stringify(file)),
+          };
+
+          await Ordinances.update(documentData, {
+            where: { id: ordinanceId },
+          });
+        }
+
+        const updatedOrdinance = await Ordinances.findOne({
+          where: { id: ordinanceId },
+        });
+
+        if (updatedOrdinance && updatedOrdinance.file) {
+          updatedOrdinance.file = updatedOrdinance.file.map((imageString) =>
+            JSON.parse(imageString)
+          );
+        }
+
+        logger.info("Ordinance Updated Successfully!");
+        return res.status(200).send({
+          success: true,
+          message: "Ordinance Updated Successfully!",
+          data: updatedOrdinance,
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  // updateOrdinance: async (req, res) => {
+  //     try {
+  //         const ordinanceId = req.params.id;
+  //         const updatedData = req.body;
+  //         const ordinance = await Ordinances.findByPk(ordinanceId);
+  //         if (!ordinance) {
+  //             return res.status(200).send({
+  //                 success: true,
+  //                 message: "Ordinance Not Found!",
+  //             })
+  //         }
+  //         const updatedOrdinance = await ordinanceService.updateOrdinance(updatedData, ordinanceId);
+  //         if (updatedOrdinance) {
+  //             if (req.files && req.files.length > 0) {
+  //                 const newAttachmentObjects = req.files.map((file, index) => {
+  //                     const path = file.destination.replace('./public/', '/public/') + file.originalname;
+  //                     const id = index + 1;
+  //                     return JSON.stringify({ id, path });
+  //                 });
+
+  //                 // Merge existing image objects with the new ones
+  //                 const updatedImages = [...newAttachmentObjects];
+
+  //                 const [numberOfAffectedRows, affectedRows] = await Ordinances.update(
+  //                     {
+  //                         file: updatedImages,
+  //                     },
+  //                     {
+  //                         where: { id: ordinanceId }
+  //                     }
+  //                 );
+
+  //             }
+
+  //             const updatedOrdinance = await Ordinances.findOne({ where: { id: ordinanceId } });
+
+  //             if (updatedOrdinance && updatedOrdinance.file) {
+  //                 updatedOrdinance.file = updatedOrdinance.file.map(imageString => JSON.parse(imageString));
+  //             }
+
+  //             logger.info("Ordinance Updated Successfully!")
+  //             return res.status(200).send({
+  //                 success: true,
+  //                 message: "Ordinance Updated Successfully!",
+  //                 data: updatedOrdinance,
+  //             })
+  //         }
+  //     } catch (error) {
+  //         logger.error(error.message)
+  //         return res.status(400).send({
+  //             success: false,
+  //             message: error.message
+  //         })
+  //     }
+  // },
+
+  // Delets/Suspend the Ordinance
+  deleteOrdinance: async (req, res) => {
+    try {
+      const ordinanceId = req.params.id;
+      const ordinance = await Ordinances.findByPk(ordinanceId);
+      if (!ordinance) {
+        return res.status(200).send({
+          success: true,
+          message: "senate Bill Not Found!",
+        });
+      }
+      const deletedOrdinance = await ordinanceService.deleteOrdinance(
+        ordinanceId
+      );
+
+      logger.info("Senate Ordinance Deleted Successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "Senate Ordinance Deleted Successfully!",
+        data: deletedOrdinance,
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  // Delete a file from the Introduced In Senate Bill data
+  deleteFile: async (req, res) => {
+    try {
+      const ordinanceBillId = req.params.id;
+      const {  fileId } = req.body;
+
+      const existingDocument = await Ordinances.findOne({
+        where: {
+          id: ordinanceBillId,
+        },
+      });
+
+      if (!existingDocument) {
+        return res.status(404).send({
+          success: false,
+          message: "Document not found!",
+        });
+      }
+
+      const existingFiles = existingDocument.file.map((file) =>
+        JSON.parse(file)
+      );
+      const fileIndex = existingFiles.findIndex((file) => file.id === fileId);
+
+      if (fileIndex === -1) {
+        return res.status(404).send({
+          success: false,
+          message: "File not found!",
+        });
+      }
+
+      // Remove the file from the array
+      existingFiles.splice(fileIndex, 1);
+
+      // Update the IDs to be sequential
+      const updatedFiles = existingFiles.map((file, index) => ({
+        ...file,
+        id: index + 1,
+      }));
+
+      const updatedDocumentData = {
+        file: updatedFiles.map((file) => JSON.stringify(file)),
+      };
+
+      // Update the document if there are files remaining
+      if (updatedFiles.length > 0) {
+        await Ordinances.update(updatedDocumentData, {
+          where: {
+            id: ordinanceBillId,
+          },
+        });
+      } else {
+        // Delete the document type if no files are remaining
+        await Ordinances.destroy({
+          where: {
+            id: ordinanceBillId,
+          },
+        });
+      }
+
+      // Check if any documents are left for the senate bill
+      const remainingDocuments = await Ordinances.findOne({
+        where: {
+          id: ordinanceBillId,
+        },
+      });
+
+      logger.info("File deleted and IDs updated successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "File deleted and IDs updated successfully!",
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+};
 
 module.exports = ordinanceController;

@@ -23,5 +23,7 @@ router.put("/update/:id", uploadFile("ordinanceDocument"), ordinances.updateOrdi
 // Suspend/Delete Ordinance
 router.delete("/delete/:id", ordinances.deleteOrdinance);
 
+router.put('/:id/file', ordinances.deleteFile);
+
 module.exports = router
 
