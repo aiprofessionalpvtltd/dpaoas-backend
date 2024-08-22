@@ -481,6 +481,7 @@ router.get('/:id', motionController.getMotionById);
 */
 router.get('/motionStatuses', motionController.getMotionStatuses);
 
+router.get("/motionDiaryNumber/generate", motionController.motionDiaryNumberGenerate);
 
 
 

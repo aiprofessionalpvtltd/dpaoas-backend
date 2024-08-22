@@ -430,4 +430,6 @@ router.put("/delete/:id", resolution.deleteResolution);
 
 router.delete("/reActive/:id", resolution.reActiveResolution);
 
+router.get("/resolutionDiaryNumber/generate", resolution.resolutionDiaryNumberGenerate);
+
 module.exports = router

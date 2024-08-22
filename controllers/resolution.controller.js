@@ -857,6 +857,24 @@ const resolutionController = {
             });
         }
     },
+        // Retrieves counts and data of motions by status
+  resolutionDiaryNumberGenerate: async (req, res) => {
+    try {
+       const result = await resolutionService.resolutionDiaryNumberGenerate();
+
+       return res.status(200).send({
+           success: true,
+           message: "Resolution new noticeOfficeDiaryNo fetched successfully!",
+           data: result
+       });
+   } catch (error) {
+       logger.error(error.message);
+       return res.status(400).send({
+           success: false,
+           message: error.message
+       });
+   }
+},
 
 }
 
