@@ -15,7 +15,36 @@ const ordinanceService = {
     createOrdinance: async (req) => {
         try {
 
-            const ordinances = await Ordinances.create(req);
+            
+                // Destructure the fields and handle empty dates
+                const {
+                    fkParliamentaryYearId,
+                    fkSessionId,
+                    fkUserId,
+                    ordinanceTitle,
+                    dateOfLayingInTheSenate,
+                    dateOfLayingInTheNA,
+                    fkOrdinanceStatus,
+                } = req;
+        
+                // Create a payload that includes all other fields and handles empty dates
+                const payload = {
+                    fkParliamentaryYearId,
+                    fkSessionId,
+                    fkUserId,
+                    ordinanceTitle,
+                   
+                    dateOfLayingInTheSenate: dateOfLayingInTheSenate || null,
+                    dateOfLayingInTheNA: dateOfLayingInTheNA || null,
+                    fkOrdinanceStatus,
+
+                };
+        
+
+                // Create the ordinance using the payload
+                const ordinances = await Ordinances.create(payload);
+
+            // const ordinances = await Ordinances.create(req);
 
             return ordinances;
         } catch (error) {
