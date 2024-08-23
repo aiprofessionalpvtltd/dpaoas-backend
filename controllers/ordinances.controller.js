@@ -96,10 +96,10 @@ const ordinanceController = {
   },
 
   // Retrieve Single Ordinance
-  findSinlgeOrdinance: async (req, res) => {
+  findSingleOrdinance: async (req, res) => {
     try {
       const ordinanceId = req.params.id;
-      const ordinance = await ordinanceService.findSinlgeOrdinance(ordinanceId);
+      const ordinance = await ordinanceService.findSingleOrdinance(ordinanceId);
       logger.info("Single Ordinance Fetched Successfully!");
       return res.status(200).send({
         success: true,
@@ -277,7 +277,7 @@ const ordinanceController = {
   //     }
   // },
 
-  // Delets/Suspend the Ordinance
+  // Delete/Suspend the Ordinance
   deleteOrdinance: async (req, res) => {
     try {
       const ordinanceId = req.params.id;

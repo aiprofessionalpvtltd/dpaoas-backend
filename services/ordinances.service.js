@@ -174,7 +174,7 @@ const ordinanceService = {
     },
 
     // Retrieve Single Ordinances
-    findSinlgeOrdinance: async (ordinanceId) => {
+    findSingleOrdinance: async (ordinanceId) => {
         try {
             const ordinances = await Ordinances.findOne({
                 where: { id: ordinanceId },

@@ -15,7 +15,7 @@ router.get("/", ordinances.findAllOrdinances);
 router.get("/search", ordinances.searchAllOrdinance);
 
 // Retrieve Single Ordinance by its ID
-router.get("/:id", ordinances.findSinlgeOrdinance);
+router.get("/:id", ordinances.findSingleOrdinance);
 
 // Update Ordinance
 router.put("/update/:id", uploadFile("ordinanceDocument"), ordinances.updateOrdinance)
