@@ -27,6 +27,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkParliamentaryYearId: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'parliamentaryYears',
+                key: 'id'
+            }
+        },
         memberStatus: {
             type: Sequelize.ENUM("Active", "Active/Oath Not Administered", "Deceased", "Disqualified", "Resigned", "Retired", "Tenure Completed"),
             defaultValue: 'Active'

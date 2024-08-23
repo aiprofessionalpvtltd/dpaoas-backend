@@ -9,12 +9,14 @@ const memberService = {
     // Create A New Member
     createMember: async (req) => {
         try {
-            let { memberName, memberUrduName, fkTenureId, memberStatus, politicalParty, electionType, gender, isMinister ,governmentType,phoneNo,reason, memberProvince} = req;
+
+            let { memberName, memberUrduName, fkTenureId, fkParliamentaryYearId , memberStatus, politicalParty, electionType, gender, isMinister ,governmentType,phoneNo,reason, memberProvince} = req;
 
             const memberRequest = await members.create({
                 memberName: memberName ? memberName : null,
                 memberUrduName : memberUrduName ? memberUrduName : null,
                 fkTenureId: fkTenureId ? fkTenureId : null,
+                fkParliamentaryYearId: fkParliamentaryYearId ? fkParliamentaryYearId : null,
                 memberStatus: memberStatus ? memberStatus : null,
                 politicalParty: politicalParty ? politicalParty : null,
                 electionType: electionType ? electionType : null,
@@ -25,7 +27,7 @@ const memberService = {
                 phoneNo: phoneNo ? phoneNo :null,
                 reason: reason ? reason : null,
             });
-
+ 
             return memberRequest;
         } catch (error) {
             console.error('Error creating member request:', error);
@@ -35,13 +37,14 @@ const memberService = {
     // Update A Member
     updateMember: async (id, payload) => {
         try {
-            let { memberName, memberUrduName, fkTenureId, memberStatus, politicalParty, electionType, gender, isMinister,governmentType,phoneNo, memberProvince , reason} = payload;
+            let { memberName, memberUrduName, fkTenureId, fkParliamentaryYearId , memberStatus, politicalParty, electionType, gender, isMinister,governmentType,phoneNo, memberProvince , reason} = payload;
 
             const result = await members.update(
                 {
                     memberName: memberName ? memberName : null,
                     memberUrduName : memberUrduName ? memberUrduName : null,
                     fkTenureId: fkTenureId ? fkTenureId : null,
+                    fkParliamentaryYearId: fkParliamentaryYearId ? fkParliamentaryYearId : null,
                     memberStatus: memberStatus ? memberStatus : null,
                     politicalParty: politicalParty ? politicalParty : null,
                     electionType: electionType ? electionType : null,
