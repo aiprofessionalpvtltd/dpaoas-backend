@@ -307,86 +307,77 @@ const ordinanceController = {
     }
   },
 
-  // Delete a file from the Introduced In Senate Bill data
   deleteFile: async (req, res) => {
     try {
-      const ordinanceBillId = req.params.id;
-      const {  fileId } = req.body;
+        const ordinanceBillId = req.params.id;
+        const { fileId } = req.body;
 
-      const existingDocument = await Ordinances.findOne({
-        where: {
-          id: ordinanceBillId,
-        },
-      });
-
-      if (!existingDocument) {
-        return res.status(404).send({
-          success: false,
-          message: "Document not found!",
+        const existingDocument = await Ordinances.findOne({
+            where: { id: ordinanceBillId },
         });
-      }
 
-      const existingFiles = existingDocument.file.map((file) =>
-        JSON.parse(file)
-      );
-      const fileIndex = existingFiles.findIndex((file) => file.id === fileId);
+        if (!existingDocument) {
+            return res.status(404).send({
+                success: false,
+                message: "Document not found!",
+            });
+        }
 
-      if (fileIndex === -1) {
-        return res.status(404).send({
-          success: false,
-          message: "File not found!",
-        });
-      }
+        const existingFiles = existingDocument.file.map(file =>
+            JSON.parse(file)
+        );
 
-      // Remove the file from the array
-      existingFiles.splice(fileIndex, 1);
+        const fileIndex = existingFiles.findIndex(file => file.id === fileId);
 
-      // Update the IDs to be sequential
-      const updatedFiles = existingFiles.map((file, index) => ({
-        ...file,
-        id: index + 1,
-      }));
+        if (fileIndex === -1) {
+            return res.status(404).send({
+                success: false,
+                message: "File not found!",
+            });
+        }
 
-      const updatedDocumentData = {
-        file: updatedFiles.map((file) => JSON.stringify(file)),
-      };
+        // Remove the file from the array
+        existingFiles.splice(fileIndex, 1);
 
-      // Update the document if there are files remaining
-      if (updatedFiles.length > 0) {
+        let updatedDocumentData;
+
+        if (existingFiles.length > 0) {
+            // Update the IDs to be sequential
+            const updatedFiles = existingFiles.map((file, index) => ({
+                ...file,
+                id: index + 1,
+            }));
+
+            updatedDocumentData = {
+                file: updatedFiles.map(file => JSON.stringify(file)),
+            };
+        } else {
+            // If no files are left, set the file column to null
+            updatedDocumentData = {
+                file: null,
+                documentDate: null,
+            };
+        }
+
+        // Update the document
         await Ordinances.update(updatedDocumentData, {
-          where: {
-            id: ordinanceBillId,
-          },
+            where: { id: ordinanceBillId },
         });
-      } else {
-        // Delete the document type if no files are remaining
-        await Ordinances.destroy({
-          where: {
-            id: ordinanceBillId,
-          },
+
+        logger.info("File deleted and IDs updated successfully!");
+        return res.status(200).send({
+            success: true,
+            message: "File deleted and IDs updated successfully!",
         });
-      }
-
-      // Check if any documents are left for the senate bill
-      const remainingDocuments = await Ordinances.findOne({
-        where: {
-          id: ordinanceBillId,
-        },
-      });
-
-      logger.info("File deleted and IDs updated successfully!");
-      return res.status(200).send({
-        success: true,
-        message: "File deleted and IDs updated successfully!",
-      });
     } catch (error) {
-      logger.error(error.message);
-      return res.status(400).send({
-        success: false,
-        message: error.message,
-      });
+        logger.error(error.message);
+        return res.status(400).send({
+            success: false,
+            message: error.message,
+        });
     }
-  },
+},
+
 };
 
 module.exports = ordinanceController;
