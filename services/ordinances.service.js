@@ -15,7 +15,36 @@ const ordinanceService = {
     createOrdinance: async (req) => {
         try {
 
-            const ordinances = await Ordinances.create(req);
+            
+                // Destructure the fields and handle empty dates
+                const {
+                    fkParliamentaryYearId,
+                    fkSessionId,
+                    fkUserId,
+                    ordinanceTitle,
+                    dateOfLayingInTheSenate,
+                    dateOfLayingInTheNA,
+                    fkOrdinanceStatus,
+                } = req;
+        
+                // Create a payload that includes all other fields and handles empty dates
+                const payload = {
+                    fkParliamentaryYearId,
+                    fkSessionId,
+                    fkUserId,
+                    ordinanceTitle,
+                   
+                    dateOfLayingInTheSenate: dateOfLayingInTheSenate || null,
+                    dateOfLayingInTheNA: dateOfLayingInTheNA || null,
+                    fkOrdinanceStatus,
+
+                };
+        
+
+                // Create the ordinance using the payload
+                const ordinances = await Ordinances.create(payload);
+
+            // const ordinances = await Ordinances.create(req);
 
             return ordinances;
         } catch (error) {
@@ -145,7 +174,7 @@ const ordinanceService = {
     },
 
     // Retrieve Single Ordinances
-    findSinlgeOrdinance: async (ordinanceId) => {
+    findSingleOrdinance: async (ordinanceId) => {
         try {
             const ordinances = await Ordinances.findOne({
                 where: { id: ordinanceId },
@@ -178,6 +207,43 @@ const ordinanceService = {
             if (!ordinances) {
                 throw ({ message: "ordinance Not Found!" })
             }
+
+             // Parse the `file` column if it exists and contains JSON strings
+             if (ordinances.file) {
+                // Parse the files and filter out any null values due to parsing errors
+                const parsedFiles = ordinances.file.map(fileString => {
+                    try {
+                        return JSON.parse(fileString);
+                    } catch (e) {
+                        console.error("Error parsing JSON:", e);
+                        return null;
+                    }
+                }).filter(file => file !== null);
+            
+                // Group files by type and date
+                const groupedFiles = parsedFiles.reduce((acc, file) => {
+                    const { type, date } = file;
+                    const dateGroup = acc.find(group => group.type === type && group.date === date);
+                    
+                    if (dateGroup) {
+                        dateGroup.files.push({ id: file.id, path: file.path });
+                    } else {
+                        acc.push({
+                            type,
+                            date,
+                            files: [{ id: file.id, path: file.path }]
+                        });
+                    }
+                    
+                    return acc;
+                }, []);
+            
+                ordinances.file = groupedFiles;
+            }
+            
+
+
+        
             return ordinances;
         }
         catch (error) {

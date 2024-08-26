@@ -415,6 +415,7 @@ db.billDocuments = require("./billDocuments.model.js")(
 );
 // Ordinance Model
 db.ordinances = require("./ordinances.model.js")(sequelize, SequelizeMain);
+db.ordinanceDocuments = require("./ordinanceDocuments.model.js")(sequelize, SequelizeMain);
 
 // mnaMinistries model
 db.mnaMinistries = require("./mnaMinistries.model.js")(sequelize, SequelizeMain);
@@ -1299,6 +1300,11 @@ db.billDocuments.belongsTo(db.introducedInSenateBills, {
 db.ordinances.belongsTo(db.parliamentaryYears, {
   foreignKey: "fkParliamentaryYearId",
   as: "parliamentaryYears",
+});
+// Ordinance documents
+db.ordinanceDocuments.belongsTo(db.ordinances, {
+  foreignKey: "fkBillId",
+  as: "ordinances",
 });
 db.ordinances.belongsTo(db.billStatuses, {
   foreignKey: "fkOrdinanceStatus",

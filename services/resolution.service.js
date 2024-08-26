@@ -1841,7 +1841,9 @@ const resolutionService = {
                 memberPosition
             } = queryParams;
 
-            const query = {};
+            const query = {
+                resolutionActive: 'active' // Ensure only active resolutions are included
+            };
 
             if (fkSessionNoFrom && fkSessionNoTo) {
                 query.fkSessionNo = { [Op.between]: [fkSessionNoFrom, fkSessionNoTo] };
