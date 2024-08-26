@@ -27,4 +27,7 @@ router.put('/sendToLegislation/:id', legislativeBills.sendToLegislation)
 router.delete("/:id", legislativeBills.deleteLegislativeBill);
 
 
+router.get("/diaryNumber/generate", legislativeBills.generateDiaryNumber);
+
+
 module.exports = router
