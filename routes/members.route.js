@@ -152,5 +152,6 @@ router.get('/:id', membersController.getMemberById);
  */
 router.delete('/delete/:id', membersController.deleteMember)
 
+router.put('/promote/:memberID', membersController.promoteMembers)
 
 module.exports = router;

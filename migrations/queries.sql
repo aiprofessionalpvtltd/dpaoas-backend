@@ -48,18 +48,21 @@
 -- WHERE priority IS NULL;
 
 
-CREATE TYPE tenureType AS ENUM ('Senators', 'Ministers');
+-- CREATE TYPE tenureType AS ENUM ('Senators', 'Ministers');
 
-ALTER TABLE tenures ADD COLUMN tenureType tenureType DEFAULT 'Senators';
+-- ALTER TABLE tenures ADD COLUMN tenureType tenureType DEFAULT 'Senators';
+
+-- ALTER TABLE members
+-- ADD COLUMN "fkParliamentaryYearId" INTEGER NULL;
+
+-- ALTER TABLE members
+-- ADD CONSTRAINT fk_parliamentary_year_id
+-- FOREIGN KEY ("fkParliamentaryYearId")
+-- REFERENCES "parliamentaryYears"(id)
+-- ON DELETE CASCADE;
 
 ALTER TABLE members
-ADD COLUMN "fkParliamentaryYearId" INTEGER NULL;
-
-ALTER TABLE members
-ADD CONSTRAINT fk_parliamentary_year_id
-FOREIGN KEY ("fkParliamentaryYearId")
-REFERENCES "parliamentaryYears"(id)
-ON DELETE CASCADE;
+  ADD COLUMN "status" BOOLEAN NOT NULL DEFAULT TRUE;
 
 
 

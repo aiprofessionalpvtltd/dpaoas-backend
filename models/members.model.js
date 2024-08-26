@@ -79,6 +79,11 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.TEXT,
             allowNull: true
         },
+        status: {
+            type: Sequelize.BOOLEAN,
+            allowNull: true,
+            defaultValue: 'true'
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });
