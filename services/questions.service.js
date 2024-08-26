@@ -722,7 +722,9 @@ const questionsService = {
         ],
         subQuery: false,
         distinct: true,
-        where: {},
+        where: {
+          questionActive: "active", // Only fetch active questions
+        },
         offset,
         limit,
         order: [["id", "ASC"]],
@@ -853,7 +855,7 @@ const questionsService = {
       console.log(error);
       throw new Error(error.message || "Error Searching Question");
     }
-  },
+  }, 
 
   // Update Question
   updateQuestion: async (req, question, questionId) => {
