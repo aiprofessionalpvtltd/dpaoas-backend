@@ -96,8 +96,8 @@ const motionService = {
           const fkMemberIdValue = senatorID
             ? senatorID
             : web_id
-            ? web_id
-            : null;
+              ? web_id
+              : null;
           console.log("fkMemberIdValue=------", fkMemberIdValue);
 
           // Prepare the data for motionMovers table
@@ -765,6 +765,103 @@ const motionService = {
     }
   },
 
+  // Retrieve Motions with Status 'Balloting'
+  findAllBallotingMotions: async (currentPage, pageSize) => {
+    try {
+      const offset = currentPage * pageSize;
+      const limit = pageSize;
+
+      // Construct where clause using literal for subquery
+      let whereClause = {
+        fkMotionStatus: {
+          [Op.in]: db.sequelize.literal(`(SELECT "id" FROM "motionStatuses" WHERE "statusName" = 'balloting')`)
+        }
+      };
+
+      const { count, rows } = await motions.findAndCountAll({
+        where: whereClause,
+        include: [
+          {
+            model: sessions,
+            as: "sessions",
+            attributes: ["sessionName", "id"],
+          },
+          {
+            model: motionStatuses,
+            as: "motionStatuses",
+            attributes: ["statusName", "id"],
+          },
+          {
+            model: noticeOfficeDairies,
+            as: "noticeOfficeDairies",
+            attributes: [
+              "noticeOfficeDiaryNo",
+              "noticeOfficeDiaryDate",
+              "noticeOfficeDiaryTime",
+              "businessType",
+              "businessId",
+            ],
+          },
+          {
+            model: motionMovers,
+            as: "motionMovers",
+            attributes: ["fkMemberId", "id"],
+            include: [
+              {
+                model: db.members,
+                as: "members",
+                attributes: ["memberName", "id"],
+              },
+            ],
+          },
+          {
+            model: motionStatuses,
+            as: "motionStatuses",
+            attributes: ["statusName", "id"],
+          },
+          {
+            model: motionMinistries,
+            as: "motionMinistries",
+            attributes: ["fkMinistryId", "id"],
+            include: [
+              {
+                model: ministries,
+                as: "ministries",
+                attributes: ["ministryName", "id"],
+              },
+            ],
+          },
+        ],
+        offset,
+        limit,
+        order: [
+          ['id', 'DESC']
+        ]
+      });
+
+      const totalPages = Math.ceil(count / pageSize);
+      return { count, totalPages, motions: rows };
+
+    } catch (error) {
+      throw { message: error.message || "Error Fetching Balloting Motions!" };
+    }
+  },
+
+
+  // Update Motions Status of 'Balloting'
+  updateMotionsStatus: async (motionIds, fkMotionStatus) => {
+    try {
+     const result =  await motions.update(
+        { fkMotionStatus },
+        { where: { id: motionIds } }
+      );
+
+      return result;
+    } catch (error) {
+      throw { message: error.message || "Error updating motions status!" };
+    }
+  },
+
   // Retrieve motions by IDs
   pdfMotionList: async (motionIds, motionListId) => {
     try {
@@ -1253,12 +1350,12 @@ const motionService = {
         attributes: [
           "motionType",
           [db.Sequelize.fn("COUNT", db.Sequelize.col("motionType")), "count"],
-          ],
-          
+        ],
+
         where: {
           motionSentStatus: motionSentStatus,
-          },
-        
+        },
+
         group: ["motionType"],
       });
 
@@ -1279,12 +1376,12 @@ const motionService = {
         };
       });
 
-         // Update the counts and motions data based on the actual data fetched
-    for (const record of motionTypeCounts) {
+      // Update the counts and motions data based on the actual data fetched
+      for (const record of motionTypeCounts) {
         const motionType = record.motionType;
         const motionTypeKey = motionType.replace(/ /g, '');
         const count = record.get('count');
-  
+
         // Fetch the motion data for the current motionType
         const motionsData = await motions.findAll({
           where: {
@@ -1339,7 +1436,7 @@ const motionService = {
             },
           ],
         });
-  
+
         motionTypeData[motionTypeKey].count = count;
         motionTypeData[motionTypeKey].motions = motionsData;
       }
@@ -1361,64 +1458,64 @@ const motionService = {
 
   motionDiaryNumberGenerate: async () => {
     try {
-        // Determine the current session year
-        const currentDate = moment();
-        const currentYear = currentDate.year();
-        const sessionStartDate = moment(`${currentYear}-03-12`);
-        const nextYear = currentYear + 1;
-        const sessionEndDate = moment(`${nextYear}-03-11`);
-        
-        // Static session end date for testing
-        // const sessionEndDate = '2024-08-20';
-         
+      // Determine the current session year
+      const currentDate = moment();
+      const currentYear = currentDate.year();
+      const sessionStartDate = moment(`${currentYear}-03-12`);
+      const nextYear = currentYear + 1;
+      const sessionEndDate = moment(`${nextYear}-03-11`);
 
-        // Fetch the latest question
-        const latestMotion= await motions.findOne({
-            include: [
-              {
-                model: noticeOfficeDairies,
-                as: 'noticeOfficeDairies',
-                attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
-              },
-            ],
-            order: [["createdAt", "DESC"]],
-        });
+      // Static session end date for testing
+      // const sessionEndDate = '2024-08-20';
 
-        let newNoticeOfficeDiaryNo;
 
-        if (latestMotion && latestMotion.noticeOfficeDairies) {
-            const currentDateMoment = moment(currentDate, 'YYYY-MM-DD');
-            const sessionEndDateMoment = moment(sessionEndDate, 'YYYY-MM-DD').startOf('day'); // Make sure it's in 'day' precision
+      // Fetch the latest question
+      const latestMotion = await motions.findOne({
+        include: [
+          {
+            model: noticeOfficeDairies,
+            as: 'noticeOfficeDairies',
+            attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+      });
 
-            console.log('sessionEndDate', sessionEndDateMoment);
-            console.log('currentDateMoment', currentDateMoment);
+      let newNoticeOfficeDiaryNo;
 
-             // Check if the latest diary date is after the session end date
-            if (currentDateMoment.isAfter(sessionEndDateMoment, 'day')) {
-                // If noticeOfficeDiaryDate is after sessionEndDate, start from "01"
-                newNoticeOfficeDiaryNo = "01";
-            } else {
-                // If noticeOfficeDiaryDate is on or before sessionEndDate, increment the number
-                const latestNo = parseInt(latestMotion.noticeOfficeDairies.noticeOfficeDiaryNo, 10);
-                newNoticeOfficeDiaryNo = String(latestNo + 1).padStart(2, "0");
-            }
+      if (latestMotion && latestMotion.noticeOfficeDairies) {
+        const currentDateMoment = moment(currentDate, 'YYYY-MM-DD');
+        const sessionEndDateMoment = moment(sessionEndDate, 'YYYY-MM-DD').startOf('day'); // Make sure it's in 'day' precision
+
+        console.log('sessionEndDate', sessionEndDateMoment);
+        console.log('currentDateMoment', currentDateMoment);
+
+        // Check if the latest diary date is after the session end date
+        if (currentDateMoment.isAfter(sessionEndDateMoment, 'day')) {
+          // If noticeOfficeDiaryDate is after sessionEndDate, start from "01"
+          newNoticeOfficeDiaryNo = "01";
         } else {
-            // If no noticeOfficeDiaryNo is found, start from "01"
-            newNoticeOfficeDiaryNo = "01";
+          // If noticeOfficeDiaryDate is on or before sessionEndDate, increment the number
+          const latestNo = parseInt(latestMotion.noticeOfficeDairies.noticeOfficeDiaryNo, 10);
+          newNoticeOfficeDiaryNo = String(latestNo + 1).padStart(2, "0");
         }
+      } else {
+        // If no noticeOfficeDiaryNo is found, start from "01"
+        newNoticeOfficeDiaryNo = "01";
+      }
 
-        console.log('newNoticeOfficeDiaryNo', newNoticeOfficeDiaryNo);
- 
-        const result = {
-            noticeOfficeDiaryNo : newNoticeOfficeDiaryNo, // Include the new noticeOfficeDiaryNo
-        };
+      console.log('newNoticeOfficeDiaryNo', newNoticeOfficeDiaryNo);
 
-        return result;
+      const result = {
+        noticeOfficeDiaryNo: newNoticeOfficeDiaryNo, // Include the new noticeOfficeDiaryNo
+      };
+
+      return result;
     } catch (error) {
-        throw { message: error.message || "Error Fetching Questions by Status!" };
+      throw { message: error.message || "Error Fetching Questions by Status!" };
     }
   },
-  
+
 };
 
 module.exports = motionService;
