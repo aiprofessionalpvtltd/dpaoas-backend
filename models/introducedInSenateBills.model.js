@@ -5,6 +5,14 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             autoIncrement: true,
         },
+        fkTenureId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'tenures',
+                key: 'id'
+            }
+        },
         fkParliamentaryYearId: {
             type: Sequelize.INTEGER,
             allowNull: false,

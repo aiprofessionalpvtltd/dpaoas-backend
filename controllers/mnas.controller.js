@@ -173,7 +173,50 @@ const mnaController = {
                 message: error.message
             })
         }
-    }
+    },
+
+
+    promoteMinister: async (req, res) => {
+        try {
+          const { body, params } = req;
+          const { ministerID } = params;
+          const { newParliamentaryYearId } = body;
+    
+          logger.info(`ministersController: promoteMinisters for ministerID ${ministerID}`);
+    
+          // Call the promoteMinisters service with ministerID and newParliamentaryYearId
+          const ministerRecord = await mnaService.promoteMinisters(
+            newParliamentaryYearId,
+            ministerID
+          );
+    
+          return res.status(200).send({
+            success: true,
+            message: `Minister promoted successfully for ID ${ministerID}`,
+            data: ministerRecord,
+          });
+        } catch (error) {
+          console.error("Error promoting minister:", error);
+          return res.status(500).send({
+            success: false,
+            message: `Failed to promote minister for ID`,
+            error: error.message,
+          });
+        }
+      },
+    
+      getMinisterByParliamentaryYearID: async (req, res) => {
+        const { params } = req;
+        const { id } = params;
+        logger.info(`ministersController: getMinisterById ${id}`);
+        const ministerRecord = await mnaService.getMinisterByParliamentaryYearID(id);
+    
+        return res.status(200).send({
+          success: true,
+          message: `Minister fetched successfully for id ${id}`,
+          data: ministerRecord,
+        });
+      },
     
 }
 

@@ -4,6 +4,7 @@ const MnaMinistries = db.mnaMinistries
 const PoliticalParties = db.politicalParties;
 const Op = db.Sequelize.Op;
 const logger = require('../common/winston');
+const { log } = require("handlebars");
 
 
 const mnaService = {
@@ -54,7 +55,16 @@ const mnaService = {
                         as: 'ministries',
                         through: { attributes: [] }, // Exclude the join table attributes
                         attributes: ['id','ministryName', 'ministryStatus'],
-                    }
+                    },
+                    {
+                        model: db.tenures, as: 'tenures',
+                        attributes: ['id','tenureName']
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears',
+                        attributes: ['id','parliamentaryTenure'],
+                    },
                 ],
                 order: [
                     ['id', 'DESC'],
@@ -98,7 +108,7 @@ const mnaService = {
                 where: { id: mnnaId },
                 include: [
                     {
-                        model: PoliticalParties,
+                        model: db.politicalParties,
                         as: 'politicalParties',
                         attributes: ['partyName', 'status'],
                     },
@@ -107,7 +117,16 @@ const mnaService = {
                         as: 'ministries',
                         through: { attributes: [] }, // Exclude the join table attributes
                         attributes: ['id','ministryName', 'ministryStatus'],
-                    }
+                    },
+                    {
+                        model: db.tenures, as: 'tenures',
+                        attributes: ['id','tenureName']
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears',
+                        attributes: ['id','parliamentaryTenure'],
+                    },
                 ]
             });
             if (!mna) {
@@ -148,7 +167,7 @@ const mnaService = {
                 where: { id: mnaId },
                 include: [
                     {
-                        model: PoliticalParties,
+                        model: db.politicalParties,
                         as: 'politicalParties',
                         attributes: ['partyName', 'status'],
                     },
@@ -157,7 +176,16 @@ const mnaService = {
                         as: 'ministries',
                         through: { attributes: [] }, // Exclude the join table attributes
                         attributes: ['ministryName', 'ministryStatus'],
-                    }
+                    },
+                    {
+                        model: db.tenures, as: 'tenures',
+                        attributes: ['id','tenureName']
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears',
+                        attributes: ['id','parliamentaryTenure'],
+                    },
                 ],
                 transaction
             });
@@ -192,8 +220,104 @@ const mnaService = {
         } catch (error) {
             throw { message: error.message || "Error deleting MNA Data" };
         }
-    }
+    },
 
+    promoteMinisters: async (  newParliamentaryYearId, ministerID) => {
+        const transaction = await db.sequelize.transaction();
+    
+        // console.log(newParliamentaryYearId, ministerID); return
+        try {
+            // Fetch the specific minister by ministerID
+            const minister = await MNAs.findOne({
+                where: { id: ministerID },
+                transaction
+            });
+    
+            if (!minister) {
+                throw new Error('Minister not found');
+            }
+    
+            // Update the status of the old minister to false (inactive)
+            await minister.update(
+                { status: false },
+                {
+                    where: { id: minister.id },
+                    transaction
+                }
+            );
+    
+            let { mnaName, constituency, address, phone,
+                politicalParty, mnaStatus, fkTenureId, fkParliamentaryYearId
+                 } = minister;
+
+        // Get the latest ID from the ministers table
+        const latestMinister = await MNAs.findOne({
+            order: [['id', 'DESC']],
+            transaction
+        });
+
+        // Increment the latest ID by 1 for the new entry
+            const newMinisterId = latestMinister ? latestMinister.id + 1 : 1;
+            
+            const ministerData = {
+                id: newMinisterId,
+                mnaName: minister.mnaName,
+                constituency: minister.constituency,
+                address: minister.address,
+                phone: phone,  
+                politicalParty: politicalParty,  
+                mnaStatus: mnaStatus,  
+                fkTenureId: fkTenureId,  
+                fkParliamentaryYearId: newParliamentaryYearId,  
+                 status: true // Set the status of the new record to active (true)
+            };
+
+          
+            // Create a new minister record with the same data but a new fkParliamentaryYearId
+            const newMinister = await MNAs.create(ministerData, { transaction });
+    
+            await transaction.commit();
+            console.log('Minister promoted successfully');
+            return newMinister;
+        } catch (error) {
+            await transaction.rollback();
+            console.error('Error promoting minister:', error);
+            throw error; // Handle the error as needed
+        }
+    },
+
+      // Get Minister By Parliamentary Year ID
+      getMinisterByParliamentaryYearID: async (id) => {
+        try {
+
+            const result = await MNAs.findAll({
+                raw: false,
+                where: {
+                    fkParliamentaryYearId: id
+                },
+                include: [
+                    {
+                        model: db.tenures,
+                        as: 'tenures',
+                        attributes: ['id','tenureName']
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears',
+                        attributes: ['id','parliamentaryTenure'],
+                    },
+                    {
+                        model: db.politicalParties,
+                        as: 'politicalParties',
+                        attributes: ['id','partyName'],
+                    }
+                ],
+            });
+            return result
+        } catch (error) {
+            console.error('Error Fetching Minister request:', error.message);
+        }
+    },
 
 }
 

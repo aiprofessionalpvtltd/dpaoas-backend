@@ -20,4 +20,11 @@ router.put("/update/:id", mnas.updateMnaData)
 // Suspend/Delete MNA
 router.delete("/delete/:id", mnas.deleteMna);
 
+
+router.put('/promote/:ministerID', mnas.promoteMinister)
+
+router.get('/parliamentaryYears/:id', mnas.getMinisterByParliamentaryYearID);
+
+
+
 module.exports = router

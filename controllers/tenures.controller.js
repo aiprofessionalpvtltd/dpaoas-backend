@@ -35,7 +35,10 @@ const tenuresController = {
             logger.info(`tenuresController: getAllTenures query ${JSON.stringify(req.query)}`)
             const currentPage = parseInt(req.query.currentPage);
             const pageSize = parseInt(req.query.pageSize);
-            const { count, totalPages, tenures } = await tenuresService.getAllTenures(currentPage, pageSize);
+            let  tenureType = req.query.tenureType;
+            
+        
+            const { count, totalPages, tenures } = await tenuresService.getAllTenures(currentPage, pageSize,tenureType);
             // Check if there are no tenures on the current page
             if (tenures.length === 0) {
                 logger.info("No data found on this page!")

@@ -197,5 +197,18 @@ const membersController = {
       });
     }
   },
+
+  getMemberByParliamentaryYearID: async (req, res) => {
+    const { params } = req;
+    const { id } = params;
+    logger.info(`membersController: getMemberById ${id}`);
+    const memberRecord = await membersService.getMemberByParliamentaryYearID(id);
+
+    return res.status(200).send({
+      success: true,
+      message: `Member fetched successfully for id ${id}`,
+      data: memberRecord,
+    });
+  },
 };
 module.exports = membersController;

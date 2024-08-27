@@ -198,6 +198,38 @@ const memberService = {
             throw error; // Handle the error as needed
         }
     },
+
+      // Get Member By Parliamentary Year ID
+      getMemberByParliamentaryYearID: async (id) => {
+        try {
+
+            const result = await members.findAll({
+                raw: false,
+                where: {
+                    fkParliamentaryYearId: id
+                },
+                include: [
+                    {
+                        model: tenures, as: 'tenures',
+                        attributes: ['id','tenureName']
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears',
+                        attributes: ['id','parliamentaryTenure'],
+                    },
+                    {
+                        model: politicalParties,
+                        as: 'politicalParties',
+                        attributes: ['id','partyName'],
+                    }
+                ],
+            });
+            return result
+        } catch (error) {
+            console.error('Error Fetching Member request:', error.message);
+        }
+    },
     
 }
 

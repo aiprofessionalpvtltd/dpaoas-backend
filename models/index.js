@@ -1208,6 +1208,18 @@ db.mnas.belongsTo(db.politicalParties, {
   foreignKey: "politicalParty",
   as: "politicalParties",
 });
+
+db.mnas.belongsTo(db.tenures, {
+  foreignKey: "fkTenureId", as: "tenures"
+});
+
+db.mnas.belongsTo(db.parliamentaryYears, {
+  foreignKey: "fkParliamentaryYearId",
+  as: "parliamentaryYears",
+});
+
+
+
 // introduced In Senate Bills
 db.introducedInSenateBills.belongsTo(db.parliamentaryYears, {
   foreignKey: "fkParliamentaryYearId",

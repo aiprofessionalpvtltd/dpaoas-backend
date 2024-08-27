@@ -26,6 +26,7 @@ const senateBillService = {
     createSenateBill: async (senateBillData) => {
         try {
             const { senateBillSenatorMovers, senateBillMinistryMovers, senateBillMnaMovers, ...senateBillAttributes } = senateBillData;
+
             const createdSenateBill = await IntroducedInSenateBills.create(senateBillAttributes);
             const senateBillId = createdSenateBill.id;
 
