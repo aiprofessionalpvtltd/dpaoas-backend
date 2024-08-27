@@ -5,6 +5,7 @@ exports.memberRequestValidation = (req, res, next) => {
         memberUrduName: Joi.string().required(),
         gender: Joi.string().required(),
         fkTenureId: Joi.number().required(),
+        fkParliamentaryYearId: Joi.number().required(),
         memberStatus: Joi.string().required(),
         politicalParty: Joi.number().required(),
         electionType: Joi.string().required(),
@@ -12,7 +13,7 @@ exports.memberRequestValidation = (req, res, next) => {
         memberProvince: Joi.string().required(),
         isMinister: Joi.boolean(),
         phoneNo: Joi.string().required(),
-        reason: Joi.string().required()
+        reason: Joi.string().optional()
     })
     const { error } = createMemberSchema.validate(req.body)
     if (error) {

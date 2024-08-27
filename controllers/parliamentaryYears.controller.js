@@ -148,6 +148,38 @@ const parliamentaryYearsController = {
 
     },
     
+     // Retrieve Records by Tenure ID
+getRecordsByTenureId: async (req, res) => {
+    try {
+      logger.info(`parliamentaryYearsController: getRecordsByTenureId tenureID ${JSON.stringify(req.params.tenureID)}`);
+      
+        const tenureID = req.params.id;
+     
+      const records = await parliamentaryYearsService.getRecordsByTenureId(tenureID);
+  
+      if (records.length === 0) {
+        logger.info("No records found for the provided Tenure ID.");
+        return res.status(404).send({
+          success: false,
+          message: "No records found for the provided Tenure ID.",
+        });
+      }
+  
+       logger.info("Records Fetched Successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "Records Fetched Successfully!",
+        data: records,
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+  
 
 }
 

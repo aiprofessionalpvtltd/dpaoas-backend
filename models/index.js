@@ -733,6 +733,11 @@ db.members.belongsTo(db.politicalParties, {
   foreignKey: "politicalParty",
   as: "politicalParties",
 });
+db.members.belongsTo(db.parliamentaryYears, {
+  foreignKey: "fkParliamentaryYearId",
+  as: "parliamentaryYears",
+});
+
 db.motions.hasMany(db.motionMovers, {
   foreignKey: "fkMotionId",
   as: "motionMovers",

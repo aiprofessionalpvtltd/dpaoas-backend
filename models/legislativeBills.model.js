@@ -67,6 +67,10 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: true,
         },
+        noticeOfficeDiaryTime: {
+            type: Sequelize.TIME,
+            allowNull: true, 
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });

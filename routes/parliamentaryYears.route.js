@@ -141,4 +141,7 @@ router.put("/update/:id", parliamentaryYears.updateParliamentaryYear)
  */
 router.delete("/delete/:id", parliamentaryYears.deleteParliamentaryYear)
 
+// Retrieve Records by Tenure ID
+router.get("/:id/tenure", parliamentaryYears.getRecordsByTenureId)
+
 module.exports = router;

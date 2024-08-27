@@ -19,7 +19,7 @@ const legislativeBillService = {
                 where: { legislativeSentStatus: 'toLegislation'},
                 offset,
                 limit,
-                order: [['id', 'DESC']],
+                order: [['createdAt', 'DESC']],
                 include: [
                     {
                         model: Sessions,
@@ -57,7 +57,7 @@ const legislativeBillService = {
                 where: {legislativeSentStatus: 'inNotice'},
                 offset,
                 limit,
-                order: [['id', 'ASC']],
+                order: [['createdAt', 'DESC']],
                 include: [
                     {
                         model: Sessions,
@@ -98,85 +98,71 @@ const legislativeBillService = {
     },
 
  // Send To Legislation
- sendToLegislation: async(req,billId) => {
-    try {
-        const updatedData = {
-            legislativeSentStatus: "toLegislation",
-            legislativeSentDate: req.legislativeSentDate
-        }
-        await LegislativeBills.update(updatedData, { where: { id: billId } });
+    sendToLegislation: async(req,billId) => {
+        try {
+            const updatedData = {
+                legislativeSentStatus: "toLegislation",
+                legislativeSentDate: req.legislativeSentDate
+            }
+            await LegislativeBills.update(updatedData, { where: { id: billId } });
 
-        // Fetch the updated private member bill which is sent to legislation
-        const billData = await LegislativeBills.findOne({ where: { id: billId } });
-        return billData;
-    } catch (error) {
-        throw { message: error.message || "Error Sending Legislative Bill To Legislation!" };
-    }
-},
-    // Retrieve Single LegislativeBill
-    // findSinlgeLegislativeBill: async (legislativeBillId) => {
-    //     try {
-    //         const legislativeBill = await LegislativeBills.findOne({
-    //             where: { id: legislativeBillId },
-    //             order: [['id', 'ASC']],
-    //             include: [
-    //                 {
-    //                     model: Sessions,
-    //                     as: 'session',
-    //                     attributes: ['id', 'sessionName']
-    //                 },
-    //                 {
-    //                     model: BillStatuses,
-    //                     as: 'billStatuses'
-    //                 }
-    //             ],
-    //         });
-    //         if (!legislativeBill) {
-    //             throw ({ message: "legislative Bill Not Found!" })
-    //         }
-    //         return legislativeBill;
-    //     }
-    //     catch (error) {
-    //         throw { message: error.message || "Error Fetching Single legislative Bill" };
-    //     }
-    // },
- 
-      generateDiaryNumber  : async () => {
-        // Determine the current session year
-        const currentDate = moment();
-        const currentYear = currentDate.year();
-        const sessionStartDate = moment(`${currentYear}-03-12`);
-        const nextYear = currentYear + 1;
-        const sessionEndDate = moment(`${nextYear}-03-11`);
-    
-        let sessionYear;
-        if (currentDate.isBetween(sessionStartDate, sessionEndDate, null, '[]')) {
-            sessionYear = currentYear;
-        } else {
-            sessionYear = currentYear - 1;
+            // Fetch the updated private member bill which is sent to legislation
+            const billData = await LegislativeBills.findOne({ where: { id: billId } });
+            return billData;
+        } catch (error) {
+            throw { message: error.message || "Error Sending Legislative Bill To Legislation!" };
         }
+    },
+     
+    generateDiaryNumber: async () => {
+        try {
+            // Determine the current session year
+            const currentDate = moment();
+            const currentYear = currentDate.year();
+            const sessionStartDate = moment(`${currentYear}-03-12`);
+            const nextYear = currentYear + 1;
+            const sessionEndDate = moment(`${nextYear}-03-11`);
     
-        // Generate the new diary number
-        const lastDiaryNumber = await LegislativeBills.findOne({
-            where: {
-                diary_number: {
-                    [Op.like]: `%(${sessionYear})`
+            // Fetch the latest legislative bill
+            const latestBill = await LegislativeBills.findOne({
+                order: [["createdAt", "DESC"]],
+            });
+    
+            let newDiaryNumber;
+            
+            if (latestBill) {
+                const currentDateMoment = moment(currentDate, 'YYYY-MM-DD');
+                const sessionEndDateMoment = moment(sessionEndDate, 'YYYY-MM-DD').startOf('day'); // Make sure it's in 'day' precision
+    
+                console.log('sessionEndDate', sessionEndDateMoment);
+                console.log('currentDateMoment', currentDateMoment);
+    
+                // Check if the latest diary date is after the session end date
+                if (currentDateMoment.isAfter(sessionEndDateMoment, 'day')) {
+                    // If diary number is after sessionEndDate, start from "01"
+                    newDiaryNumber = `01`;
+                } else {
+                    // If diary number is on or before sessionEndDate, increment the number
+                    const lastDiaryNumberValue = parseInt(latestBill.diary_number, 10);
+                    newDiaryNumber = String(lastDiaryNumberValue + 1).padStart(2, '0');
                 }
-            },
-            order: [['diary_number', 'DESC']],
-            attributes: ['diary_number']
-        });
+            } else {
+                // If no diary number is found, start from "01"
+                newDiaryNumber = `01`;
+            }
     
-        let newDiaryNumber;
-        if (lastDiaryNumber) {
-            const lastDiaryNumberValue = parseInt(lastDiaryNumber.diary_number.split('-')[0]);
-            newDiaryNumber = `${String(lastDiaryNumberValue + 1).padStart(2, '0')}-(${sessionYear})`;
-        } else {
-            newDiaryNumber = `01-(${sessionYear})`;
+            console.log('newDiaryNumber', newDiaryNumber);
+
+            const result = {
+                newDiaryNumber: newDiaryNumber, // Include the new newDiaryNumber
+            };
+    
+            return result;
+         } catch (error) {
+            throw { message: error.message || "Error Generating Diary Number!" };
         }
-    
-        return newDiaryNumber;
-    } ,
+    }
+     ,
     
      findSingleLegislativeBill : async (legislativeBillId) => {
         try {
@@ -231,7 +217,7 @@ const legislativeBillService = {
                         as: 'billStatuses'
                     }
                 ],
-                order: [['createdAt', 'DESC']]
+                order: [['id', 'DESC']]
             });
             if (!legislativeBill) {
                 throw ({ message: "legislative Bill Not Found!" })

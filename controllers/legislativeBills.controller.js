@@ -294,9 +294,26 @@ const legislativeBillController = {
                 message: error.message
             })
         }
+    },
+
+    
+    generateDiaryNumber: async (req, res) => {
+        try {
+            const result = await legislativeBillService.generateDiaryNumber();
+     
+            return res.status(200).send({
+                success: true,
+                message: "Resolution new noticeOfficeDiaryNo fetched successfully!",
+                data: result
+            });
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
     }
-
-
 }
 
 module.exports = legislativeBillController;

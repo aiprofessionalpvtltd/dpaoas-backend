@@ -27,6 +27,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkParliamentaryYearId: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'parliamentaryYears',
+                key: 'id'
+            }
+        },
         memberStatus: {
             type: Sequelize.ENUM("Active", "Active/Oath Not Administered", "Deceased", "Disqualified", "Resigned", "Retired", "Tenure Completed"),
             defaultValue: 'Active'
@@ -70,6 +78,11 @@ module.exports = (sequelize, Sequelize) => {
         reason: {
             type: Sequelize.TEXT,
             allowNull: true
+        },
+        status: {
+            type: Sequelize.BOOLEAN,
+            allowNull: true,
+            defaultValue: 'true'
         },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,

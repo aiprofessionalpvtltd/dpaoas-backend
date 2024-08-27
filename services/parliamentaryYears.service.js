@@ -93,6 +93,25 @@ const parliamentaryYearsService = {
             throw { message: error.message || "Error Deleting Parliamentary Year!" };
         }
     }
+    ,
+
+    getRecordsByTenureId: async (tenureID) => {
+        try {
+          // Fetch records where fkTenureId matches the provided tenureID
+          const records = await ParliamentaryYears.findAll({
+            where: {
+              fkTenureId: tenureID
+            }
+          });
+    
+          // Return the fetched records
+          return records;
+    
+        } catch (error) {
+          // Handle any errors during the database operation
+          throw new Error(`Error fetching records by Tenure ID: ${error.message}`);
+        }
+      }
 
 }
 
