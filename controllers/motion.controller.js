@@ -585,6 +585,58 @@ const MotionController = {
     }
   },
 
+  // Retrieve Motions with Status 'Balloting'
+  findAllBallotingMotions: async (req, res) => {
+    try {
+      const currentPage = parseInt(req.query.currentPage);
+      const pageSize = parseInt(req.query.pageSize);
+      const { count, totalPages, motions } = await motionService.findAllBallotingMotions(currentPage, pageSize);
+
+      if (motions.length === 0) {
+        logger.info("No data found on this page!")
+        return res.status(200).send({
+          success: true,
+          message: 'No data found on this page!',
+          data: { motions }
+        });
+      }
+      else {
+        logger.info("All Balloting motion Fetched Successfully!")
+        return res.status(200).send({
+          success: true,
+          message: "All Balloting motion fetched successfully!",
+          data: { motions, totalPages, count }
+        })
+      }
+
+    } catch (error) {
+      logger.error(error.message)
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+
+      })
+    }
+  },
+
+  updateMotionsStatus: async (req, res) => {
+    try {
+        const { motionIds, fkMotionStatus } = req.body; // Expecting motionIds array and fkMotionStatus
+        const result = await motionService.updateMotionsStatus(motionIds, fkMotionStatus);
+        if(result){
+          return res.status(200).send({
+            success: true,
+            message: "Motions status updated successfully!",
+          })
+        }  
+    } catch (error) {
+        return res.status(400).send({
+            success: false,
+            message: error.message
+        });
+    }
+},
+
   getMotionTypes: async (req, res) => {
     logger.info(`SenateLegislativeController: getMotionTypes `);
     try {
@@ -905,12 +957,12 @@ const MotionController = {
   },
 
   //motionDashboardStats
-    motionDashboardStats: async (req, res) => {
+  motionDashboardStats: async (req, res) => {
 
-        logger.info("MotionController: motionDashboardStats");
+    logger.info("MotionController: motionDashboardStats");
     try {
-        const result = await motionService.motionDashboardStats();
-       return res.status(200).send({
+      const result = await motionService.motionDashboardStats();
+      return res.status(200).send({
         success: true,
         message: "Motion Statuses Fetched",
         data: result,
@@ -923,25 +975,25 @@ const MotionController = {
       });
     }
   },
-    
-    
-      // Retrieves counts and data of motions by status
-  motionDiaryNumberGenerate: async (req, res) => {
-         try {
-            const result = await motionService.motionDiaryNumberGenerate();
 
-            return res.status(200).send({
-                success: true,
-                message: "Motions new noticeOfficeDiaryNo fetched successfully!",
-                data: result
-            });
-        } catch (error) {
-            logger.error(error.message);
-            return res.status(400).send({
-                success: false,
-                message: error.message
-            });
-        }
-    },
+
+  // Retrieves counts and data of motions by status
+  motionDiaryNumberGenerate: async (req, res) => {
+    try {
+      const result = await motionService.motionDiaryNumberGenerate();
+
+      return res.status(200).send({
+        success: true,
+        message: "Motions new noticeOfficeDiaryNo fetched successfully!",
+        data: result
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      });
+    }
+  },
 };
 module.exports = MotionController;

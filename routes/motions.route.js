@@ -14,6 +14,8 @@ router.get('/motionLists', motionController.getAllMotionLists);
 router.delete('/motionlists/:id', motionController.deleteMotionList);
 router.get('/getSingleMotionData/:id', motionController.getSingleMotionData);
 router.post("/pdfMotionList", motionController.pdfMotionList);
+router.put("/motionBalloting/status", motionController.updateMotionsStatus);
+router.get("/findAllBalloting", motionController.findAllBallotingMotions);
 // get data for motion dashboard
 router.get('/motion-dashboard-stats', motionController.motionDashboardStats);
 
