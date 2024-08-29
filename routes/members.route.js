@@ -154,4 +154,7 @@ router.delete('/delete/:id', membersController.deleteMember)
 
 router.put('/promote/:memberID', membersController.promoteMembers)
 
+router.get('/parliamentaryYears/:id', membersController.getMemberByParliamentaryYearID);
+
+
 module.exports = router;

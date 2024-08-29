@@ -35,6 +35,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkTermId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'terms',
+                key: 'id'
+            }
+        },
         memberStatus: {
             type: Sequelize.ENUM("Active", "Active/Oath Not Administered", "Deceased", "Disqualified", "Resigned", "Retired", "Tenure Completed"),
             defaultValue: 'Active'
@@ -89,6 +97,7 @@ module.exports = (sequelize, Sequelize) => {
     });
     members.associate = function (models) {
         members.belongsTo(models.tenures, { foreignKey: 'fkTenureId', as: 'tenures' });
+        members.belongsTo(models.terms, { foreignKey: 'fkTermId', as: 'terms' });
         members.belongsTo(models.politicalParties, { foreignKey: 'politicalParty', as: 'politicalParties' });
         members.belongsToMany(models.resolutions, { through: 'resolutionMovers', foreignKey: 'fkResolutionId', otherKey: 'fkMemberId', as: 'resolutions' });
         members.hasMany(models.contactListUsers, { foreignKey: 'fkMemberId', as: 'member' });

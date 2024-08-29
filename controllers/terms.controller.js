@@ -141,6 +141,27 @@ const termsController = {
 
     },
 
+      // Retrive Single Term
+      getSingleTermByTenureID: async (req, res) => {
+        try {
+            logger.info(`termsController: getSingleTerm params id ${JSON.stringify(req.params.id)}`)
+            const termId = req.params.id;
+            const fetchedTerm = await termsService.getSingleTermByTenureID(termId);
+            logger.info("Single Term Fetched Successfully!")
+            return res.status(200).send({
+                success: true,
+                message: "Single Term Fetched Successfully!",
+                data: fetchedTerm,
+            })
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+
 
 }
 

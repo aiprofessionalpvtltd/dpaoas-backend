@@ -25,6 +25,11 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true
 
         },
+        tenureType: {
+            type: Sequelize.ENUM("Senators", "Ministers"),
+            allowNull: false,
+             defaultValue: 'Senators'
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });

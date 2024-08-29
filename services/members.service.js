@@ -11,7 +11,7 @@ const memberService = {
         const transaction = await db.sequelize.transaction();
     
         try {
-            let { memberName, memberUrduName, fkTenureId, fkParliamentaryYearId, memberStatus, politicalParty, electionType, gender, isMinister, governmentType, phoneNo, reason, memberProvince } = req;
+            let { memberName, memberUrduName, fkTenureId, fkParliamentaryYearId, fkTermId , memberStatus, politicalParty, electionType, gender, isMinister, governmentType, phoneNo, reason, memberProvince } = req;
     
             // Get the latest ID from the members table
             const latestMember = await members.findOne({
@@ -29,6 +29,7 @@ const memberService = {
                 memberUrduName: memberUrduName ? memberUrduName : null,
                 fkTenureId: fkTenureId ? fkTenureId : null,
                 fkParliamentaryYearId: fkParliamentaryYearId ? fkParliamentaryYearId : null,
+                fkTermId: fkTermId ? fkTermId : null,
                 memberStatus: memberStatus ? memberStatus : null,
                 politicalParty: politicalParty ? politicalParty : null,
                 electionType: electionType ? electionType : null,
@@ -54,7 +55,8 @@ const memberService = {
     updateMember: async (id, payload) => {
         try {
             // console.log(payload); return false;
-            let { memberName, memberUrduName, fkTenureId, fkParliamentaryYearId , memberStatus, politicalParty, electionType, gender, isMinister,governmentType,phoneNo, memberProvince , reason} = payload;
+            let { memberName, memberUrduName, fkTenureId, fkParliamentaryYearId , fkTermId ,memberStatus, politicalParty, electionType, gender, isMinister,governmentType,phoneNo, memberProvince , reason} = payload;
+
 
             const result = await members.update(
                 {
@@ -62,6 +64,7 @@ const memberService = {
                     memberUrduName : memberUrduName ? memberUrduName : null,
                     fkTenureId: fkTenureId ? fkTenureId : null,
                     fkParliamentaryYearId: fkParliamentaryYearId ? fkParliamentaryYearId : null,
+                    fkTermId: fkTermId ? fkTermId : null,
                     memberStatus: memberStatus ? memberStatus : null,
                     politicalParty: politicalParty ? politicalParty : null,
                     electionType: electionType ? electionType : null,
@@ -105,6 +108,11 @@ const memberService = {
                         attributes: ['id','parliamentaryTenure'],
                     },
                     {
+                        model: db.terms,
+                        as: 'terms',
+                        attributes: ['id','termName'],
+                    },
+                    {
                         model: politicalParties,
                         as: 'politicalParties',
                         attributes: ['id','partyName'],
@@ -133,7 +141,7 @@ const memberService = {
         }
     },
 
-    promoteMembers: async (  newParliamentaryYearId, memberID) => {
+    promoteMembers: async (newParliamentaryYearId, newTermId, memberID) => {
         const transaction = await db.sequelize.transaction();
     
         try {
@@ -156,22 +164,24 @@ const memberService = {
                 }
             );
     
+            // Extract relevant fields from the existing member record
             let { memberName, memberUrduName, fkTenureId, fkParliamentaryYearId, memberStatus, politicalParty, electionType, gender, isMinister, governmentType, phoneNo, reason, memberProvince } = member;
-
-        // Get the latest ID from the members table
-        const latestMember = await members.findOne({
-            order: [['id', 'DESC']],
-            transaction
-        });
-
-        // Increment the latest ID by 1 for the new entry
+    
+            // Get the latest ID from the members table
+            const latestMember = await members.findOne({
+                order: [['id', 'DESC']],
+                transaction
+            });
+    
+            // Increment the latest ID by 1 for the new entry
             const newMemberId = latestMember ? latestMember.id + 1 : 1;
-            
+    
             const memberData = {
                 id: newMemberId,
                 memberName: member.memberName,
                 memberUrduName: member.memberUrduName,
                 fkTenureId: member.fkTenureId,
+                fkTermId: newTermId ? newTermId : member.fkTermId, // Update fkTermId only if newTermId is provided
                 fkParliamentaryYearId: newParliamentaryYearId, // Set the new fkParliamentaryYearId
                 memberStatus: member.memberStatus,
                 politicalParty: member.politicalParty,
@@ -184,8 +194,7 @@ const memberService = {
                 reason: member.reason,
                 status: true // Set the status of the new record to active (true)
             };
-
-          
+    
             // Create a new member record with the same data but a new fkParliamentaryYearId
             const newMember = await members.create(memberData, { transaction });
     
@@ -196,6 +205,44 @@ const memberService = {
             await transaction.rollback();
             console.error('Error promoting member:', error);
             throw error; // Handle the error as needed
+        }
+    },
+    
+
+      // Get Member By Parliamentary Year ID
+      getMemberByParliamentaryYearID: async (id) => {
+        try {
+
+            const result = await members.findAll({
+                raw: false,
+                where: {
+                    fkParliamentaryYearId: id
+                },
+                include: [
+                    {
+                        model: tenures, as: 'tenures',
+                        attributes: ['id','tenureName']
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears',
+                        attributes: ['id','parliamentaryTenure'],
+                    },
+                    {
+                        model: db.terms,
+                        as: 'terms',
+                        attributes: ['id','termNamae'],
+                    },
+                    {
+                        model: politicalParties,
+                        as: 'politicalParties',
+                        attributes: ['id','partyName'],
+                    }
+                ],
+            });
+            return result
+        } catch (error) {
+            console.error('Error Fetching Member request:', error.message);
         }
     },
     

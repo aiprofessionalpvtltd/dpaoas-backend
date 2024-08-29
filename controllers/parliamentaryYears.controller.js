@@ -180,6 +180,37 @@ getRecordsByTenureId: async (req, res) => {
     }
   },
   
+       // Retrieve Records by Term ID
+getRecordsByTermId: async (req, res) => {
+  try {
+    logger.info(`parliamentaryYearsController: getRecordsByTermId tenureID ${JSON.stringify(req.params.termID)}`);
+    
+      const termID = req.params.id;
+   
+    const records = await parliamentaryYearsService.getRecordsByTermId(termID);
+
+    if (records.length === 0) {
+      logger.info("No records found for the provided Term ID.");
+      return res.status(404).send({
+        success: false,
+        message: "No records found for the provided Term ID.",
+      });
+    }
+
+     logger.info("Records Fetched Successfully!");
+    return res.status(200).send({
+      success: true,
+      message: "Records Fetched Successfully!",
+      data: records,
+    });
+  } catch (error) {
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+},
 
 }
 
