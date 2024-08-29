@@ -99,6 +99,14 @@ const senateBillService = {
                         as: 'parliamentaryYears'
                     },
                     {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
+                    {
                         model: Sessions,
                         as: 'sessions'
                     },
@@ -207,6 +215,14 @@ const senateBillService = {
                         as: 'parliamentaryYears'
                     },
                     {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
+                    {
                         model: Sessions,
                         as: 'sessions'
                     },
@@ -300,6 +316,14 @@ const senateBillService = {
                 {
                     model: ParliamentaryYears,
                     as: 'parliamentaryYears'
+                },
+                {
+                    model: db.tenures,
+                    as: 'tenures'
+                },
+                {
+                    model: db.terms,
+                    as: 'terms'
                 },
                 {
                     model: Sessions,
@@ -515,6 +539,14 @@ const senateBillService = {
                     {
                         model: ParliamentaryYears,
                         as: 'parliamentaryYears'
+                    },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    {
+                        model: db.terms,
+                        as: 'terms'
                     },
                     {
                         model: Sessions,

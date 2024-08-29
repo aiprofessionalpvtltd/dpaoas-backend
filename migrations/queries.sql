@@ -61,37 +61,72 @@
 -- REFERENCES "parliamentaryYears"(id)
 -- ON DELETE CASCADE;
 
-ALTER TABLE mnas
-  ADD COLUMN "status" BOOLEAN NOT NULL DEFAULT TRUE;
+-- ALTER TABLE mnas
+--   ADD COLUMN "status" BOOLEAN NOT NULL DEFAULT TRUE;
 
 
-ALTER TABLE mnas
-ADD COLUMN "fkParliamentaryYearId" INTEGER NULL;
+-- ALTER TABLE mnas
+-- ADD COLUMN "fkParliamentaryYearId" INTEGER NULL;
 
-ALTER TABLE mnas
-ADD CONSTRAINT fk_parliamentary_year_id
-FOREIGN KEY ("fkParliamentaryYearId")
-REFERENCES "parliamentaryYears"(id)
-ON DELETE CASCADE;
-
-
-ALTER TABLE mnas
-ADD COLUMN "fkTenureId" INTEGER NULL;
-
-ALTER TABLE mnas
-ADD CONSTRAINT fk_tenure_id
-FOREIGN KEY ("fkTenureId")
-REFERENCES "tenures"(id)
-ON DELETE CASCADE;
+-- ALTER TABLE mnas
+-- ADD CONSTRAINT fk_parliamentary_year_id
+-- FOREIGN KEY ("fkParliamentaryYearId")
+-- REFERENCES "parliamentaryYears"(id)
+-- ON DELETE CASCADE;
 
 
+-- ALTER TABLE mnas
+-- ADD COLUMN "fkTenureId" INTEGER NULL;
 
-ALTER TABLE mnintroducedInSenateBillsas
-ADD COLUMN "fkTenureId" INTEGER NULL;
+-- ALTER TABLE mnas
+-- ADD CONSTRAINT fk_tenure_id
+-- FOREIGN KEY ("fkTenureId")
+-- REFERENCES "tenures"(id)
+-- ON DELETE CASCADE;
 
-ALTER TABLE introducedInSenateBills
-ADD CONSTRAINT fk_tenure_id
-FOREIGN KEY ("fkTenureId")
-REFERENCES "tenures"(id)
-ON DELETE CASCADE;
+
+
+-- ALTER TABLE mnintroducedInSenateBillsas
+-- ADD COLUMN "fkTenureId" INTEGER NULL;
+
+-- ALTER TABLE introducedInSenateBills
+-- ADD CONSTRAINT fk_tenure_id
+-- FOREIGN KEY ("fkTenureId")
+-- REFERENCES "tenures"(id)
+-- ON DELETE CASCADE;
+
+
+
+ 
+--  ALTER TABLE "parliamentaryYears"
+--  ADD COLUMN "fkTermId" INTEGER NULL;
+
+-- ALTER TABLE "parliamentaryYears"
+-- ADD CONSTRAINT "fkTermId"
+-- FOREIGN KEY ("fkTermId")
+-- REFERENCES "terms"(id)
+-- ON DELETE CASCADE;
+
+
+
+-- ALTER TABLE members
+-- ADD COLUMN "fkTermId" INTEGER NULL;
+
+-- ALTER TABLE members
+-- ADD CONSTRAINT fkTermId
+-- FOREIGN KEY ("fkTermId")
+-- REFERENCES "terms"(id)
+-- ON DELETE CASCADE;
+
+
+-- ALTER TABLE introducedInSenateBills 
+-- ADD COLUMN "fkTermId" INTEGER NULL;
+
+-- ALTER TABLE introducedInSenateBills
+-- ADD CONSTRAINT fkTermId
+-- FOREIGN KEY ("fkTermId")
+-- REFERENCES "terms"(id)
+-- ON DELETE CASCADE;
+
+
 

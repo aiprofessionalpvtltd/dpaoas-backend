@@ -729,6 +729,7 @@ db.noteParagraphs.belongsTo(db.users, {
 // db.filesNotifications.belongsTo(db.cases, { foreignKey: 'fkCaseId', as: 'case' });
 
 db.members.belongsTo(db.tenures, { foreignKey: "fkTenureId", as: "tenures" });
+db.members.belongsTo(db.terms, { foreignKey: "fkTermId", as: "terms" });
 db.members.belongsTo(db.politicalParties, {
   foreignKey: "politicalParty",
   as: "politicalParties",
@@ -1054,6 +1055,7 @@ db.sessions.belongsTo(db.parliamentaryYears, {
 db.divisions.belongsTo(db.ministries, { foreignKey: "fkMinistryId" });
 db.tenures.hasMany(db.members, { foreignKey: "fkTenureId", as: "members" });
 db.parliamentaryYears.belongsTo(db.tenures, { foreignKey: "fkTenureId" });
+db.parliamentaryYears.belongsTo(db.terms, { foreignKey: "fkTermId" });
 db.terms.belongsTo(db.tenures, { foreignKey: "fkTenureId" });
 db.groupsDivisions.belongsTo(db.divisions, { foreignKey: "fkDivisionId" });
 db.groupsDivisions.belongsTo(db.groups, { foreignKey: "fkGroupId" , as: 'group' });
@@ -1224,6 +1226,14 @@ db.mnas.belongsTo(db.parliamentaryYears, {
 db.introducedInSenateBills.belongsTo(db.parliamentaryYears, {
   foreignKey: "fkParliamentaryYearId",
   as: "parliamentaryYears",
+});
+db.introducedInSenateBills.belongsTo(db.tenures, {
+  foreignKey: "fkTenureId",
+  as: "tenures",
+});
+db.introducedInSenateBills.belongsTo(db.terms, {
+  foreignKey: "fkTermId",
+  as: "terms",
 });
 db.introducedInSenateBills.belongsTo(db.sessions, {
   foreignKey: "fkSessionId",

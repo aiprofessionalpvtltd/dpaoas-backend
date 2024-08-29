@@ -137,4 +137,7 @@ router.put("/update/:id", terms.updateTerm)
  */
 router.delete("/delete/:id", terms.deleteTerm)
 
+router.get("/tenure/:id", terms.getSingleTermByTenureID)
+
+
 module.exports = router;

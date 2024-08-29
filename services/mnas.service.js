@@ -19,6 +19,7 @@ const mnaService = {
             // Create the MNA
             const mna = await MNAs.create(mnaData, { transaction });
 
+
             // Associate the MNA with existing ministries
             const ministryAssociations = await Promise.all(
                 ministryIds.map(async (ministryId) => {
@@ -44,6 +45,7 @@ const mnaService = {
             const { count, rows } = await MNAs.findAndCountAll({
                 offset,
                 limit,
+                where: { status: true },
                 include: [
                     {
                         model: PoliticalParties,

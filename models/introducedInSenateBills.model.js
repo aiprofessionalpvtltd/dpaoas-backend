@@ -13,6 +13,15 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+
+        fkTermId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'terms',
+                key: 'id'
+            }
+        },
         fkParliamentaryYearId: {
             type: Sequelize.INTEGER,
             allowNull: false,
@@ -124,6 +133,11 @@ module.exports = (sequelize, Sequelize) => {
         actNo: {
             type: Sequelize.STRING,
             allowNull: true
+        },
+        billFor: {
+            type: Sequelize.ENUM("Senators", "Ministers"),
+            allowNull: false,
+             defaultValue: 'Senators'
         },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,

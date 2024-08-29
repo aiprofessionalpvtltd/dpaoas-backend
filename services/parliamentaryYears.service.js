@@ -27,7 +27,11 @@ const parliamentaryYearsService = {
                 include: [
                     {
                         model: Tenures,
-                        attributes: ['id','tenureName']
+                        attributes: ['id','tenureName' ,'tenureType']
+                    },
+                    {
+                        model: db.terms,
+                        attributes: ['id','termName']
                     }
                 ],
                 offset,
@@ -52,7 +56,11 @@ const parliamentaryYearsService = {
                 include: [
                     {
                         model: Tenures,
-                        attributes: ['id','tenureName']
+                        attributes: ['id','tenureName','tenureType']
+                    },
+                    {
+                        model: db.terms,
+                        attributes: ['id','termName']
                     }
                 ]
             });
@@ -110,6 +118,24 @@ const parliamentaryYearsService = {
         } catch (error) {
           // Handle any errors during the database operation
           throw new Error(`Error fetching records by Tenure ID: ${error.message}`);
+        }
+    },
+
+    getRecordsByTermId: async (termID) => {
+        try {
+          // Fetch records where fkTermId matches the provided termID
+          const records = await ParliamentaryYears.findAll({
+            where: {
+              fkTermId: termID
+            }
+          });
+    
+          // Return the fetched records
+          return records;
+    
+        } catch (error) {
+          // Handle any errors during the database operation
+          throw new Error(`Error fetching records by Term ID: ${error.message}`);
         }
       }
 
