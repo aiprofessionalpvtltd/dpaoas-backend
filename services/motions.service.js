@@ -636,6 +636,45 @@ const motionService = {
     }
   },
 
+  // Revive Motions by Updating fkSessionId
+  reviveMotions: async (motionIds, fkSessionId) => {
+    try {
+
+      // Check if fkSessionId is provided
+      if (!fkSessionId) {
+        throw new Error("Session no is required");
+      }
+
+      const updatedMotions = [];
+
+      for (const motionId of motionIds) {
+        const motionRecord = await motions.findOne({
+          where: {
+            id: motionId,
+          },
+        });
+
+        if (motionRecord) {
+          // Update the fkSessionId with the new one
+          motionRecord.fkSessionId = fkSessionId;
+
+          // Save the updated motion record
+          const updatedMotion = await motionRecord.save();
+          updatedMotions.push(updatedMotion);
+        } else {
+          console.warn(`Motion with id ${motionId} not found`);
+   
+        }
+      }
+
+      return updatedMotions;
+    } catch (error) {
+      console.error("Error in reviveMotions:", error.message);
+      throw error;
+    }
+  },
+
+
   // Update motion list status to inactive (soft delete)
   deleteMotionList: async (motionListId) => {
     try {
@@ -851,7 +890,7 @@ const motionService = {
   // Update Motions Status of 'Balloting'
   updateMotionsStatus: async (motionIds, fkMotionStatus) => {
     try {
-     const result =  await motions.update(
+      const result = await motions.update(
         { fkMotionStatus },
         { where: { id: motionIds } }
       );

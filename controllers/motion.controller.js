@@ -621,21 +621,21 @@ const MotionController = {
 
   updateMotionsStatus: async (req, res) => {
     try {
-        const { motionIds, fkMotionStatus } = req.body; // Expecting motionIds array and fkMotionStatus
-        const result = await motionService.updateMotionsStatus(motionIds, fkMotionStatus);
-        if(result){
-          return res.status(200).send({
-            success: true,
-            message: "Motions status updated successfully!",
-          })
-        }  
+      const { motionIds, fkMotionStatus } = req.body; // Expecting motionIds array and fkMotionStatus
+      const result = await motionService.updateMotionsStatus(motionIds, fkMotionStatus);
+      if (result) {
+        return res.status(200).send({
+          success: true,
+          message: "Motions status updated successfully!",
+        })
+      }
     } catch (error) {
-        return res.status(400).send({
-            success: false,
-            message: error.message
-        });
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      });
     }
-},
+  },
 
   getMotionTypes: async (req, res) => {
     logger.info(`SenateLegislativeController: getMotionTypes `);
@@ -933,6 +933,30 @@ const MotionController = {
       data: motionRecord,
     });
   },
+
+  // Revived Motion API
+  reviveMotions: async (req, res) => {
+    try {
+      const { motionIds, fkSessionId } = req.body;
+      logger.info(`MotionController: reviveMotions ${motionIds}, fkSessionId: ${fkSessionId}`);
+
+      // Call the service method to update the fkSessionId for the provided motionIds
+      const updatedMotions = await motionService.reviveMotions(motionIds, fkSessionId);
+
+      return res.status(200).send({
+        success: true,
+        message: `Motions revived successfully`,
+        data: updatedMotions,
+      });
+    } catch (error) {
+      logger.error(`MotionController: Error in reviveMotions: ${error.message}`);
+      return res.status(400).send({
+        success: false,
+        error: error.message,
+      });
+    }
+  },
+
 
   //Get Ministries
   getMinistries: async (req, res) => {
