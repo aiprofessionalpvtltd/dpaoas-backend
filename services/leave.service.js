@@ -83,35 +83,64 @@ const leaveService = {
     },
     getAllLeave: async (pageSize, offset) => {
         try {
-            const leaves = await db.sequelize.query(`
-                        SELECT 
-                            "requestLeaves".*,
-                            "leaveTypes"."leaveType" AS "leaveTypeName",
-                            "employees"."id" AS "employees.id",
-                            "employees"."firstName" AS "employees.firstName",
-                            "employees"."lastName" AS "employees.lastName",
-                            "employees"."phoneNo" AS "employees.phoneNo",
-                            "leaveOf"."firstName" AS "leavesubmittedTofirstName",
-                            "leaveOf"."lastName" AS "leavesubmittedTolastName"
-                        FROM 
-                            "requestLeaves"
-                        LEFT JOIN 
-                            "employees" ON "requestLeaves"."fkUserId" = "employees"."id"
-                        LEFT JOIN
-                            "employees" AS "leaveOf" ON "requestLeaves"."requestLeaveSubmittedTo"::integer = "leaveOf"."id"
-                        LEFT JOIN
-                            "leaveTypes" ON "requestLeaves"."fkRequestTypeId" = "leaveTypes"."id"
-                        LIMIT :limit
-                        OFFSET :offset
-                    `, {
+            // Run the main query
+            const result = await db.sequelize.query(`
+                WITH leaveData AS (
+                    SELECT 
+                        "requestLeaves".*,
+                        "leaveTypes"."leaveType" AS "leaveTypeName",
+                        "employees"."id" AS "employees.id",
+                        "employees"."firstName" AS "employees.firstName",
+                        "employees"."lastName" AS "employees.lastName",
+                        "employees"."phoneNo" AS "employees.phoneNo",
+                        "leaveOf"."firstName" AS "leavesubmittedTofirstName",
+                        "leaveOf"."lastName" AS "leavesubmittedTolastName",
+                        "members"."memberName" AS "memberName"
+                    FROM 
+                        "requestLeaves"
+                    LEFT JOIN 
+                        "employees" ON "requestLeaves"."fkUserId" = "employees"."id"
+                    LEFT JOIN
+                        "employees" AS "leaveOf" ON "requestLeaves"."requestLeaveSubmittedTo"::integer = "leaveOf"."id"
+                    LEFT JOIN
+                        "leaveTypes" ON "requestLeaves"."fkRequestTypeId" = "leaveTypes"."id"
+                    LEFT JOIN 
+                        "members" ON "requestLeaves"."web_id" = "members"."id"
+                    ORDER BY 
+                        "requestLeaves"."createdAt" DESC
+                )
+                SELECT 
+                    (SELECT COUNT(*) FROM leaveData) AS totalCount,
+                    leaveData.*
+                FROM 
+                    leaveData
+                LIMIT :limit
+                OFFSET :offset
+            `, {
                 type: db.sequelize.QueryTypes.SELECT,
                 replacements: { limit: parseInt(pageSize), offset: offset },
             });
-            return leaves
+    
+            // Extract the total count from the first record
+            const totalCount = result.length > 0 ? result[0].totalcount : 0;
+    
+            // Create a new array excluding the totalCount from each record
+            const leaves = result.map(record => {
+                const { totalcount, ...leaveData } = record;
+                return leaveData;
+            });
+    
+            // Return the total count separately along with the leaves array
+            return {
+                totalCount: parseInt(totalCount),  // Ensure totalCount is returned as a number
+                leaves,
+            };
+    
         } catch (error) {
-            console.error('Error Fetching leave request:', error.message);
+            console.error('Error fetching leave request:', error.message);
+            throw error;
         }
-    },
+    },    
     getLeaveById: async (id) => {
         try {
             console.log("herer");

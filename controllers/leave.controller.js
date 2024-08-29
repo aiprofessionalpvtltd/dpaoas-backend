@@ -27,12 +27,13 @@ const leaveController = {
         else {
             orderType = "DESC";
         }
-        const result = await leaveService.getAllLeave(pageSize, offset);
-        console.log("Result", result);
+        const { totalCount, leaves } = await leaveService.getAllLeave(pageSize, offset);
+        // console.log("Result", result);
         return res.status(200).send({
             success: true,
             message: `All Leave Information fetched successfully`,
-            data: result,
+            data: leaves,
+            totalCount,
         })
     },
     getAllLeavesOfUser: async (req, res) => {
