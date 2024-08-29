@@ -17,6 +17,15 @@ module.exports = (sequelize, Sequelize) => {
               key: 'id'
             }
         },
+
+        fkTermId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+              model: 'terms',
+              key: 'id'
+            }
+        },
         fromDate: {
             type: Sequelize.STRING,
             allowNull: false
@@ -34,6 +43,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM("active","inactive"),
             defaultValue: "active",
         },
+       
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });

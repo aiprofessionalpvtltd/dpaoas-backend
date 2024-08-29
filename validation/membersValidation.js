@@ -6,6 +6,7 @@ exports.memberRequestValidation = (req, res, next) => {
         gender: Joi.string().required(),
         fkTenureId: Joi.number().required(),
         fkParliamentaryYearId: Joi.number().required(),
+        fkTermId: Joi.number().required(),
         memberStatus: Joi.string().required(),
         politicalParty: Joi.number().required(),
         electionType: Joi.string().required(),
@@ -13,7 +14,7 @@ exports.memberRequestValidation = (req, res, next) => {
         memberProvince: Joi.string().required(),
         isMinister: Joi.boolean(),
         phoneNo: Joi.string().required(),
-        reason: Joi.string().optional()
+        reason: Joi.string().allow(null, '') // Allowing null and empty string
     })
     const { error } = createMemberSchema.validate(req.body)
     if (error) {

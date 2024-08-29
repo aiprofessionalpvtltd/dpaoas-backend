@@ -33,8 +33,29 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM("active", "inactive"),
             defaultValue: 'active'
         },
+        fkTenureId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'tenures',
+                key: 'id'
+            }
+        },
+        fkParliamentaryYearId: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'parliamentaryYears',
+                key: 'id'
+            }
+        }, status: {
+            type: Sequelize.BOOLEAN,
+            allowNull: true,
+            defaultValue: 'true'
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
+       
     });
 
     Mnas.associate = function (models) {

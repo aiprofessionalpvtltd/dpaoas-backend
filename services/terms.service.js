@@ -92,7 +92,29 @@ const termsService = {
         } catch (error) {
             throw { message: error.message || "Error Deleting Term!" };
         }
-    }
+    },
+
+       // Get Single Term
+       getSingleTermByTenureID: async (tenureId) => {
+        try {
+
+            const term = await Terms.findAll({ where: { fkTenureId: tenureId },
+                include :[
+                    {
+                        model: Tenures,
+                        attributes: ['id','tenureName']
+                    }
+                ]
+            });
+            if (!term) {
+                throw ({ message: "Term Not Found!" })
+            }
+            return term;
+        } catch (error) {
+            throw new Error(error.message || "Error Fetching Term");
+
+        }
+    },
 
 }
 

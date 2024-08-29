@@ -52,7 +52,12 @@ const membersController = {
                     model: tenures,
                     as: "tenures",
                     attributes: ["tenureName"],
-                },
+              },
+              {
+                model: db.terms,
+                as: 'terms',
+                attributes: ['id','termName'],
+            },
                 {
                     model: db.parliamentaryYears,
                     as: "parliamentaryYears",
@@ -173,13 +178,14 @@ const membersController = {
     try {
       const { body, params } = req;
       const { memberID } = params;
-      const { newParliamentaryYearId } = body;
+      const { newParliamentaryYearId , newTermId} = body;
 
       logger.info(`membersController: promoteMembers for memberID ${memberID}`);
 
       // Call the promoteMembers service with memberID and newParliamentaryYearId
       const memberRecord = await membersService.promoteMembers(
         newParliamentaryYearId,
+        newTermId,
         memberID
       );
 
@@ -196,6 +202,19 @@ const membersController = {
         error: error.message,
       });
     }
+  },
+
+  getMemberByParliamentaryYearID: async (req, res) => {
+    const { params } = req;
+    const { id } = params;
+    logger.info(`membersController: getMemberById ${id}`);
+    const memberRecord = await membersService.getMemberByParliamentaryYearID(id);
+
+    return res.status(200).send({
+      success: true,
+      message: `Member fetched successfully for id ${id}`,
+      data: memberRecord,
+    });
   },
 };
 module.exports = membersController;

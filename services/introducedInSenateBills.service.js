@@ -26,6 +26,7 @@ const senateBillService = {
     createSenateBill: async (senateBillData) => {
         try {
             const { senateBillSenatorMovers, senateBillMinistryMovers, senateBillMnaMovers, ...senateBillAttributes } = senateBillData;
+
             const createdSenateBill = await IntroducedInSenateBills.create(senateBillAttributes);
             const senateBillId = createdSenateBill.id;
 
@@ -96,6 +97,14 @@ const senateBillService = {
                     {
                         model: ParliamentaryYears,
                         as: 'parliamentaryYears'
+                    },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    {
+                        model: db.terms,
+                        as: 'terms'
                     },
                     {
                         model: Sessions,
@@ -206,6 +215,14 @@ const senateBillService = {
                         as: 'parliamentaryYears'
                     },
                     {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
+                    {
                         model: Sessions,
                         as: 'sessions'
                     },
@@ -299,6 +316,14 @@ const senateBillService = {
                 {
                     model: ParliamentaryYears,
                     as: 'parliamentaryYears'
+                },
+                {
+                    model: db.tenures,
+                    as: 'tenures'
+                },
+                {
+                    model: db.terms,
+                    as: 'terms'
                 },
                 {
                     model: Sessions,
@@ -514,6 +539,14 @@ const senateBillService = {
                     {
                         model: ParliamentaryYears,
                         as: 'parliamentaryYears'
+                    },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    {
+                        model: db.terms,
+                        as: 'terms'
                     },
                     {
                         model: Sessions,

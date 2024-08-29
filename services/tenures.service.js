@@ -18,23 +18,39 @@ const tenuresService = {
     },
 
     // Get All Tenures
-    getAllTenures: async (currentPage, pageSize) => {
+    getAllTenures: async (currentPage, pageSize, tenureType) => {
         try {
-            const offset = currentPage * pageSize;
-            const limit = pageSize;
+            // Validate and sanitize pagination inputs
+            const page = Math.max(parseInt(currentPage, 10) || 0, 0);
+            const size = Math.min(parseInt(pageSize, 10) || 10, 100); // Assuming 100 is the max page size
+            const offset = page * size;
+            const limit = size;
+    
+            // Build the where condition dynamically
+            const where = {};
+            if (tenureType) {
+                where.tenureType = tenureType;
+            }
+    
+            // Execute the query
             const { count, rows } = await Tenures.findAndCountAll({
                 offset,
                 limit,
+                where,
                 order: [
-                    ['id','DESC']
+                    ['id', 'DESC']
                 ]
             });
-            const totalPages = Math.ceil(count / pageSize);
+    
+            const totalPages = Math.ceil(count / size);
+    
             return { count, totalPages, tenures: rows };
         } catch (error) {
+            console.error("Error fetching tenures:", error);
             throw new Error(error.message || "Error Fetching All Tenures");
         }
     },
+    
 
 
     // Get Single Tenure
