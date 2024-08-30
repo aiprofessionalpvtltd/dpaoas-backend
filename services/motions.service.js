@@ -645,6 +645,15 @@ const motionService = {
         throw new Error("Session no is required");
       }
 
+      // Fetch the "Admitted" status ID
+      const admittedStatus = await db.motionStatuses.findOne({
+        where: { statusName: "Admitted" }
+      });
+
+      if (!admittedStatus) {
+        throw new Error("Admitted status not found in motionStatuses");
+      }
+
       const updatedMotions = [];
 
       for (const motionId of motionIds) {
@@ -655,15 +664,16 @@ const motionService = {
         });
 
         if (motionRecord) {
-          // Update the fkSessionId with the new one
+          // Update the fkSessionId and fkMotionStatus with the new ones
           motionRecord.fkSessionId = fkSessionId;
+          motionRecord.fkMotionStatus = admittedStatus.id;
 
           // Save the updated motion record
           const updatedMotion = await motionRecord.save();
           updatedMotions.push(updatedMotion);
         } else {
           console.warn(`Motion with id ${motionId} not found`);
-   
+
         }
       }
 
@@ -672,6 +682,137 @@ const motionService = {
       console.error("Error in reviveMotions:", error.message);
       throw error;
     }
+  },
+
+  searchMotions: async ({
+    page,
+    pageSize,
+    fkMemberId,
+    sessionStartRange,
+    sessionEndRange,
+    fkMotionStatus,
+    memberPosition,
+    motionType,
+    politicalParty,
+    governmentType,
+  }) => {
+    const offset = page * pageSize;
+    const limit = pageSize;
+
+    let whereClause = {};
+
+    if (fkMemberId) {
+      whereClause["$motionMovers.fkMemberId$"] = fkMemberId;
+    }
+    if (motionType) {
+      whereClause["$motionType$"] = motionType;
+    }
+    if (fkMotionStatus) {
+      whereClause["$motionStatuses.id$"] = fkMotionStatus;
+    }
+    if (memberPosition) {
+      whereClause["$memberPosition$"] = memberPosition;
+    }
+    if (sessionStartRange && sessionEndRange) {
+      whereClause["$sessions.id$"] = {
+        [Op.between]: [sessionStartRange, sessionEndRange],
+      };
+    } else if (sessionStartRange) {
+      whereClause["$sessions.id$"] = {
+        [Op.gte]: sessionStartRange,
+      };
+    } else if (sessionEndRange) {
+      whereClause["$sessions.id$"] = {
+        [Op.lte]: sessionEndRange,
+      };
+    }
+
+    if (politicalParty) {
+      whereClause["$motionMovers.members.politicalParty$"] = politicalParty;
+    }
+    if (governmentType) {
+      whereClause["$motionMovers.members.governmentType$"] = governmentType;
+    }
+
+    let options = {
+      raw: false,
+      include: [
+        {
+          model: sessions,
+          as: "sessions",
+          attributes: ["sessionName", "id"],
+        },
+        {
+          model: motionStatuses,
+          as: "motionStatuses",
+          attributes: ["statusName", "id"],
+        },
+        {
+          model: motionMovers,
+          as: "motionMovers",
+          attributes: ["fkMemberId", "id"],
+          include: [
+            {
+              model: db.members,
+              as: "members",
+              attributes: ["memberName", "id", "politicalParty", "governmentType"],
+              include: [
+                {
+                  model: db.politicalParties,
+                  as: "politicalParties",
+                  attributes: ["partyName", "id"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: motionMinistries,
+          as: "motionMinistries",
+          attributes: ["fkMinistryId", "id"],
+          include: [
+            {
+              model: ministries,
+              as: "ministries",
+              attributes: ["ministryName", "id"],
+            },
+          ],
+        },
+      ],
+      subQuery: false,
+      distinct: true,
+      limit,
+      offset,
+      order: [["id", "DESC"]],
+      where: whereClause,
+    };
+
+    const { rows, count } = await motions.findAndCountAll(options);
+    const totalPages = Math.ceil(count / pageSize);
+
+    // Calculate member counts by motionType
+    let memberCountsByMotionType = {};
+
+    rows.forEach((motion) => {
+      const { motionType, motionMovers } = motion;
+
+      if (!memberCountsByMotionType[motionType]) {
+        memberCountsByMotionType[motionType] = {};
+      }
+
+      motionMovers.forEach((mover) => {
+        const memberName = mover.members.memberName;
+
+        if (!memberCountsByMotionType[motionType][memberName]) {
+          memberCountsByMotionType[motionType][memberName] = 0;
+        }
+
+        memberCountsByMotionType[motionType][memberName] += 1;
+      });
+    });
+
+
+    return { totalPages, rows, count, memberCountsByMotionType };
   },
 
 
