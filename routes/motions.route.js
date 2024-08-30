@@ -17,6 +17,7 @@ router.post("/pdfMotionList", motionController.pdfMotionList);
 router.put("/motionBalloting/status", motionController.updateMotionsStatus);
 router.get("/findAllBalloting", motionController.findAllBallotingMotions);
 router.post('/revive-motions', motionController.reviveMotions);
+router.get('/searchMotions', motionController.searchMotions);
 // get data for motion dashboard
 router.get('/motion-dashboard-stats', motionController.motionDashboardStats);
 

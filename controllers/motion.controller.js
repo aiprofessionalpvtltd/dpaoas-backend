@@ -957,6 +957,58 @@ const MotionController = {
     }
   },
 
+  searchMotions: async (req, res) => {
+    const { query } = req;
+    const {
+      page,
+      pageSize,
+      fkMemberId,
+      sessionStartRange,
+      sessionEndRange,
+      fkMotionStatus,
+      memberPosition,
+      motionType,
+      politicalParty,
+      governmentType,
+    } = query;
+
+    try {
+      const response = await motionService.searchMotions({
+        page,
+        pageSize,
+        fkMemberId,
+        sessionStartRange,
+        sessionEndRange,
+        fkMotionStatus,
+        memberPosition,
+        motionType,
+        politicalParty,
+        governmentType,
+      });
+
+      if (response.rows.length > 0) {
+        return res.status(200).send({
+          success: true,
+          message: `Motions Information fetched successfully`,
+          data: response,
+        });
+      } else {
+        return res.status(200).send({
+          success: true,
+          message: `Data Not Found`,
+          data: { rows: [] },
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching motions:", error.message);
+      return res.status(500).send({
+        success: false,
+        message: "Error fetching motions",
+        error: error.message,
+      });
+    }
+  },
+
 
   //Get Ministries
   getMinistries: async (req, res) => {
