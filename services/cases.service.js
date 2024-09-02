@@ -508,7 +508,7 @@ const casesService = {
   },
 
   // Get Case History On The Basis of Created User
-  getCasesHistory: async (fileId, userId, branchId, currentPage, pageSize) => {
+  getCasesHistory: async (userId, branchId, currentPage, pageSize) => {
     try {
       const allRelevantSections = await CaseNotes.findAll({
         include: [
@@ -524,7 +524,7 @@ const casesService = {
               "createdAt",
               "updatedAt",
             ],
-            ...(fileId ? { where: { fkFileId: fileId } } : {}),
+            // ...(fileId ? { where: { fkFileId: fileId } } : {}),
             include: [
               {
                 model: Files,
@@ -711,7 +711,7 @@ const casesService = {
 
 
   getAllCasesHistory: async (
-    fileId,
+    // fileId,
     userId,
     branchId,
     currentPage,
@@ -732,7 +732,7 @@ const casesService = {
               "createdAt",
               "updatedAt",
             ],
-            ...(fileId ? { where: { fkFileId: fileId } } : {}),
+            // ...(fileId ? { where: { fkFileId: fileId } } : {}),
             include: [
               {
                 model: Files,
