@@ -87,11 +87,18 @@ router.get("/getCasesByFileId", cases.getCasesByFileId);
  *       '200':
  *         description: A successful response
  */
-router.get("/getCasesHistory/:fileId/:branchId/:userId", cases.getCasesHistory);
+// router.get("/getCasesHistory/:fileId/:branchId/:userId", cases.getCasesHistory);
+router.get("/getCasesHistory/:branchId/:userId", cases.getCasesHistory);
+// router.get(
+//   "/getAllCasesHistory/:fileId/:branchId/:userId",
+//   cases.getAllCasesHistory
+// );
+
 router.get(
-  "/getAllCasesHistory/:fileId/:branchId/:userId",
+  "/getAllCasesHistory/:branchId/:userId",
   cases.getAllCasesHistory
 );
+
 
 
 

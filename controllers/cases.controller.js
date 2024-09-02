@@ -229,7 +229,7 @@ const casesController = {
       const currentPage = req.query.currentPage;
       const pageSize = req.query.pageSize;
       const { cases, count, totalPages } = await casesService.getCasesHistory(
-        fileId,
+        // fileId,
         userId,
         branchId,
         currentPage,
@@ -266,7 +266,7 @@ const casesController = {
       const pageSize = req.query.pageSize;
       const { cases, count, totalPages } =
         await casesService.getAllCasesHistory(
-          fileId,
+          // fileId,
           userId,
           branchId,
           currentPage,
