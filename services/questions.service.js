@@ -170,6 +170,12 @@ const questionsService = {
             model: Divisions,
             as: "divisions",
             attributes: ["id", "divisionName"],
+            include: [
+              {
+                model: db.ministries,
+                attributes: ["id", "ministryName"],
+              },
+            ]
           },
           {
             model: Groups,
@@ -285,6 +291,12 @@ const questionsService = {
             model: Divisions,
             as: "divisions",
             attributes: ["id", "divisionName"],
+            include: [
+              {
+                model: db.ministries,
+                attributes: ["id", "ministryName"],
+              },
+            ]
           },
           {
             model: Groups,
@@ -490,6 +502,12 @@ const questionsService = {
             model: Divisions,
             as: "divisions",
             attributes: ["id", "divisionName"],
+            include: [
+              {
+                model: db.ministries,
+                attributes: ["id", "ministryName"],
+              },
+            ]
           },
           {
             model: Groups,
@@ -663,6 +681,12 @@ const questionsService = {
             model: Divisions,
             as: "divisions",
             attributes: ["id", "divisionName"],
+            include: [
+              {
+                model: db.ministries,
+                attributes: ["id", "ministryName"],
+              },
+            ]
           },
           {
             model: Groups,

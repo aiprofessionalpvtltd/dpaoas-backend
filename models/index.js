@@ -420,6 +420,9 @@ db.ordinanceDocuments = require("./ordinanceDocuments.model.js")(sequelize, Sequ
 // mnaMinistries model
 db.mnaMinistries = require("./mnaMinistries.model.js")(sequelize, SequelizeMain);
 
+// resolution ministries
+db.resolutionMinistries = require("./resolutionMinistries.model.js")(sequelize, SequelizeMain);
+
 //db.fileRemarks.belongsTo(db.users, { foreignKey: 'commentBy', as: 'users' });
 db.files.hasMany(db.fileAttachments, {
   as: "fileAttachments",
@@ -1385,6 +1388,11 @@ db.legislativeBills.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id
 db.privateMemberBills.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
 db.researchServices.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
 db.speechOnDemands.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
+
+// resolution ministries
+db.resolutionMinistries.belongsTo(db.resolutions, { foreignKey: 'fkResolutionId', as: 'resolution' });
+db.resolutionMinistries.belongsTo(db.ministries, { foreignKey: 'fkMinistryId', as: 'ministries' });
+db.resolutions.hasMany(db.resolutionMinistries, { foreignKey: 'fkResolutionId', as: 'resolutionMinistries' });
 
 sequelize.sync();
 module.exports = db;

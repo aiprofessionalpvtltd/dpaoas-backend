@@ -4,6 +4,7 @@ const resolution = db.resolutions;
 const noticeOfficeDairies = db.noticeOfficeDairies;
 const resolutionDiaries = db.resolutionDiaries;
 const resolutionMovers = db.resolutionMovers;
+const resolutionMinistries =  db.resolutionMinistries
 const resolutionStatus = db.resolutionStatus;
 const Questions = db.questions;
 const members = db.members;
@@ -62,6 +63,20 @@ const resolutionService = {
             const resolutionId = resolutions.id;
             // console.log("resolution id", resolutionId)
 
+
+            // Add ministries to the resolution
+            if (Array.isArray(data.ministries)) {
+                for (const ministryId of data.ministries) {
+                    console.log("sssss", ministryId)
+                    const resolutionMinistryData = {
+                        fkResolutionId: resolutionId,
+                        fkMinistryId: ministryId?.fkMinistryId,
+                    };
+                    await resolutionMinistries.create(resolutionMinistryData);
+                }
+            }
+
+            //console.log("data.resolutionMovers----", data.resolutionMovers)
             if (Array.isArray(data.resolutionMovers)) {
 
                 for (const moverData of data.resolutionMovers) {
@@ -158,6 +173,18 @@ const resolutionService = {
                         ]
                     },
                     {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
+                            }
+                        ]
+                    },
+                    {
                         model: noticeOfficeDairies,
                         as: 'noticeDiary',
                         attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
@@ -242,6 +269,18 @@ const resolutionService = {
                                 model: db.members,
                                 as: 'memberAssociation',
                                 attributes: ['memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
                             }
                         ]
                     },
@@ -590,6 +629,18 @@ const resolutionService = {
                         ]
                     },
                     {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
+                            }
+                        ]
+                    },
+                    {
                         model: noticeOfficeDairies,
                         as: 'noticeDiary',
                         attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
@@ -708,6 +759,24 @@ const resolutionService = {
                 }
             }
 
+            if (body.ministries) {
+                // Delete existing resolutionMovers entries
+                await resolutionMinistries.destroy({
+                    where: { fkResolutionId: resolutionId }
+                });
+
+                // Create new resolutionMovers entries
+                for (const ministryId of body.ministries) {
+
+                    const resolutionMinistryData = {
+                        fkResolutionId: resolutionId,
+                        fkMinistryId: ministryId?.fkMinistryId,
+                    };
+
+                    await resolutionMinistries.create(resolutionMinistryData);
+                }
+            }
+
             const updatedResolutionData =
             {
                 ...body,
@@ -729,6 +798,18 @@ const resolutionService = {
                                 model: db.members,
                                 as: 'memberAssociation',
                                 attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
                             }
                         ]
                     },
@@ -808,6 +889,18 @@ const resolutionService = {
                                 model: db.members,
                                 as: 'memberAssociation',
                                 attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
                             }
                         ]
                     },
@@ -1589,7 +1682,7 @@ const resolutionService = {
     },
 
 
-    // get Single Resolution Data
+    // get Single Resolution List Data
     getSingleResolutionData: async (resolutionListId) => {
         try {
 
@@ -1933,6 +2026,18 @@ const resolutionService = {
                         ],
                     },
                     {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
+                            }
+                        ]
+                    },
+                    {
                         model: db.noticeOfficeDairies,
                         as: 'noticeDiary',
                         attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
@@ -2265,6 +2370,18 @@ const resolutionService = {
                         ],
                     },
                     {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
+                            }
+                        ]
+                    },
+                    {
                         model: db.noticeOfficeDairies,
                         as: 'noticeDiary',
                         attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
@@ -2417,6 +2534,18 @@ const resolutionService = {
                         ],
                     },
                     {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
+                            }
+                        ]
+                    },
+                    {
                         model: db.noticeOfficeDairies,
                         as: 'noticeDiary',
                         attributes: ['id', 'noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime'],
@@ -2536,6 +2665,18 @@ const resolutionService = {
                         ]
                     },
                     {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
+                            }
+                        ]
+                    },
+                    {
                         model: db.noticeOfficeDairies,
                         as: 'noticeDiary',
                         attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
@@ -2587,7 +2728,7 @@ const resolutionService = {
             const sessionStartDate = moment(`${currentYear}-03-12`);
             const nextYear = currentYear + 1;
             const sessionEndDate = moment(`${nextYear}-03-11`);
-    
+
             // Fetch the latest resolution
             const latestResolution = await resolution.findOne({
                 include: [
@@ -2599,16 +2740,16 @@ const resolutionService = {
                 ],
                 order: [["createdAt", "DESC"]],
             });
-    
+
             let newNoticeOfficeDiaryNo;
-    
+
             if (latestResolution && latestResolution.noticeDiary) {
                 const latestDiaryDateMoment = moment(latestResolution.noticeDiary.noticeOfficeDiaryDate).startOf('day');
                 const sessionEndDateMoment = sessionEndDate.startOf('day');
-    
+
                 console.log('sessionEndDate', sessionEndDateMoment.format('YYYY-MM-DD'));
                 console.log('latestDiaryDate', latestDiaryDateMoment.format('YYYY-MM-DD'));
-    
+
                 // Check if the current date is after the session end date
                 if (latestDiaryDateMoment.isAfter(sessionEndDateMoment, 'day')) {
                     // If noticeOfficeDiaryDate is after sessionEndDate, start from "01"
@@ -2622,19 +2763,19 @@ const resolutionService = {
                 // If no noticeOfficeDiaryNo is found, start from "01"
                 newNoticeOfficeDiaryNo = "01";
             }
-    
+
             console.log('newNoticeOfficeDiaryNo', newNoticeOfficeDiaryNo);
-    
+
             const result = {
                 noticeOfficeDiaryNo: newNoticeOfficeDiaryNo, // Include the new noticeOfficeDiaryNo
             };
-    
+
             return result;
         } catch (error) {
             throw { message: error.message || "Error Fetching Resolutions by Status!" };
         }
     },
-    
+
 
 
 
