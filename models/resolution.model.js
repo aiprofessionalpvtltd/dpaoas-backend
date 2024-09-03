@@ -174,6 +174,7 @@ module.exports = (sequelize, Sequelize) => {
         resolutions.belongsTo(models.resolutionStatuses, { foreignKey: 'fkResolutionStatus', as: 'resolutionStatus' });
         resolutions.belongsTo(models.resolutionDiaries, { foreignKey: 'fkResolutionDairyId', as: 'resolutionDiaries' });
         resolutions.hasMany(models.resolutionMovers, { foreignKey: 'fkResolutionId', as: 'resolutionMovers' });
+        resolutions.hasMany(models.resolutionMinistries, { foreignKey: 'fkResolutionId', as: 'resolutionMinistries' });
         resolutions.belongsTo(models.users, { foreignKey: 'createdByUser' })
         resolutions.belongsTo(models.users, { foreignKey: 'deletedByUser' })
         resolutions.belongsTo(models.branches, { foreignKey: 'initiatedByBranch' })
