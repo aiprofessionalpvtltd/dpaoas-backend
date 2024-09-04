@@ -142,7 +142,7 @@ module.exports = (sequelize, Sequelize) => {
         },
 
         resolutionSentStatus: {
-            type: Sequelize.ENUM("inResolution","toResolution", "inNotice"),
+            type: Sequelize.ENUM("inResolution", "toResolution", "inNotice"),
             defaultValue: "inNotice",
         },
 
@@ -179,6 +179,23 @@ module.exports = (sequelize, Sequelize) => {
         resolutions.belongsTo(models.users, { foreignKey: 'deletedByUser' })
         resolutions.belongsTo(models.branches, { foreignKey: 'initiatedByBranch' })
         resolutions.belongsTo(models.branches, { foreignKey: 'sentToBranch' })
+        // resolutions.hasMany(models.resolutionClubs, { foreignKey: 'fkResolutionId', as: 'resolutionClubs' });
+        // resolutions.hasMany(models.resolutionClubs, { foreignKey: 'linkedResolutionId', as: 'linkedToResolutions' });
+
+          // Handling both directions of linking
+          resolutions.belongsToMany(models.resolutions, {
+            through: models.resolutionClubs,
+            as: 'linkedResolutions', // Outgoing links (from this resolution to others)
+            foreignKey: 'fkResolutionId',
+            otherKey: 'linkedResolutionId',
+        });
+
+        resolutions.belongsToMany(models.resolutions, {
+            through: models.resolutionClubs,
+            as: 'linkedToResolutions', // Incoming links (from others to this resolution)
+            foreignKey: 'linkedResolutionId',
+            otherKey: 'fkResolutionId',
+        });
     };
 
     return resolutions;

@@ -4,7 +4,8 @@ const resolution = db.resolutions;
 const noticeOfficeDairies = db.noticeOfficeDairies;
 const resolutionDiaries = db.resolutionDiaries;
 const resolutionMovers = db.resolutionMovers;
-const resolutionMinistries =  db.resolutionMinistries
+const resolutionMinistries = db.resolutionMinistries;
+const resolutionClubs = db.resolutionClubs;
 const resolutionStatus = db.resolutionStatus;
 const Questions = db.questions;
 const members = db.members;
@@ -67,12 +68,34 @@ const resolutionService = {
             // Add ministries to the resolution
             if (Array.isArray(data.ministries)) {
                 for (const ministryId of data.ministries) {
-                    console.log("sssss", ministryId)
+                    // console.log("sssss", ministryId)
                     const resolutionMinistryData = {
                         fkResolutionId: resolutionId,
                         fkMinistryId: ministryId?.fkMinistryId,
                     };
                     await resolutionMinistries.create(resolutionMinistryData);
+                }
+            }
+
+            // Convert the string to an array of integers
+            let linkedResolutionsArray = [];
+            if (typeof data.linkedResolutions === 'string') {
+                linkedResolutionsArray = data.linkedResolutions
+                    .split(',')
+                    .map(id => parseInt(id.trim(), 10))
+                    .filter(id => !isNaN(id)); // Filter out any non-numeric values
+            } else if (Array.isArray(data.linkedResolutions)) {
+                linkedResolutionsArray = data.linkedResolutions;
+            }
+
+            // Link Resolutions (Clubbing)
+            if (Array.isArray(linkedResolutionsArray)) {
+                for (const linkedResolutionId of linkedResolutionsArray) {
+                    const resolutionClubData = {
+                        fkResolutionId: resolutionId,
+                        linkedResolutionId: linkedResolutionId
+                    };
+                    await resolutionClubs.create(resolutionClubData);
                 }
             }
 
@@ -84,7 +107,7 @@ const resolutionService = {
 
                     // Determine the fkMemberId value
                     const fkMemberIdValue = moverData.fkMemberId ? moverData.fkMemberId : (data.web_id ? data.web_id : null);
-                    console.log("fkMemberIdValue=------", fkMemberIdValue)
+                    // console.log("fkMemberIdValue=------", fkMemberIdValue)
 
 
 
@@ -95,13 +118,13 @@ const resolutionService = {
                     };
 
                     const resolutionMover = await resolutionMovers.create(resolutionMoversData);
-                    console.log("resolutionMover------", resolutionMover)
+                    // console.log("resolutionMover------", resolutionMover)
 
                 }
             } else {
                 // Handle the case when resolutionMovers does not exist
                 const fkMemberIdValue = data.web_id ? data.web_id : null;
-                console.log("fkMemberIdValue when resolutionMovers is not present=------", fkMemberIdValue);
+                // console.log("fkMemberIdValue when resolutionMovers is not present=------", fkMemberIdValue);
 
                 // If fkMemberIdValue is not null, create a resolution mover entry
                 if (fkMemberIdValue !== null) {
@@ -213,6 +236,18 @@ const resolutionService = {
                             as: 'employee',
                             attributes: ['id', 'firstName', 'lastName']
                         }]
+                    },
+                    {
+                        model: resolutionClubs,
+                        as: 'resolutionClubs',
+                        attributes: ['linkedResolutionId'],
+                        include: [
+                            {
+                                model: resolution,
+                                as: 'linkedResolution',
+                                attributes: ['id', 'englishText', 'urduText']
+                            }
+                        ]
                     }
 
                 ],
@@ -777,6 +812,32 @@ const resolutionService = {
                 }
             }
 
+            // Update resolutionClub
+            if (body.linkedResolutions) {
+                // Convert the comma-separated string to an array of integers
+                let linkedResolutionsArray = [];
+                if (typeof body.linkedResolutions === 'string') {
+                    linkedResolutionsArray = body.linkedResolutions
+                        .split(',')
+                        .map(id => parseInt(id.trim(), 10))
+                        .filter(id => !isNaN(id));
+                } else if (Array.isArray(body.linkedResolutions)) {
+                    linkedResolutionsArray = body.linkedResolutions;
+                }
+
+                // Delete existing resolutionClubs entries
+                await resolutionClubs.destroy({ where: { fkResolutionId: resolutionId } });
+
+                // Create new resolutionClubs entries
+                for (const linkedResolutionId of linkedResolutionsArray) {
+                    const resolutionClubData = {
+                        fkResolutionId: resolutionId,
+                        linkedResolutionId: linkedResolutionId
+                    };
+                    await resolutionClubs.create(resolutionClubData);
+                }
+            }
+
             const updatedResolutionData =
             {
                 ...body,
@@ -934,6 +995,32 @@ const resolutionService = {
                             attributes: ['id', 'firstName', 'lastName']
                         }]
                     },
+                    {
+                        model: db.resolutions,
+                        as: 'linkedResolutions', // Outgoing links
+                        attributes: ['id'],
+                        // through: { attributes: [] }, // Exclude the join table attributes
+                        // include: [
+                        //     {
+                        //         model: db.resolutions,
+                        //         as: 'linkedResolutions', // Recursively include
+                        //         attributes: ['id'],
+                        //     }
+                        // ]
+                    },
+                    {
+                        model: db.resolutions,
+                        as: 'linkedToResolutions', // Incoming links
+                        attributes: ['id'],
+                        // through: { attributes: [] }, // Exclude the join table attributes
+                        // include: [
+                        //     {
+                        //         model: db.resolutions,
+                        //         as: 'linkedToResolutions', // Recursively include
+                        //         attributes: ['id'],
+                        //     }
+                        // ]
+                    }
 
                 ],
                 attributes: ['id', 'fkSessionNo', 'resolutionType', 'englishText', 'urduText', 'colourResNo', 'dateOfMovingHouse', 'dateOfDiscussion', 'dateOfPassing', 'sentForTranslation', 'isTranslated', 'resolutionActive', 'attachment', 'description', 'device', 'memberPosition'],
@@ -1934,12 +2021,15 @@ const resolutionService = {
                 memberPosition
             } = queryParams;
 
+
             const query = {
                 resolutionActive: 'active' // Ensure only active resolutions are included
             };
 
             if (fkSessionNoFrom && fkSessionNoTo) {
                 query.fkSessionNo = { [Op.between]: [fkSessionNoFrom, fkSessionNoTo] };
+            } else if (fkSessionNoTo) {
+                query.fkSessionNo = fkSessionNoTo;
             }
 
             if (resolutionType) {
@@ -2070,19 +2160,18 @@ const resolutionService = {
 
 
                 ],
-                subQuery: false,
                 distinct: true,
                 where: query,
                 offset,
                 limit,
                 order: [
-                    ['id', 'ASC']
+                    ['id', 'DESC']
                 ],
 
             });
 
             const totalPages = Math.ceil(count / pageSize)
-            return { count: rows.length, totalPages, resolutions: rows };
+            return { count, totalPages, resolutions: rows };
 
             //            return resolutionsData;
         } catch (error) {

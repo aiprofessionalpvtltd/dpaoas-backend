@@ -423,6 +423,9 @@ db.mnaMinistries = require("./mnaMinistries.model.js")(sequelize, SequelizeMain)
 // resolution ministries
 db.resolutionMinistries = require("./resolutionMinistries.model.js")(sequelize, SequelizeMain);
 
+//clubs resolution
+db.resolutionClubs = require("./resolutionClubs.model.js")(sequelize, SequelizeMain);
+
 //db.fileRemarks.belongsTo(db.users, { foreignKey: 'commentBy', as: 'users' });
 db.files.hasMany(db.fileAttachments, {
   as: "fileAttachments",
@@ -1393,6 +1396,27 @@ db.speechOnDemands.belongsTo(db.members, { foreignKey: 'web_id', targetKey: 'id'
 db.resolutionMinistries.belongsTo(db.resolutions, { foreignKey: 'fkResolutionId', as: 'resolution' });
 db.resolutionMinistries.belongsTo(db.ministries, { foreignKey: 'fkMinistryId', as: 'ministries' });
 db.resolutions.hasMany(db.resolutionMinistries, { foreignKey: 'fkResolutionId', as: 'resolutionMinistries' });
+
+// club resolution
+db.resolutionClubs.belongsTo(db.resolutions, { foreignKey: 'fkResolutionId', as: 'mainResolution' });
+db.resolutionClubs.belongsTo(db.resolutions, { foreignKey: 'linkedResolutionId', as: 'linkedResolution' });
+// db.resolutions.hasMany(db.resolutionClubs, { foreignKey: 'fkResolutionId', as: 'resolutionClubs' });
+// db.resolutions.hasMany(db.resolutionClubs, { foreignKey: 'linkedResolutionId', as: 'linkedToResolutions' });
+
+  // Handling both directions of linking
+  db.resolutions.belongsToMany(db.resolutions, {
+    through: db.resolutionClubs,
+    as: 'linkedResolutions', // Outgoing links (from this resolution to others)
+    foreignKey: 'fkResolutionId',
+    otherKey: 'linkedResolutionId',
+});
+
+db.resolutions.belongsToMany(db.resolutions, {
+    through: db.resolutionClubs,
+    as: 'linkedToResolutions', // Incoming links (from others to this resolution)
+    foreignKey: 'linkedResolutionId',
+    otherKey: 'fkResolutionId',
+});
 
 sequelize.sync();
 module.exports = db;
