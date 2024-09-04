@@ -29,6 +29,23 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.ENUM("active", "inactive"),
       defaultValue: "active",
     },
+
+    fkFlagId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        key: "id",
+        model: "flags",
+      },
+    },
+    fkCorrespondenceId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+          key: 'id',
+          model: 'correspondences'
+      }
+    },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
     createdBy: {
@@ -45,6 +62,16 @@ module.exports = (sequelize, Sequelize) => {
     NoteParagraphs.belongsTo(models.users, {
       foreignKey: "createdBy",
       as: "createdByUser",
+    });
+
+    NoteParagraphs.belongsTo(models.flags, {
+      foreignKey: "fkFlagId",
+      as: "flag",
+    });
+
+    NoteParagraphs.belongsTo(models.correspondences, {
+      foreignKey: "fkCorrespondenceId",
+      as: "correspondence",
     });
   };
 

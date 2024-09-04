@@ -26,6 +26,9 @@ module.exports = (sequelize, Sequelize) => {
         foreignKey: "fkBranchId",
         as: "branch",
       });
+
+      Flag.hasOne(models.noteParagraphs, { as: "note", foreignKey: "fkFlagId" });
+
     };
 
     return Flag;

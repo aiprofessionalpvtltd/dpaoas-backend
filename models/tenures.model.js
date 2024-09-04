@@ -32,11 +32,20 @@ module.exports = (sequelize, Sequelize) => {
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });
-  tenures.associate = function (models) {
-    tenures.hasMany(models.members, {
-      foreignKey: "fkTenureId",
-      as: "members",
+ 
+  tenures.associate = function(models) {
+    // Define a hasMany association with Members
+    tenures.hasMany(models.Members, {
+        foreignKey: 'fkTenureId',
+        as: 'members' // Optional: Alias for the association
+    });
+
+    // Define a hasMany association with ParliamentaryYears
+    tenures.hasMany(models.ParliamentaryYears, {
+        foreignKey: 'fkTenureId',
+        as: 'parliamentaryYears' // Optional: Alias for the association
     });
   };
+  
   return tenures;
 };

@@ -2707,26 +2707,53 @@ const casesService = {
               },
             ],
           },
-        ],
-      });
-
-      // Ensure validCorrespondenceIds and validFreshReceiptIds are arrays
-      const validCorrespondenceIds = caseNotes.fkCorrespondenceIds;
-
-      console.log("validCorrespondenceIds", validCorrespondenceIds);
-
-      // return false;
-      const correspondences = await Correspondences.findAll({
-        where: { id: { [Op.in]: validCorrespondenceIds } },
-        include: [
           {
-            model: CorrespondenceAttachments,
-            as: "correspondenceAttachments",
-            attributes: ["id", "file"],
+            model: db.flags,
+            as: "flag",
+            attributes: ["id" ,"flag"],
+          },
+
+          {
+            model: db.correspondences,
+            as: "correspondence",
+            attributes: ["id" ,"name",'fkCaseId','fkFileId','fkBranchId'],
           },
         ],
       });
-      console.log("correspondences", correspondences);
+
+
+      const validCorrespondenceIds = caseNotes.fkCorrespondenceIds;
+
+      if (orderBy === 'DESC') {
+        validCorrespondenceIds.sort((a, b) => b - a);
+      } else {
+        validCorrespondenceIds.sort((a, b) => a - b);
+      }
+      
+      console.log("validCorrespondenceIds", validCorrespondenceIds);
+      
+      // Use map to create an array of promises
+      const correspondencesPromises = validCorrespondenceIds.map(id => 
+        Correspondences.findOne({
+          where: { id: id },
+          include: [
+            {
+              model: CorrespondenceAttachments,
+              as: "correspondenceAttachments",
+              attributes: ["id", "file"],
+            },
+          ],
+        })
+      );
+      
+      // Use Promise.all to wait for all promises to resolve
+      const correspondencesArray = await Promise.all(correspondencesPromises);
+      
+      // `correspondencesArray` now contains all correspondences in the specified order
+      // console.log("correspondencesArray", correspondencesArray);
+      
+      
+      // console.log("correspondences", correspondences);
 
       const validFreshReceiptIds = caseNotes.fkFreshReciptIds;
 
@@ -2741,20 +2768,31 @@ const casesService = {
         ],
       });
 
-      let correspondenceMap = {};
-      correspondences.forEach((corr) => {
-        correspondenceMap[corr.id] = {
-          id: corr.id,
-          name: corr.name,
-          description: corr.description,
-          attachments: corr.correspondenceAttachments.map((att) => ({
-            id: att.id,
-            file: att.file,
-          })),
-        };
-      });
 
-      console.log("correspondenceMap---", correspondenceMap);
+
+    // Create correspondenceMap maintaining the order
+    const correspondenceMapArray = validCorrespondenceIds.map(id => {
+      const corr = correspondencesArray.find(corr => corr.id === id);
+      return corr ? {
+        id: corr.id,
+        name: corr.name,
+        attachments: corr.correspondenceAttachments.map((att) => ({
+          id: att.id,
+          file: att.file,
+        })),
+      } : null;
+    }).filter(corr => corr !== null); // Filter out any null values
+
+    // Sort the array based on id
+    if (orderBy === 'DESC') {
+      correspondenceMapArray.sort((a, b) => b.id - a.id);
+    } else {
+      correspondenceMapArray.sort((a, b) => a.id - b.id);
+    }
+
+ 
+
+      return false;
 
       let freshReceiptMap = {};
       freshReceipts.forEach((fresh) => {
@@ -2769,44 +2807,48 @@ const casesService = {
 
       console.log("freshReceiptMap---", freshReceiptMap);
 
-      // Create a map to associate flags with their IDs
-      const flagIdMap = {};
+      // // Create a map to associate flags with their IDs
+      // const flagIdMap = {};
 
-      noteParas.forEach((para) => {
-        const flags = para.flags ? para.flags.split(",") : [];
+      // noteParas.forEach((para) => {
 
-        console.log("flags", flags);
+      //   // console.log(para.flag.id); return false;
+      //   // const flags = para.flags ? para.flags.split(",") : [];
+      //   const paraFlag = para.flag ? para.flag : [];
 
-        flags.forEach((flag) => {
-          const trimmedFlag = flag.trim();
-          if (trimmedFlag) {
-            // Check if the flag is already in the map
-            if (!flagIdMap[trimmedFlag]) {
-              // Find the correct ID for this flag
-              const correspondenceId = validCorrespondenceIds.find(
-                (id) => !Object.values(flagIdMap).includes(id)
-              );
-              const freshReceiptId = validFreshReceiptIds.find(
-                (id) => !Object.values(flagIdMap).includes(id)
-              );
+      //   // flags.forEach((flag) => {
+      //     const trimmedFlag = paraFlag.id;
 
-              // Assign the correspondenceId first if it exists, otherwise use freshReceiptId
-              if (correspondenceId !== null && correspondenceId !== undefined) {
-                flagIdMap[trimmedFlag] = correspondenceId;
-              } else if (
-                freshReceiptId !== null &&
-                freshReceiptId !== undefined
-              ) {
-                flagIdMap[trimmedFlag] = freshReceiptId;
-              }
+      //     if (trimmedFlag) {
+      //       // Check if the flag is already in the map
+      //       if (!flagIdMap[trimmedFlag]) {
+      //         // Find the correct ID for this flag
+      //         const correspondenceId = validCorrespondenceIds.find(
+      //           (id) => !Object.values(flagIdMap).includes(id)
+      //         );
+      //         const freshReceiptId = validFreshReceiptIds.find(
+      //           (id) => !Object.values(flagIdMap).includes(id)
+      //         );
 
-              console.log("flagIdMap[trimmedFlag]", flagIdMap[trimmedFlag]);
-            }
-          }
-        });
-      });
+      //         // Assign the correspondenceId first if it exists, otherwise use freshReceiptId
+      //         if (correspondenceId !== null && correspondenceId !== undefined) {
+      //           flagIdMap[trimmedFlag] = correspondenceId;
+      //         } else if (
+      //           freshReceiptId !== null &&
+      //           freshReceiptId !== undefined
+      //         ) {
+      //           flagIdMap[trimmedFlag] = freshReceiptId;
+      //         }
 
-      console.log("flagIdMap", flagIdMap);
+      //         console.log("flagIdMap[trimmedFlag]", flagIdMap[trimmedFlag]);
+      //       }
+      //     }
+      //   // });
+      // });
+
+      // console.log("flagIdMap=========>", flagIdMap); 
+
+      // return false;
 
       const paragraphArray = noteParas.map((para) => {
         const flags = para.flags ? para.flags.split(",") : [];
@@ -2820,7 +2862,7 @@ const casesService = {
             attachments: [],
           };
 
-          const correspondenceId = flagIdMap[trimmedFlag];
+          // const correspondenceId = flagIdMap[trimmedFlag];
           const freshReceiptsId = flagIdMap[trimmedFlag];
 
           if (correspondenceId && correspondenceMap[correspondenceId]) {

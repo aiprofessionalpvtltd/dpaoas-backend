@@ -129,4 +129,13 @@
 -- ON DELETE CASCADE;
 
 
+--  ALTER TABLE "noteParagraphs" 
+--  ADD COLUMN "fkFlagId" INTEGER NULL;
+
+--  ALTER TABLE "noteParagraphs" 
+--  ADD CONSTRAINT fkFlagId
+--  FOREIGN KEY ("fkFlagId")
+--  REFERENCES "flags"(id)
+--  ON DELETE CASCADE;
+
 

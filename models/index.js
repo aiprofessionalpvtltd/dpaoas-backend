@@ -319,6 +319,10 @@ db.correspondenceAttachments = require("./correspondenceAttachments.model")(
 db.caseNotes = require("./caseNotes.model")(sequelize, SequelizeMain);
 db.noteParagraphs = require("./noteParagraphs.model")(sequelize, SequelizeMain);
 
+
+// Flag Module
+db.flags = require('./flagModel.model.js')(sequelize, SequelizeMain);
+
 // db.fileRemarks.belongsTo(db.employees, { foreignKey: 'commentBy', as: 'employees' });
 
 //private member bill
@@ -619,6 +623,14 @@ db.noteParagraphs.belongsTo(db.caseNotes, {
 db.noteParagraphs.belongsTo(db.users, {
   foreignKey: "createdBy",
   as: "createdByUser",
+});
+db.noteParagraphs.belongsTo(db.flags, {
+  foreignKey: "fkFlagId",
+  as: "flag",
+});
+db.noteParagraphs.belongsTo(db.correspondences, {
+  foreignKey: "fkCorrespondenceId",
+  as: "correspondence",
 });
 // db.employees.belongsTo(db.users, { as: 'users', foreignKey: 'fkUserId' });
 
@@ -1366,8 +1378,6 @@ db.motionLists.belongsTo(db.sessions, {
 });
 
 
-// Flag Module
-db.flags = require('./flagModel')(sequelize, SequelizeMain);
 db.flags.belongsTo(db.branches, {
   foreignKey: "fkBranchId",
   as: "branches",
