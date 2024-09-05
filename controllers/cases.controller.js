@@ -25,6 +25,8 @@ const casesController = {
       const freshReceiptId = req.params.fkFreshReceiptId
         ? parseInt(req.params.fkFreshReceiptId)
         : null;
+      
+
       const cases = await casesService.createCase(
         req.body,
         fileId,

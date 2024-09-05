@@ -51,7 +51,21 @@ module.exports = (sequelize, Sequelize) => {
 
     correspondences.associate = function (models) {
         correspondences.belongsTo(models.branches, { foreignKey: 'fkBranchId', as: 'branch' });
-      };
+
+        correspondences.hasMany(models.correspondenceAttachments, {
+            as: 'correspondenceAttachments',
+            foreignKey: 'fkCorrespondenceId',  // Assuming 'fkCorrespondenceId' is the foreign key in correspondenceAttachments
+          });
+          
+          models.correspondenceAttachments.belongsTo(correspondences, {
+            foreignKey: 'fkCorrespondenceId',
+          });
+    };
+    
+    
+
+    
+    
     return correspondences;
 
 };
