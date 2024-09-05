@@ -2692,7 +2692,7 @@ const casesService = {
 
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
-        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy"],
+        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt"],
         order: [["paragraphTitle", orderBy]],
         include: [
           {
@@ -2704,6 +2704,13 @@ const casesService = {
                 model: Employees,
                 as: "employee",
                 attributes: ["id", "firstName", "lastName", "userType"],
+                include: [
+                  {
+                    model: Designations,
+                    as: "designations",
+                    attributes: ["id", "designationName"],
+                  },
+                ],
               },
             ],
           },
@@ -2859,6 +2866,8 @@ const casesService = {
           description: para.paragraph,
           references: references,
           createdBy: para.createdBy,
+          createdAt: para.createdAt,
+          createdByUserDesignation: `${para.createdByUser.employee.designations.designationName}`,
           createdByUser:
             para.createdByUser.employee.firstName +
             " " +
