@@ -74,7 +74,7 @@ const questionsController = {
       const currentPage = parseInt(req.query.currentPage);
       const pageSize = parseInt(req.query.pageSize);
       const questionSentStatus = req.query.questionSentStatus ? req.query.questionSentStatus : null;
-      const { count, totalPages, questions } = await questionsService.getAllQuestions(currentPage, pageSize,questionSentStatus);
+      const { count, totalPages, questions } = await questionsService.getAllQuestions(currentPage, pageSize, questionSentStatus);
       if (questions.length === 0) {
         logger.info("No data found on this page!")
         return res.status(200).send({
@@ -104,26 +104,26 @@ const questionsController = {
     }
   },
 
-  
-      // Retrieves counts and data of questions by status
-      getQuestionsByStatus: async (req, res) => {
-        try {
-            const statuses = ['inQuestion', 'toQuestion'];
-            const result = await questionsService.getQuestionsByStatus(statuses);
 
-            return res.status(200).send({
-                success: true,
-                message: "Questions fetched successfully!",
-                data: result
-            });
-        } catch (error) {
-            logger.error(error.message);
-            return res.status(400).send({
-                success: false,
-                message: error.message
-            });
-        }
-    },
+  // Retrieves counts and data of questions by status
+  getQuestionsByStatus: async (req, res) => {
+    try {
+      const statuses = ['inQuestion', 'toQuestion'];
+      const result = await questionsService.getQuestionsByStatus(statuses);
+
+      return res.status(200).send({
+        success: true,
+        message: "Questions fetched successfully!",
+        data: result
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      });
+    }
+  },
 
   // Retrieve All Questions In Notice Branch
   getAllQuestionsInNotice: async (req, res) => {
@@ -404,7 +404,7 @@ const questionsController = {
       console.log("web id", webId)
       const questions = await questionsService.findAllQuestionsByWebId(webId);
       questions.forEach(question => {
-        if(question.questionImage && question.questionImage[0]){
+        if (question.questionImage && question.questionImage[0]) {
           question.questionImage = JSON.parse(question.questionImage[0]);
         } else {
           question.questionImage = null;
@@ -436,6 +436,74 @@ const questionsController = {
           success: true,
           message: "Question statuses fetched successfully!",
           data: quesStatuses,
+        })
+      }
+      else {
+        logger.info("No data found!")
+        return res.status(200).send({
+          success: true,
+          message: "No data found!",
+
+        })
+      }
+
+    } catch (error) {
+      logger.error(error.message)
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      })
+
+    }
+  },
+
+  // Get Member wise statement
+  getMemberWiseStatement: async (req, res) => {
+    try {
+      logger.info(`questionsController: getMemberWiseStatement`)
+      const fromSession = req.query.fromSession;
+      const toSession = req.query.toSession
+      const groups = await questionsService.getMemberWiseStatement(fromSession, toSession)
+      if (groups) {
+        logger.info("Member-wise statement fetched successfully!")
+        return res.status(200).send({
+          success: true,
+          message: "Member-wise statement fetched successfully!",
+          data: groups,
+        })
+      }
+      else {
+        logger.info("No data found!")
+        return res.status(200).send({
+          success: true,
+          message: "No data found!",
+
+        })
+      }
+
+    } catch (error) {
+      logger.error(error.message)
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      })
+
+    }
+  },
+
+  // Get Division wise statement
+  getDivisionWiseCategoryCount: async (req, res) => {
+    try {
+      logger.info(`questionsController: getDivisionWiseCategoryCount`)
+      const fromSession = req.query.fromSession;
+      const toSession = req.query.toSession
+      const groups = await questionsService.getDivisionWiseCategoryCount(fromSession, toSession)
+      if (groups) {
+        logger.info("Ministry-wise statement fetched successfully!")
+        return res.status(200).send({
+          success: true,
+          message: "Ministry-wise statement fetched successfully!",
+          data: groups,
         })
       }
       else {
@@ -514,21 +582,21 @@ const questionsController = {
   },
 
   // Change Question Status
-  changeQuestionStatus: async(req,res) => {
+  changeQuestionStatus: async (req, res) => {
     try {
       logger.info(`questionsController: changeQuestionStatus body ${JSON.stringify(req.body)}`)
-      
+
 
       // Update the question with new information excluding the attachments
       const updatedQuestion = await questionsService.changeQuestionStatus(req.body);
-  
-        logger.info("Question's Status Changed Successfully!");
-        return res.status(200).send({
-          success: true,
-          message: "Question's Status Changed Successfully!",
-          data: updatedQuestion,
-        });
-      
+
+      logger.info("Question's Status Changed Successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "Question's Status Changed Successfully!",
+        data: updatedQuestion,
+      });
+
 
     } catch (error) {
       logger.error(error.message);
@@ -836,24 +904,24 @@ const questionsController = {
 
   },
 
-      // Retrieves counts and data of questions by status
-      questionDiaryNumberGenerate: async (req, res) => {
-        try {
-            const result = await questionsService.questionDiaryNumberGenerate();
+  // Retrieves counts and data of questions by status
+  questionDiaryNumberGenerate: async (req, res) => {
+    try {
+      const result = await questionsService.questionDiaryNumberGenerate();
 
-            return res.status(200).send({
-                success: true,
-                message: "Questions new noticeOfficeDiaryNo fetched successfully!",
-                data: result
-            });
-        } catch (error) {
-            logger.error(error.message);
-            return res.status(400).send({
-                success: false,
-                message: error.message
-            });
-        }
-    },
+      return res.status(200).send({
+        success: true,
+        message: "Questions new noticeOfficeDiaryNo fetched successfully!",
+        data: result
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      });
+    }
+  },
 
 }
 

@@ -226,8 +226,12 @@ module.exports = (sequelize, Sequelize) => {
         questions.hasMany(models.questionStatusHistories, { foreignKey: 'fkQuestionId'});
         questions.belongsTo(models.users , { foreignKey: 'deletedBy', as: 'questionDeletedBy'})
         questions.belongsTo(models.users , { foreignKey: 'submittedBy', as: 'questionSubmittedBy'})
+        // questions.belongsTo(models.members, { foreignKey: 'fkMemberId', as: 'member' });
+
 
     };
 
     return questions;
 };
+
+
