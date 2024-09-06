@@ -7,6 +7,8 @@ const { uploadFile } = require('../common/upload');
 
 //get Questions By Status
 router.get("/questionsByStatus", questions.getQuestionsByStatus);
+router.get("/getMemberWiseStatement", questions.getMemberWiseStatement); 
+router.get("/getDivisionWiseCategoryCount", questions.getDivisionWiseCategoryCount);
 router.get("/questionDiaryNumber/generate", questions.questionDiaryNumberGenerate);
 
 // Create Question

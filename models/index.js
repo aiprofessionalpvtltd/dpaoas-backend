@@ -1418,5 +1418,51 @@ db.resolutions.belongsToMany(db.resolutions, {
     otherKey: 'fkResolutionId',
 });
 
+
+// member wise get statement using associations
+db.groups.belongsToMany(db.divisions, {
+  through: 'groupsDivisionsBridge', // Junction table
+  foreignKey: 'fkGroupId',
+  otherKey: 'fkDivisionId',
+  as: 'divisions' // Alias used in eager loading
+});
+
+db.divisions.belongsToMany(db.groups, {
+  through: 'groupsDivisionsData', // Junction table
+  foreignKey: 'fkDivisionId',
+  otherKey: 'fkGroupId',
+  as: 'groups' // Alias used if loading groups through divisions
+});
+
+// db.members.belongsTo(db.groups, { foreignKey: 'fkGroupId', as: 'group' });
+// db.groups.hasMany(db.members, { foreignKey: 'fkGroupId', as: 'members' });
+// db.divisions.hasMany(db.members, { foreignKey: 'fkDivisionId', as: 'members' });
+// db.members.hasMany(db.questions, { foreignKey: 'fkMemberId', as: 'questions' });
+
+
+// db.divisions.belongsToMany(db.groups, {
+//   through: db.groupsDivisions,
+//   foreignKey: 'fkDivisionId',
+//   otherKey: 'fkGroupId',
+//   as: 'groupAssociations'
+// });
+
+// db.groups.belongsToMany(db.divisions, {
+//   through: db.groupsDivisions,
+//   foreignKey: 'fkGroupId',
+//   otherKey: 'fkDivisionId',
+//   as: 'divisionAssociations'
+// });
+
+// db.divisions.hasMany(db.members, { 
+//   foreignKey: 'fkDivisionId', 
+//   as: 'members' 
+// });
+
+db.members.hasMany(db.questions, { 
+  foreignKey: 'fkMemberId', 
+  as: 'questions' 
+});
+
 sequelize.sync();
 module.exports = db;
