@@ -447,7 +447,10 @@ const questionsService = {
       const formattedDate = currentDate.toLocaleDateString('en-GB');
 
       return {
-        sessions: sessionMap, // Only fromSession and toSession names
+        sessions: {
+          fromSession: sessionMap[fromSession], 
+          toSession: sessionMap[toSession]
+        },
         currentDate: formattedDate, // Current report generation date
         data: formattedResult // Grouped data
       };
@@ -573,7 +576,10 @@ const questionsService = {
       }));
   
       return {
-        sessions: sessionMap, // Only fromSession and toSession names
+        sessions: {
+          fromSession: sessionMap[fromSession], 
+          toSession: sessionMap[toSession]
+        },
         currentDate: formattedDate, // Current report generation date
         data: formattedResult // Grouped data with totals
       };
