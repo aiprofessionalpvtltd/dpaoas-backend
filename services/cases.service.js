@@ -206,6 +206,8 @@ const casesService = {
         }
       }
   
+    
+
       // Preprocess paragraphArray to check for duplicate flags
       const flagTracker = new Set();
       paragraphArray.forEach((para) => {
@@ -218,7 +220,7 @@ const casesService = {
           flagTracker.add(ref.flag);
         });
       });
-  
+
       let allCorrespondencesIds = new Array(paragraphArray.length).fill(null);
       let allFreshReceiptIds = new Array(paragraphArray.length).fill(null);
   
@@ -250,15 +252,15 @@ const casesService = {
             if (freshReceiptIds.length > 0) {
               allFreshReceiptIds[index] = freshReceiptIds[0];
             }
-  
-             const validFlag = await db.flags.findOne({ where: { id: para.references[0].flag } });
+            // console.log('para.references[0].flag',para.references[0].flagId); return false;
+
+             const validFlag = await db.flags.findOne({ where: { id: para.references[0].flagId } });
 
             if (!validFlag) {
               throw new Error(`Flag with id ${para.references[0].flag} does not exist`);
             }
             
-            // console.log('validFlag',validFlag.id); return false;
-            await NoteParagraphs.create(
+             await NoteParagraphs.create(
               {
                 fkCaseNoteId: caseNotes.id,
                 paragraphTitle: para.title,
@@ -1394,100 +1396,14 @@ const casesService = {
       console.error("Error Fetching Case:", error.message);
     }
   },
-
-  // Update Case For The File
-  // updateCase: async (data, files, fileId, caseId) => {
-  //     try {
-  //         const updatedCases = [];
-  //         const cases = data['cases'];
-
-  //         for (const caseItem of cases) {
-  //             for (const sectionType in caseItem) {
-  //                 const sectionData = caseItem[sectionType];
-  //                 const { description } = sectionData;
-
-  //                 const caseModel = await Cases.findOne({
-  //                     where: {
-  //                         id: caseId,
-  //                         fkFileId: fileId
-  //                     }
-  //                 });
-
-  //                 await Cases.update(
-  //                     { isEditable: data.isEditable },
-  //                     {
-  //                         where: {
-  //                             id: caseId,
-  //                             fkFileId: fileId
-  //                         }
-  //                     }
-  //                 );
-
-  //                 // Fetch or create the case section
-  //                 let existingCaseSection = await SectionCases.findOrCreate({
-  //                     where: {
-  //                         fkCaseId: caseModel.id,
-  //                         sectionType: sectionType,
-  //                     },
-  //                     defaults: { description: description }
-  //                 });
-
-  //                 const [section, wasCreated] = existingCaseSection;
-  //                 if (!wasCreated && section.description !== description) {
-  //                     section.description = description;
-  //                     await section.save();
-  //                 }
-  //                 updatedCases.push(section);
-
-  //                 // Retrieve existing attachments for this section
-  //                 const existingAttachments = await CaseAttachments.findAll({
-  //                     where: { fkSectionId: section.id }
-  //                 });
-
-  //                 const existingAttachmentIds = existingAttachments.map(a => a.id);
-
-  //                 // Filter files for the current sectionType
-  //                 const filteredFiles = files.filter(file => {
-  //                     return file.fieldname.includes(`[${sectionType}]`);
-  //                 });
-
-  //                 for (const file of filteredFiles) {
-  //                     const path = file.destination.replace('./public/', '/public/');
-  //                     const filePath = `${path}/${file.filename}`;
-
-  //                     if (file.id && existingAttachmentIds.includes(file.id)) {
-  //                         continue;
-  //                     }
-
-  //                     // Check if a new file needs to be added or an existing file needs to be updated
-  //                     const existingAttachment = existingAttachments.find(a => a.fileName === filePath);
-
-  //                     if (!existingAttachment) {
-  //                         await CaseAttachments.create({
-  //                             fileName: filePath,
-  //                             fkSectionId: section.id
-  //                         });
-  //                     } else if (existingAttachment && file.id) {
-  //                         existingAttachment.fileName = filePath;
-  //                         await existingAttachment.save();
-  //                     }
-  //                 }
-  //             }
-  //         }
-
-  //         return updatedCases;
-  //     } catch (error) {
-  //         throw { message: error.message || "Error Updating Case!" };
-  //     }
-  // },
-
-  //Update Case For The File
+  
   updateCase: async (data, caseNotesId) => {
     const transaction = await db.sequelize.transaction();
 
+  //  console.log('Requested Data ', data); return false;
     try {
       // Update existing case notes
-      await CaseNotes.update(
+      const caseNotes = await CaseNotes.update(
         {
           notingSubject: data.notingSubject,
         },
@@ -1515,64 +1431,100 @@ const casesService = {
         transaction,
       });
 
-      // Declare and initialize allCorrespondencesIds outside of the loop
-      let allCorrespondencesIds = [];
-
+  
       console.log("paragraphArray.length", paragraphArray.length);
 
       // Preprocess paragraphArray to check for duplicate flags
       const flagTracker = new Set();
-      paragraphArray.forEach((para) => {
-        para.references.forEach((ref) => {
-          if (flagTracker.has(ref.flag)) {
+
+      for (const para of paragraphArray) {
+        for (const ref of para.references) {
+          const validFlag = await db.flags.findOne({ where: { id: ref.flagId } });
+
+          if (flagTracker.has(ref.flagId)) {
             throw new Error(
-              `The flag '${ref.flag}' is already assigned to '${para.title}'`
+              `The flag '${validFlag.flag}' is already assigned to '${para.title}'`
             );
           }
-          flagTracker.add(ref.flag);
-        });
-      });
 
+          flagTracker.add(ref.flagId);
+        }
+      }
+
+
+      let allCorrespondencesIds = new Array(paragraphArray.length).fill(null);
+      let allFreshReceiptIds = new Array(paragraphArray.length).fill(null);
+      
       if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
-        const createdParas = await Promise.all(
+        await Promise.all(
           paragraphArray.map(async (para, index) => {
-            const correspondencesIds = para.references.map((ref) => ref.id);
-            console.log("para.references", para.references);
-
-            allCorrespondencesIds =
-              allCorrespondencesIds.concat(correspondencesIds);
-
-            const updateData = {
-              fkCorrespondenceIds: allCorrespondencesIds,
-            };
-
-            await CaseNotes.update(updateData, {
-              where: { id: caseNotesId },
-              transaction,
+            let correspondencesIds = [];
+            let freshReceiptIds = [];
+            let flagIds = [];
+  
+            para.references.forEach((ref) => {
+              flagIds.push(ref.id); // Store flag id
+  
+              if (ref.attachments && Array.isArray(ref.attachments)) {
+                ref.attachments.forEach((att) => {
+                  if (att.name) {
+                    correspondencesIds.push(ref.id); // Correspondence ID
+                  } else if (att.filename) {
+                    freshReceiptIds.push(ref.id); // FreshReceipt ID
+                  }
+                });
+              }
             });
+  
+            // Store the first ID found for each type, if any
+            if (correspondencesIds.length > 0) {
+              allCorrespondencesIds[index] = correspondencesIds[0];
+            }
+            if (freshReceiptIds.length > 0) {
+              allFreshReceiptIds[index] = freshReceiptIds[0];
+            }
+  
+             const validFlag = await db.flags.findOne({ where: { id: para.references[0].flagId } });
 
-            return await NoteParagraphs.create(
+            if (!validFlag) {
+              throw new Error(`Flag with id ${para.references[0].flag} does not exist`);
+            }
+            
+            // console.log('correspondencesIds in update',correspondencesIds); return false;
+            await NoteParagraphs.create(
               {
                 fkCaseNoteId: caseNotesId,
                 paragraphTitle: para.title,
                 paragraph: para.description,
                 createdBy: para.createdBy,
-                flags: para.references.map((ref) => ref.flag).join(","),
+                flags: validFlag.flag, // Save all flags as string
+                fkFlagId: validFlag.id, // Use the valid flag ID
+                fkCorrespondenceId: correspondencesIds[0] || null, // Save correspondence ID
               },
               { transaction }
             );
+            
           })
+        );
+  
+          await CaseNotes.update(
+          {
+            fkCorrespondenceIds: allCorrespondencesIds,
+            fkFreshReciptIds: allFreshReceiptIds,
+          },
+          { where: { id: caseNotesId }, transaction }
         );
       }
 
       await transaction.commit();
-      return await CaseNotes.findByPk(caseNotesId);
+      return caseNotes;
     } catch (error) {
       await transaction.rollback();
-      console.log(error);
+      console.error("Error Updating Case", error);
       throw new Error(error.message || "Error Updating Case");
     }
   },
+
 
   updateCaseStatus: async (caseId, newStatus) => {
     try {
@@ -2734,7 +2686,7 @@ const casesService = {
           {
             model: db.correspondences,
             as: "correspondence",
-            attributes: ["id", "name", 'fkCaseId', 'fkFileId', 'fkBranchId'],
+            attributes: ["id", "name", 'fkCaseId', 'fkFileId', 'fkBranchId' ,'description'],
             include: [
               {
                 model: db.correspondenceAttachments,
@@ -2783,6 +2735,7 @@ const casesService = {
           const reference = {
             flagId: paraFlag.id,
             flag: paraFlag.flag,
+            id: correspondence.id,  // Include correspondence.id directly in the reference object
             attachments: [],
           };
   
@@ -2790,6 +2743,7 @@ const casesService = {
           if (validFreshReceiptIds.length > 0 && freshReceiptMap[para.id]) {
             reference.attachments.push(...freshReceiptMap[para.id].attachments);
           } else if (correspondence) {
+            
             // Handle Correspondence if no fresh receipts
             reference.attachments.push({
               id: correspondence.id,
@@ -2797,7 +2751,8 @@ const casesService = {
               fkCaseId: correspondence.fkCaseId,
               fkFileId: correspondence.fkFileId,
               fkBranchId: correspondence.fkBranchId,
-              correspondenceAttachments: correspondence.correspondenceAttachments.map((attachment) => ({
+              description: correspondence.description,
+              attachments: correspondence.correspondenceAttachments.map((attachment) => ({
                 id: attachment.id,
                 file: attachment.file,
               })),
