@@ -1125,6 +1125,7 @@ const casesService = {
     pageSize
   ) => {
     try {
+    
       const allRelevantSections = await CaseNotes.findAll({
         where: { caseStatus: "approved", fkBranchId: branchId },
         include: [
@@ -1252,11 +1253,12 @@ const casesService = {
       allRelevantSections.forEach((section) => {
         const caseData = section.cases;
         const createdByUser = caseData.createdByUser;
+  
         if (userId) {
           const remarks = caseData.casesRemarks || [];
           const createdBy = parseInt(caseData.createdBy);
 
-
+ 
           // Determine visibility and isEditable
           let isVisible = false;
           let isEditable = true;
@@ -1296,6 +1298,12 @@ const casesService = {
                 caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
                 createdAt: caseData.createdAt,
                 createdBy: caseData.createdBy,
+                createdByUser: {
+                  id: createdByUser.id,
+                  firstName: createdByUser.employee.firstName,
+                  lastName: createdByUser.employee.lastName,
+                  designation: createdByUser.employee.designations.designationName,
+                },
                 fileData: caseData.files,
                 freshReceiptData: caseData.freshReceipts,
                 fileRemarksData: caseData.casesRemarks,
