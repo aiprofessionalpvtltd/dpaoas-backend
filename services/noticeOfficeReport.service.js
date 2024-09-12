@@ -58,7 +58,13 @@ const noticeOfficeReportService = {
                     {
                         model: Divisions,
                         as: 'divisions',
-                        attributes: ['id', 'divisionName']
+                        attributes: ['id', 'divisionName'],
+                        include: [
+                            {
+                              model: db.ministries,
+                              attributes: ["id", "ministryName"],
+                            },
+                          ]
                     },
                     {
                         model: Groups,

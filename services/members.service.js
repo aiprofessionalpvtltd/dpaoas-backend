@@ -231,7 +231,7 @@ const memberService = {
                     {
                         model: db.terms,
                         as: 'terms',
-                        attributes: ['id','termNamae'],
+                        attributes: ['id','termName'],
                     },
                     {
                         model: politicalParties,
