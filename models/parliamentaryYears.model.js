@@ -47,10 +47,21 @@ module.exports = (sequelize, Sequelize) => {
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });
-
+    
     parliamentaryYears.associate = function(models) {
-        parliamentaryYears.belongsTo(models.tenures, { foreignKey: 'fkTenureId'});
+        // Define a belongsTo association with Tenures
+        parliamentaryYears.belongsTo(models.Tenures, {
+            foreignKey: 'fkTenureId',
+            as: 'tenure' // Optional: Alias for the association
+        });
+
+        //Define an association with Terms if needed
+        parliamentaryYears.belongsTo(models.Terms, {
+            foreignKey: 'fkTermId',
+            as: 'term' // Optional: Alias for the association
+        });
     };
+
 
     return parliamentaryYears;
 };
