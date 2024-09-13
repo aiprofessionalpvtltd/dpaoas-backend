@@ -2,6 +2,7 @@ const membersService = require("../services/members.service");
 const logger = require("../common/winston");
 const { uploadFile } = require("../common/upload");
 const db = require("../models");
+const { log } = require("handlebars");
 const members = db.members;
 const tenures = db.tenures;
 const politicalParties = db.politicalParties;
@@ -31,69 +32,91 @@ const membersController = {
     }
   },
 
-  // Members Listing
-  getAllMembers: async (req, res) => {
-    try {
-        const { query } = req;
-        const { currentPage = 1, pageSize = 10 } = query; // Set default values if not provided
-        const offset = currentPage  * pageSize;
-        const limit = parseInt(pageSize);
+ // Members Listing
+getAllMembers: async (req, res) => {
+  try {
+    const { query } = req;
+    const { currentPage = 1, pageSize = 10 } = query; // Set default values if not provided
+    const offset = (currentPage - 1) * pageSize;
+    const limit = parseInt(pageSize);
 
-        logger.info(`membersController: getAllMembers query ${JSON.stringify(query)}`);
+    logger.info(`membersController: getAllMembers query ${JSON.stringify(query)}`);
 
-        // Define the where clause with status == true
-        let whereClause = { status: true };
+    // Get the latest parliamentary year based on the maximum fromDate
+    const latestParliamentaryYear = await db.parliamentaryYears.findOne({
+      attributes: ["id" ,"parliamentaryTenure"],
+      order: [["fromDate", "DESC"]],
+      limit: 1, // Retrieve only the latest year
+    });
 
-        // Define options for the query
-        let options = {
-            raw: false,
-            include: [
-                {
-                    model: tenures,
-                    as: "tenures",
-                    attributes: ["tenureName"],
-              },
-              {
-                model: db.terms,
-                as: 'terms',
-                attributes: ['id','termName'],
-            },
-                {
-                    model: db.parliamentaryYears,
-                    as: "parliamentaryYears",
-                    attributes: ["id", "parliamentaryTenure"],
-                },
-                {
-                    model: politicalParties,
-                    as: "politicalParties",
-                    attributes: ["partyName"],
-                },
-            ],
-            subQuery: false,
-            distinct: true,
-            where: whereClause, // Apply the where clause here
-            limit,
-            offset,
-            order: [["id", "DESC"]],
-        };
 
-        // Execute the query with the defined options
-        const { rows, count } = await members.findAndCountAll(options);
-        const totalPages = Math.ceil(count / pageSize);
+    console.log(latestParliamentaryYear);
+    
 
-        return res.status(200).send({
-            success: true,
-            message: `All members' information fetched successfully`,
-            data: { members: rows, totalPages, count },
-        });
-    } catch (error) {
-        console.error('Error fetching members:', error);
-        return res.status(500).send({
-            success: false,
-            message: 'Failed to fetch members',
-            error: error.message,
-        });
+    // Check if a latest parliamentary year exists
+    if (!latestParliamentaryYear) {
+      return res.status(404).send({
+        success: false,
+        message: 'No parliamentary years found.',
+      });
     }
+
+    // Define the where clause to filter members by status and latest parliamentaryYearId
+    let whereClause = { 
+      status: true,
+      fkParliamentaryYearId: latestParliamentaryYear.id, // Filter by latest parliamentary year
+    };
+
+    // Define options for the query
+    let options = {
+      raw: false,
+      include: [
+        {
+          model: tenures,
+          as: "tenures",
+          attributes: ["tenureName"],
+        },
+        {
+          model: db.terms,
+          as: 'terms',
+          attributes: ['id', 'termName'],
+        },
+        {
+          model: db.parliamentaryYears,
+          as: "parliamentaryYears",
+          attributes: ["id", "parliamentaryTenure"],
+        },
+        {
+          model: politicalParties,
+          as: "politicalParties",
+          attributes: ["partyName"],
+        },
+      ],
+      subQuery: false,
+      distinct: true,
+      where: whereClause, // Apply the where clause here
+      limit,
+      offset,
+      order: [["id", "DESC"]],
+    };
+
+    // Execute the query with the defined options
+    const { rows, count } = await members.findAndCountAll(options);
+    const totalPages = Math.ceil(count / pageSize);
+
+    return res.status(200).send({
+      success: true,
+      message: `All members' information fetched successfully`,
+      data: { members: rows, totalPages, count },
+    });
+  } catch (error) {
+    console.error('Error fetching members:', error);
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to fetch members',
+      error: error.message,
+    });
+  }
 },
 
   getMemberById: async (req, res) => {

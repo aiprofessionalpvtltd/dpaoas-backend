@@ -23,26 +23,30 @@ const termsService = {
         try {
             const offset = currentPage * pageSize;
             const limit = pageSize;
+    
             const { count, rows } = await Terms.findAndCountAll({
-                include :[
+                include: [
                     {
                         model: Tenures,
-                        attributes: ['id','tenureName']
+                        attributes: ['id', 'tenureName'], // Keep related Tenures attributes
                     }
                 ],
                 offset,
                 limit,
                 order: [
-                    ['id','DESC']
+                    ['fromDate', 'ASC'], // Order by fromDate in ascending order
+                    ['toDate', 'ASC'],   // Order by toDate in ascending order
+                    ['id', 'DESC']        // Secondary sorting by term ID in descending order
                 ]
             });
+    
             const totalPages = Math.ceil(count / pageSize);
             return { count, totalPages, terms: rows };
         } catch (error) {
             throw new Error(error.message || "Error Fetching All Terms");
         }
     },
-
+    
 
     // Get Single Term
     getSingleTerm: async (termId) => {

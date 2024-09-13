@@ -18,6 +18,39 @@ const tenuresService = {
     },
 
     // Get All Tenures
+    // getAllTenures: async (currentPage, pageSize, tenureType) => {
+    //     try {
+    //         // Validate and sanitize pagination inputs
+    //         const page = Math.max(parseInt(currentPage, 10) || 0, 0);
+    //         const size = Math.min(parseInt(pageSize, 10) || 10, 100); // Assuming 100 is the max page size
+    //         const offset = page * size;
+    //         const limit = size;
+    
+    //         // Build the where condition dynamically
+    //         const where = {};
+    //         if (tenureType) {
+    //             where.tenureType = tenureType;
+    //         }
+    
+    //         // Execute the query
+    //         const { count, rows } = await Tenures.findAndCountAll({
+    //             offset,
+    //             limit,
+    //             where,
+    //             order: [
+    //                 ['id', 'DESC']
+    //             ]
+    //         });
+    
+    //         const totalPages = Math.ceil(count / size);
+    
+    //         return { count, totalPages, tenures: rows };
+    //     } catch (error) {
+    //         console.error("Error fetching tenures:", error);
+    //         throw new Error(error.message || "Error Fetching All Tenures");
+    //     }
+    // },
+
     getAllTenures: async (currentPage, pageSize, tenureType) => {
         try {
             // Validate and sanitize pagination inputs
@@ -29,18 +62,25 @@ const tenuresService = {
             // Build the where condition dynamically
             const where = {};
             if (tenureType) {
-                where.tenureType = tenureType;
+                where['"tenureType"'] = tenureType; // Ensure correct casing
+            } else {
+                where['"tenureType"'] = { [Op.in]: ['Senators', 'Ministers'] };
             }
     
             // Execute the query
-            const { count, rows } = await Tenures.findAndCountAll({
-                offset,
-                limit,
-                where,
-                order: [
-                    ['id', 'DESC']
+        const { count, rows } = await Tenures.findAndCountAll({
+            offset,
+            limit,
+            where,
+            order: tenureType ? 
+                [['fromDate', 'ASC'], ['toDate', 'ASC']] : // If tenureType is specified, order by fromDate and toDate in ascending order
+                [
+                    [db.sequelize.literal(`CASE WHEN "tenureType" = 'Senators' THEN 1 ELSE 2 END`), 'ASC'], // Prioritize Senators first if no tenureType is specified
+                    ['fromDate', 'ASC'], // Ascending order by fromDate
+                    ['toDate', 'ASC'], // Ascending order by toDate
+                    ['id', 'DESC'] // Secondary sorting by ID
                 ]
-            });
+        });
     
             const totalPages = Math.ceil(count / size);
     
@@ -50,6 +90,7 @@ const tenuresService = {
             throw new Error(error.message || "Error Fetching All Tenures");
         }
     },
+    
     
 
 

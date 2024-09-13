@@ -379,6 +379,7 @@ updateEmployee: async (employee, req) => {
         userName: req.body.userName,
         phoneNo: req.body.phoneNo,
         gender: req.body.gender,
+        userType: req.body.userType,
         fileNumber: req.body.fileNumber,
         supervisor: req.body.supervisor,
         fkBranchId: req.body.fkBranchId,
