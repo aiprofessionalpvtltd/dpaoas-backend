@@ -16,6 +16,7 @@ router.post(
   "/createCase/:fileId/:createdBy/:fkFreshReceiptId",
   cases.createCase
 );
+
 /**
  * @swagger
  * /api/cases/getCasesByFileId:
@@ -363,6 +364,9 @@ router.get(
   "/deleteCorrespondenceAttachment/",
   cases.deleteCorrespondenceAttachment
 );
+
+// Delete Case by caseId (mark as inactive)
+router.delete('/delete-case/:caseId', cases.deleteCaseById);
 
 
 module.exports = router;
