@@ -285,9 +285,10 @@ const casesService = {
     try {
       const allRelevantSections = await CaseNotes.findAll({
         where: {
-          caseStatus: {
-            [Op.or]: ["draft", "pending"],
-          },
+          [Op.and]: [
+            { status: "active" },
+            { caseStatus: { [Op.or]: ["draft", "pending"] } }
+          ]
         },
         include: [
           {
@@ -406,6 +407,7 @@ const casesService = {
           "notingSubject",
           "fkCorrespondenceIds",
           "createdAt",
+          "status"
         ],
       });
 
@@ -437,7 +439,7 @@ const casesService = {
             { createdAt: new Date(0), assignedTo: null }
           );
 
-          console.log("latestRemark", latestRemark)
+         // console.log("latestRemark", latestRemark)
 
           // If there is a latest remark, check if the user is the one it's assigned to
           // Determine caseStatus based on assigned user
@@ -468,7 +470,9 @@ const casesService = {
         if (isVisible) {
           if (!casesByCaseId[caseData.id]) {
             casesByCaseId[caseData.id] = {
+              caseNoteId: section.id,
               id: caseData.id,
+              status: section.status,
               fkCaseId: section.fkCaseId,
               caseStatus: caseStatus, // Include caseStatus from CaseNotes
               createdAt: caseData.createdAt,
@@ -3326,6 +3330,28 @@ const casesService = {
       // Log and throw the error for better error handling
       console.error("Error updating correspondence ID:", error);
       throw new Error(error.message || "Error performing the operation");
+    }
+  },
+
+  // Delete Case By Id (mark as inactive)
+  deleteCaseById: async (caseId) => {
+    try {
+      // Find the case note by caseId and update the status to 'inactive'
+      const caseNote = await CaseNotes.findOne({
+        where: { id: caseId, status: 'active' },
+      });
+
+      if (!caseNote) {
+        return null; // Case not found
+      }
+
+      // Mark the case note as inactive
+      caseNote.status = 'inactive';
+      await caseNote.save();
+
+      return caseNote;
+    } catch (error) {
+      throw new Error(error.message || 'Error Deleting Case');
     }
   },
 };

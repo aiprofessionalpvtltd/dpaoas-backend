@@ -5,7 +5,7 @@ const Op = db.Sequelize.Op;
 const logger = require('../common/winston');
 
 
-const BillStatusService = {
+const BillStatusService = { 
     // Create A New bill Status
     createBillStatus: async (req) => {
         try {

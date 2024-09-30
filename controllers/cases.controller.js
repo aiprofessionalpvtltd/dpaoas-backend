@@ -633,6 +633,35 @@ const casesController = {
       });
     }
   },
+
+  // Delete Case By Id (mark as inactive)
+  deleteCaseById: async (req, res) => {
+    try {
+      const caseId = req.params.caseId;
+      console.log("case id", caseId);
+      logger.info(`casesController: deleteCaseById caseId ${caseId}`);
+
+      const result = await casesService.deleteCaseById(caseId);
+
+      if (result) {
+        return res.status(200).send({
+          success: true,
+          message: 'Case deleted successfully!',
+        });
+      } else {
+        return res.status(404).send({
+          success: false,
+          message: 'Case not found!',
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
 };
 
 module.exports = casesController;
