@@ -646,12 +646,12 @@ const casesController = {
       if (result) {
         return res.status(200).send({
           success: true,
-          message: `Case with ID ${caseId} marked as inactive successfully!`,
+          message: 'Case deleted successfully!',
         });
       } else {
         return res.status(404).send({
           success: false,
-          message: `Case with ID ${caseId} not found!`,
+          message: 'Case not found!',
         });
       }
     } catch (error) {
