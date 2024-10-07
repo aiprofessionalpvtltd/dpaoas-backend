@@ -219,7 +219,7 @@ const mnaController = {
             if (!ministerRecord || Object.keys(ministerRecord).length === 0) {
                 logger.warn(`No minister found for id ${id}`);
                 return res.status(404).send({
-                    success: false,
+                    success: true,
                     message: `No minister found for id ${id}`,
                 });
             }
