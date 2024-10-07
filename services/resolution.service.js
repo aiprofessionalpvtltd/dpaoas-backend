@@ -91,11 +91,12 @@ const resolutionService = {
             // Link Resolutions (Clubbing)
             if (Array.isArray(linkedResolutionsArray)) {
                 for (const linkedResolutionId of linkedResolutionsArray) {
-                    const resolutionClubData = {
-                        fkResolutionId: resolutionId,
-                        linkedResolutionId: linkedResolutionId
-                    };
-                    await resolutionClubs.create(resolutionClubData);
+                
+                        const resolutionClubData = {
+                            fkResolutionId: resolutionId,
+                            linkedResolutionId: linkedResolutionId
+                        };
+                        await resolutionClubs.create(resolutionClubData);
                 }
             }
 
@@ -237,18 +238,18 @@ const resolutionService = {
                             attributes: ['id', 'firstName', 'lastName']
                         }]
                     },
-                    {
-                        model: resolutionClubs,
-                        as: 'resolutionClubs',
-                        attributes: ['linkedResolutionId'],
-                        include: [
-                            {
-                                model: resolution,
-                                as: 'linkedResolution',
-                                attributes: ['id', 'englishText', 'urduText']
-                            }
-                        ]
-                    }
+                    // {
+                    //     model: resolutionClubs,
+                    //     as: 'resolutionClubs',
+                    //     attributes: ['linkedResolutionId'],
+                    //     include: [
+                    //         {
+                    //             model: resolution,
+                    //             as: 'linkedResolution',
+                    //             attributes: ['id', 'englishText', 'urduText']
+                    //         }
+                    //     ]
+                    // }
 
                 ],
 
@@ -825,17 +826,33 @@ const resolutionService = {
                     linkedResolutionsArray = body.linkedResolutions;
                 }
 
-                // Delete existing resolutionClubs entries
-                await resolutionClubs.destroy({ where: { fkResolutionId: resolutionId } });
+                // console.log("linkedResolutionsArray----", linkedResolutionsArray)
+                // console.log("resolutionId----", resolutionId)
 
-                // Create new resolutionClubs entries
-                for (const linkedResolutionId of linkedResolutionsArray) {
-                    const resolutionClubData = {
-                        fkResolutionId: resolutionId,
-                        linkedResolutionId: linkedResolutionId
-                    };
-                    await resolutionClubs.create(resolutionClubData);
+                // console.log("Type of resolutionId:", typeof resolutionId);
+                // console.log("Type of linkedResolutionsArray values:", linkedResolutionsArray.map(id => typeof id));
+
+                // Check for self-linking before proceeding to destroy existing resolutionClubs
+                if (linkedResolutionsArray.map(String).includes(String(resolutionId))) {
+                    console.log("come in resolution club");
+                    throw new Error("A resolution cannot be linked to itself.");
                 }
+                else {
+                    // Delete existing resolutionClubs entries
+                    await resolutionClubs.destroy({ where: { fkResolutionId: resolutionId } });
+
+                    // Create new resolutionClubs entries
+                    for (const linkedResolutionId of linkedResolutionsArray) {
+
+                        const resolutionClubData = {
+                            fkResolutionId: resolutionId,
+                            linkedResolutionId: linkedResolutionId
+                        };
+                        await resolutionClubs.create(resolutionClubData);
+                    }
+                }
+
+
             }
 
             const updatedResolutionData =
