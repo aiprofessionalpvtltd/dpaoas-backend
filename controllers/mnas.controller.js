@@ -218,7 +218,7 @@ const mnaController = {
             // Check if the ministerRecord is empty
             if (!ministerRecord || Object.keys(ministerRecord).length === 0) {
                 logger.warn(`No minister found for id ${id}`);
-                return res.status(404).send({
+                return res.status(200).send({
                     success: true,
                     message: `No minister found for id ${id}`,
                 });
