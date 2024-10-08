@@ -15,6 +15,31 @@ module.exports = (sequelize, Sequelize) => {
         key: 'id'
       }
     },
+    fkMemberId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'members',
+        key: 'id'
+      }
+    },
+    fkSessionId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'sessions',
+        key: 'id'
+      }
+    },
+    applicationDate: {
+      type: Sequelize.DATE,
+      allowNull: true
+    },
+
+    subject: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
     fkUserId: {
       type: Sequelize.INTEGER,
       allowNull: true,
@@ -86,6 +111,11 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: true
     },
+    device: {
+      type: Sequelize.STRING,
+      defaultValue: 'mobile',
+      allowNull: true,
+    },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });
@@ -93,6 +123,8 @@ module.exports = (sequelize, Sequelize) => {
     requestLeaves.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'users' });
     requestLeaves.belongsTo(models.users, { foreignKey: 'requestLeaveSubmittedTo', as: 'submittedToUser' });
     requestLeaves.hasMany(models.leaveComments, { foreignKey: 'fkRequestLeaveId', as: 'leaveComments' });
+    requestLeaves.belongsTo(models.members, { foreignKey: 'fkMemberId', as: 'member' });
+    requestLeaves.belongsTo(models.sessions, { foreignKey: 'fkSessionId', as: 'sessions' });
   };
   return requestLeaves;
 };

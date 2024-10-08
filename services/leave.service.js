@@ -10,14 +10,19 @@ const logger = require('../common/winston');
 const leaveService = {
     // Create A New Role
     createleave: async (req) => {
+        const transaction = await db.sequelize.transaction();
         try {
-            let { fkRequestTypeId, fkUserId, requestStartDate, requestEndDate, requestStatus, requestLeaveSubType, requestLeaveReason,
+            let { fkRequestTypeId, fkUserId, fkMemberId, fkSessionId, applicationDate, subject, requestStartDate, requestEndDate, requestStatus, requestLeaveSubType, requestLeaveReason,
                 requestNumberOfDays, requestStationLeave, requestLeaveAttachment,
-                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leave_oneday, web_id } = req;
+                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leave_oneday, web_id, leaveComment, device } = req;
 
             const leaveRequest = await requestLeaves.create({
                 fkRequestTypeId,
                 fkUserId,
+                fkMemberId, 
+                fkSessionId, 
+                applicationDate, 
+                subject,
                 requestStartDate,
                 requestEndDate,
                 requestStatus,
@@ -30,19 +35,33 @@ const leaveService = {
                 requestLeaveApplyOnBehalf,
                 requestLeaveForwarder,
                 leave_oneday,
-                web_id
-            });
+                web_id,
+                device
+            }, { transaction });
 
-            return leaveRequest;
+              // If leaveComment is provided, create an entry in the leaveComments table
+        if (leaveComment) {
+            await leaveComments.create({
+                leaveComment,  
+                fkRequestLeaveId: leaveRequest.id, // Reference to the newly created leave request
+                commentedBy: fkUserId 
+            }, { transaction });
+        }
+
+        await transaction.commit(); // Commit transaction if everything is successful
+        return leaveRequest;
+
         } catch (error) {
+            await transaction.rollback();
             console.error('Error creating leave request:', error);
             throw error; // or handle the error in a way that makes sense for your application
         }
     },
 
     updateleave: async (id, payload) => {
+        const transaction = await db.sequelize.transaction(); // Start a transaction
         try {
-            let { fkRequestTypeId, fkUserId, requestStartDate, requestEndDate, requestStatus, requestLeaveSubType, requestLeaveReason,
+            let { fkRequestTypeId, fkUserId, fkMemberId, fkSessionId, applicationDate, subject, requestStartDate, requestEndDate, requestStatus, requestLeaveSubType, requestLeaveReason,
                 requestNumberOfDays, requestStationLeave, requestLeaveAttachment,
                 requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leaveComment, commentedBy, leave_oneday } = payload;
 
@@ -50,10 +69,14 @@ const leaveService = {
                 {
                     fkRequestTypeId,
                     fkUserId,
+                    fkMemberId, 
+                    fkSessionId, 
+                    applicationDate, 
+                    subject,
                     requestStartDate,
                     requestEndDate,
                     requestStatus,
-                    requestLeaveSubType,
+                    requestLeaveSubType, 
                     requestLeaveReason,
                     requestNumberOfDays,
                     requestStationLeave,
@@ -65,49 +88,95 @@ const leaveService = {
                 },
                 {
                     where: { id: id } // Add the WHERE condition to filter by id
-                }
+                },
+                { transaction }
             );
-            if (result > 0) {
-                const comment = await leaveComments.create({
-                    leaveComment,
-                    fkRequestLeaveId: id,
-                    commentedBy,
+
+            // Check if the leave request update was successful
+        if (result > 0) {
+            // Check if the `leaveComment` field is provided in the payload
+            if (leaveComment) {
+                // Check if a comment already exists for this leave request
+                const existingComment = await leaveComments.findOne({
+                    where: { fkRequestLeaveId: id }, // Check for comments related to the leave request
                 });
-                return comment;
-            } else {
-                console.log('No rows were updated. Check if the record with the provided ID exists')
+
+                if (existingComment) {
+                    // If a comment exists, update it
+                    await leaveComments.update(
+                        {
+                            leaveComment,
+                            commentedBy // You can also update who commented it
+                        },
+                        {
+                            where: { fkRequestLeaveId: id },
+                        },
+                        { transaction }
+                    );
+                } else {
+                    // If no comment exists, create a new comment
+                    await leaveComments.create({
+                        leaveComment,
+                        fkRequestLeaveId: id, // Link to the leave request
+                        commentedBy // Store the user who made the comment
+                    }, { transaction });
+                }
             }
-        } catch (error) {
-            console.error('Error updating leave request:', error.message);
+            // if (result > 0) {
+            //     const comment = await leaveComments.create({
+            //         leaveComment,
+            //         fkRequestLeaveId: id,
+            //         commentedBy,
+            //     });
+            //     return comment;
+            // } else {
+            //     console.log('No rows were updated. Check if the record with the provided ID exists')
+            // }
+            await transaction.commit(); // Commit the transaction if everything is successful
+            return { message: 'Leave request and comment updated successfully' };
+        } else {
+            console.log('No rows were updated. Check if the record with the provided ID exists');
+            await transaction.rollback(); // Rollback the transaction if no update occurred
+            return { message: 'No leave request found for the provided ID' };
         }
+    } catch (error) {
+        await transaction.rollback(); // Rollback transaction in case of error
+        console.error('Error updating leave request:', error.message);
+        throw error;
+    }
     },
     getAllLeave: async (pageSize, offset) => {
         try {
-            // Run the main query
             const result = await db.sequelize.query(`
                 WITH leaveData AS (
                     SELECT 
-                        "requestLeaves".*,
-                        "leaveTypes"."leaveType" AS "leaveTypeName",
-                        "employees"."id" AS "employees.id",
-                        "employees"."firstName" AS "employees.firstName",
-                        "employees"."lastName" AS "employees.lastName",
-                        "employees"."phoneNo" AS "employees.phoneNo",
-                        "leaveOf"."firstName" AS "leavesubmittedTofirstName",
-                        "leaveOf"."lastName" AS "leavesubmittedTolastName",
-                        "members"."memberName" AS "memberName"
+                        rl.*,
+                        lt."leaveType" AS "leaveTypeName",
+                        emp."id" AS "employees.id",
+                        emp."firstName" AS "employees.firstName",
+                        emp."lastName" AS "employees.lastName",
+                        emp."phoneNo" AS "employees.phoneNo",
+                        lof."firstName" AS "leavesubmittedTofirstName",
+                        lof."lastName" AS "leavesubmittedTolastName",
+                        mem."memberName" AS "memberName", 
+                        ses."sessionName" AS "sessionName",
+                        lc."leaveComment" AS "leaveComment" -- Corrected column name
                     FROM 
-                        "requestLeaves"
+                        "requestLeaves" rl
                     LEFT JOIN 
-                        "employees" ON "requestLeaves"."fkUserId" = "employees"."id"
+                        "employees" emp ON rl."fkUserId" = emp."id"
                     LEFT JOIN
-                        "employees" AS "leaveOf" ON "requestLeaves"."requestLeaveSubmittedTo"::integer = "leaveOf"."id"
+                        "employees" lof ON rl."requestLeaveSubmittedTo"::integer = lof."id"
                     LEFT JOIN
-                        "leaveTypes" ON "requestLeaves"."fkRequestTypeId" = "leaveTypes"."id"
+                        "leaveTypes" lt ON rl."fkRequestTypeId" = lt."id"
                     LEFT JOIN 
-                        "members" ON "requestLeaves"."web_id" = "members"."id"
+                        "members" mem ON rl."fkMemberId" = mem."id"
+                    LEFT JOIN 
+                        "sessions" ses ON rl."fkSessionId" = ses."id"
+                    LEFT JOIN
+                        "leaveComments" lc ON lc."fkRequestLeaveId" = rl."id"
                     ORDER BY 
-                        "requestLeaves"."createdAt" DESC
+                        rl."createdAt" DESC
                 )
                 SELECT 
                     (SELECT COUNT(*) FROM leaveData) AS totalCount,
@@ -121,18 +190,15 @@ const leaveService = {
                 replacements: { limit: parseInt(pageSize), offset: offset },
             });
     
-            // Extract the total count from the first record
             const totalCount = result.length > 0 ? result[0].totalcount : 0;
     
-            // Create a new array excluding the totalCount from each record
             const leaves = result.map(record => {
                 const { totalcount, ...leaveData } = record;
                 return leaveData;
             });
     
-            // Return the total count separately along with the leaves array
             return {
-                totalCount: parseInt(totalCount),  // Ensure totalCount is returned as a number
+                totalCount: parseInt(totalCount),
                 leaves,
             };
     
@@ -140,53 +206,80 @@ const leaveService = {
             console.error('Error fetching leave request:', error.message);
             throw error;
         }
-    },    
+    },
+    
+        
     getLeaveById: async (id) => {
         try {
-            console.log("herer");
             const result = await db.sequelize.query(`
-                    SELECT 
-                        "requestLeaves".*,
-                        "leaveOf"."firstName" AS "leavesubmittedTofirstName",
-                        "leaveOf"."lastName" AS "leavesubmittedTolastName",
-                        ARRAY_AGG(
-                            json_build_object(
-                                'leaveCommentId', "leaveComments"."id",
-                                'leaveComment', "leaveComments"."leaveComment",
-                                'commentedById', "leaveComments"."commentedBy", -- include the commentedBy ID
-                                'commentedByName', "commentingEmployee"."firstName" -- include the commentedBy first name
-                            )
-                        ) AS "comments",
-                        "employees"."id" AS "userId",
-                        "employees"."firstName" AS "RequesterNamefirstName",
-                        "employees"."lastName" AS "RequesterNamelastName"
-                    FROM 
-                        "requestLeaves"
-                    LEFT JOIN 
-                        "leaveComments" ON "requestLeaves"."id" = "leaveComments"."fkRequestLeaveId"
-                    LEFT JOIN 
-                        "employees" ON "requestLeaves"."fkUserId" = "employees"."id" 
-                    LEFT JOIN
-                        "employees" AS "leaveOf" ON "requestLeaves"."requestLeaveSubmittedTo"::integer = "leaveOf"."id"
-                    LEFT JOIN
-                        "employees" AS "commentingEmployee" ON "leaveComments"."commentedBy" = "commentingEmployee"."id" -- new join
-                    WHERE 
-                        "requestLeaves"."id" = :id
-                    GROUP BY
-                        "requestLeaves"."id",
-                        "employees"."id",
-                        "leaveOf"."firstName",
-                        "leaveOf"."lastName"
-                `, {
+                SELECT 
+                    "requestLeaves".id,
+                    json_build_object(
+                        'id', "requestLeaves"."fkMemberId",
+                        'name', "members"."memberName"
+                    ) AS "member",
+                    json_build_object(
+                        'id', "requestLeaves"."fkSessionId",
+                        'name', "sessions"."sessionName"
+                    ) AS "session",
+                    "requestLeaves"."applicationDate",
+                    "requestLeaves"."subject",
+                    "leaveOf"."firstName" AS "leavesubmittedTofirstName",
+                    "leaveOf"."lastName" AS "leavesubmittedTolastName",
+                    ARRAY_AGG(
+                        json_build_object(
+                            'leaveCommentId', "leaveComments"."id",
+                            'leaveComment', "leaveComments"."leaveComment",
+                            'commentedById', "leaveComments"."commentedBy",
+                            'commentedByName', "commentingEmployee"."firstName"
+                        )
+                    ) AS "comments",
+                    "employees"."id" AS "userId",
+                    "employees"."firstName" AS "RequesterNamefirstName",
+                    "employees"."lastName" AS "RequesterNamelastName",
+                    "requestLeaves"."requestStartDate",        
+                    "requestLeaves"."requestEndDate",          
+                    "requestLeaves"."requestLeaveReason",      
+                    "requestLeaves"."leave_oneday",            
+                    "requestLeaves"."web_id",                  
+                    "requestLeaves"."device",   
+                    "requestLeaves"."requestStatus",               
+                    "requestLeaves"."file"         
+                FROM 
+                    "requestLeaves"
+                LEFT JOIN 
+                    "leaveComments" ON "requestLeaves"."id" = "leaveComments"."fkRequestLeaveId"
+                LEFT JOIN 
+                    "employees" ON "requestLeaves"."fkUserId" = "employees"."id" 
+                LEFT JOIN
+                    "employees" AS "leaveOf" ON "requestLeaves"."requestLeaveSubmittedTo"::integer = "leaveOf"."id"
+                LEFT JOIN
+                    "employees" AS "commentingEmployee" ON "leaveComments"."commentedBy" = "commentingEmployee"."id"
+                LEFT JOIN 
+                    "members" ON "requestLeaves"."fkMemberId" = "members"."id"
+                LEFT JOIN 
+                    "sessions" ON "requestLeaves"."fkSessionId" = "sessions"."id"
+                WHERE 
+                    "requestLeaves"."id" = :id
+                GROUP BY
+                    "requestLeaves"."id",
+                    "employees"."id",
+                    "leaveOf"."firstName",
+                    "leaveOf"."lastName",
+                    "members"."memberName",
+                    "sessions"."sessionName"
+            `, {
                 type: db.sequelize.QueryTypes.SELECT,
                 replacements: { id: id },
             });
-
-            return result
+    
+            return result;
         } catch (error) {
             console.error('Error Fetching leave request:', error.message);
+            throw error;
         }
     },
+       
     findAllLeaveByWebId: async (web_id) => {
         try {
             const result = await db.sequelize.query(`

@@ -168,25 +168,49 @@ const leaveController = {
             })
         }
     },
-
     getLeaveById: async (req, res) => {
-        const { params } = req
-        const { id } = params
-        logger.info(`LeaveController: getLeaveById ${id}`)
-        const leaveRecord = await leaveService.getLeaveById(id)
-        const transformedResult = leaveRecord.map(row => {
-            return {
-                ...row,
-                comments: row.comments[0].leaveCommentId === null ? [] : row.comments,
-            };
-        });
-
-        return res.status(200).send({
-            success: true,
-            message: `Leave fetched successfully for id ${id}`,
-            data: transformedResult,
-        })
+        const { params } = req;
+        const { id } = params;
+        const baseUrl = req.protocol + '://' + req.get('host'); // Construct base URL dynamically
+    
+        logger.info(`LeaveController: getLeaveById ${id}`);
+    
+        try {
+            const leaveRecord = await leaveService.getLeaveById(id);
+    
+            if (!leaveRecord || leaveRecord.length === 0) {
+                return res.status(404).send({
+                    success: false,
+                    message: `No leave found for id ${id}`,
+                });
+            }
+    
+            const transformedResult = leaveRecord.map(row => {
+                return {
+                    ...row,
+                    // Transform the file path to full URL if file is present
+                    file: row.file ? `${baseUrl}${row.file}` : null,
+                    // Ensure comments array is empty if there are no comments
+                    comments: row.comments[0].leaveCommentId === null ? [] : row.comments,
+                };
+            });
+    
+            return res.status(200).send({
+                success: true,
+                message: `Leave fetched successfully for id ${id}`,
+                data: transformedResult,
+            });
+        } catch (error) {
+            console.error('Error Fetching leave request:', error.message);
+            return res.status(500).send({
+                success: false,
+                message: 'Error fetching leave request',
+            });
+        }
     },
+    
+    
+    
 //Get Leave Types
     getLeaveTypes: async (req, res) => {
         logger.info(`LeaveControllers: getLeaveTypes`);
