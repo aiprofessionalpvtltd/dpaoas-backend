@@ -925,7 +925,7 @@ db.leaveComments.belongsTo(db.requestLeaves, {
   foreignKey: "fkRequestLeaveId",
   as: "requestLeaves",
 });
-db.requestLeaves.hasMany(db.leaveComments, {
+db.requestLeaves.hasMany(db.leaveComments, {  
   foreignKey: "fkRequestLeaveId",
   as: "leaveComments",
 });
@@ -933,6 +933,9 @@ db.leaveComments.belongsTo(db.users, {
   foreignKey: "commentedBy",
   as: "users",
 });
+db.requestLeaves.belongsTo(db.members, { foreignKey: 'fkMemberId', as: 'member' });
+db.requestLeaves.belongsTo(db.sessions, { foreignKey: 'fkSessionId', as: 'sessions' });
+
 //db.Departments.hasMany(db.users, { foreignKey: 'fkDepartmentId', as: 'users' });
 db.requestLeaves.belongsTo(db.users, {
   foreignKey: "requestLeaveSubmittedTo",
