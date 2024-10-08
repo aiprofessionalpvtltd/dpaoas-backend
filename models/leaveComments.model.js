@@ -8,7 +8,7 @@ module.exports = (sequelize, Sequelize) => {
     leaveComment: {
       type: Sequelize.STRING,
       allowNull: true
-
+ 
     },
     fkRequestLeaveId: {
       type: Sequelize.INTEGER,
@@ -20,7 +20,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     commentedBy: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
