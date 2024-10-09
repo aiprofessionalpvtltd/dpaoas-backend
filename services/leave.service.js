@@ -61,22 +61,38 @@ const leaveService = {
     updateleave: async (id, payload) => {
         const transaction = await db.sequelize.transaction(); // Start a transaction
         try {
-            let { fkRequestTypeId, fkUserId, fkMemberId, fkSessionId, applicationDate, subject, requestStartDate, requestEndDate, requestStatus, requestLeaveSubType, requestLeaveReason,
-                requestNumberOfDays, requestStationLeave, requestLeaveAttachment,
-                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leaveComment, commentedBy, leave_oneday } = payload;
-
+            let {
+                fkRequestTypeId, fkUserId, fkMemberId, fkSessionId, applicationDate, subject,
+                requestStartDate, requestEndDate, requestStatus, requestLeaveSubType,
+                requestLeaveReason, requestNumberOfDays, requestStationLeave, requestLeaveAttachment,
+                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leaveComment, commentedBy, leave_oneday
+            } = payload;
+    
+            // Check if both requestStartDate and requestEndDate are provided, and leave_oneday has a value
+            if (requestStartDate && requestEndDate && leave_oneday !== null) {
+                // Clear leave_oneday if both start and end dates are being provided
+                leave_oneday = null;
+            }
+    
+            // Check if leave_oneday is provided and both requestStartDate and requestEndDate have values
+            if (leave_oneday && (requestStartDate !== null || requestEndDate !== null)) {
+                // Clear requestStartDate and requestEndDate if leave_oneday is being provided
+                requestStartDate = null;
+                requestEndDate = null;
+            }
+    
             const result = await requestLeaves.update(
                 {
                     fkRequestTypeId,
                     fkUserId,
-                    fkMemberId, 
-                    fkSessionId, 
-                    applicationDate, 
+                    fkMemberId,
+                    fkSessionId,
+                    applicationDate,
                     subject,
                     requestStartDate,
                     requestEndDate,
                     requestStatus,
-                    requestLeaveSubType, 
+                    requestLeaveSubType,
                     requestLeaveReason,
                     requestNumberOfDays,
                     requestStationLeave,
@@ -91,60 +107,53 @@ const leaveService = {
                 },
                 { transaction }
             );
-
+    
             // Check if the leave request update was successful
-        if (result > 0) {
-            // Check if the `leaveComment` field is provided in the payload
-            if (leaveComment) {
-                // Check if a comment already exists for this leave request
-                const existingComment = await leaveComments.findOne({
-                    where: { fkRequestLeaveId: id }, // Check for comments related to the leave request
-                });
-
-                if (existingComment) {
-                    // If a comment exists, update it
-                    await leaveComments.update(
-                        {
+            if (result > 0) {
+                // If a comment is provided, handle it
+                if (leaveComment) {
+                    // Check if a comment already exists for this leave request
+                    const existingComment = await leaveComments.findOne({
+                        where: { fkRequestLeaveId: id }, // Check for comments related to the leave request
+                    });
+    
+                    if (existingComment) {
+                        // Update the comment if it exists
+                        await leaveComments.update(
+                            {
+                                leaveComment,
+                                commentedBy // Update who commented it
+                            },
+                            {
+                                where: { fkRequestLeaveId: id },
+                            },
+                            { transaction }
+                        );
+                    } else {
+                        // Create a new comment if none exists
+                        await leaveComments.create({
                             leaveComment,
-                            commentedBy // You can also update who commented it
-                        },
-                        {
-                            where: { fkRequestLeaveId: id },
-                        },
-                        { transaction }
-                    );
-                } else {
-                    // If no comment exists, create a new comment
-                    await leaveComments.create({
-                        leaveComment,
-                        fkRequestLeaveId: id, // Link to the leave request
-                        commentedBy // Store the user who made the comment
-                    }, { transaction });
+                            fkRequestLeaveId: id, // Link to the leave request
+                            commentedBy // Store the user who made the comment
+                        }, { transaction });
+                    }
                 }
+    
+                await transaction.commit(); // Commit the transaction if everything is successful
+                return { message: 'Leave request and comment updated successfully' };
+            } else {
+                console.log('No rows were updated. Check if the record with the provided ID exists');
+                await transaction.rollback(); // Rollback the transaction if no update occurred
+                return { message: 'No leave request found for the provided ID' };
             }
-            // if (result > 0) {
-            //     const comment = await leaveComments.create({
-            //         leaveComment,
-            //         fkRequestLeaveId: id,
-            //         commentedBy,
-            //     });
-            //     return comment;
-            // } else {
-            //     console.log('No rows were updated. Check if the record with the provided ID exists')
-            // }
-            await transaction.commit(); // Commit the transaction if everything is successful
-            return { message: 'Leave request and comment updated successfully' };
-        } else {
-            console.log('No rows were updated. Check if the record with the provided ID exists');
-            await transaction.rollback(); // Rollback the transaction if no update occurred
-            return { message: 'No leave request found for the provided ID' };
+        } catch (error) {
+            await transaction.rollback(); // Rollback transaction in case of error
+            console.error('Error updating leave request:', error.message);
+            throw error;
         }
-    } catch (error) {
-        await transaction.rollback(); // Rollback transaction in case of error
-        console.error('Error updating leave request:', error.message);
-        throw error;
-    }
     },
+    
+    
     getAllLeave: async (pageSize, offset) => {
         try {
             const result = await db.sequelize.query(`
@@ -279,7 +288,7 @@ const leaveService = {
             throw error;
         }
     },
-       
+
     findAllLeaveByWebId: async (web_id) => {
         try {
             const result = await db.sequelize.query(`
