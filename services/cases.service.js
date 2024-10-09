@@ -492,14 +492,18 @@ const casesService = {
         }
       });
 
-      // Convert to array and sort by fkCaseId in descending order
-      const aggregatedCases = Object.values(casesByCaseId).sort((a, b) => b.fkCaseId - a.fkCaseId);
+    // Filter only active cases
+    const activeCases = Object.values(casesByCaseId).filter(caseItem => caseItem.status === "active");
 
-      const paginatedCases = aggregatedCases.slice(
-        currentPage * pageSize,
-        (currentPage + 1) * pageSize
-      );
-      const totalPages = Math.ceil(aggregatedCases.length / pageSize);
+    // Convert to array and sort by fkCaseId in descending order
+    const aggregatedCases = activeCases.sort((a, b) => b.fkCaseId - a.fkCaseId);
+
+    const paginatedCases = aggregatedCases.slice(
+      currentPage * pageSize,
+      (currentPage + 1) * pageSize
+    );
+    const totalPages = Math.ceil(aggregatedCases.length / pageSize);
+
 
       return {
         cases: paginatedCases,
