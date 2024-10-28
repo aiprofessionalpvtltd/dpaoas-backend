@@ -104,6 +104,45 @@ const questionsController = {
     }
   },
 
+  // Retrieve Today's Questions
+  getTodaysQuestions: async (req, res) => {
+    try {
+      logger.info(`questionsController: getTodaysQuestions query ${JSON.stringify(req.query)}`);
+
+      const currentPage = parseInt(req.query.currentPage);
+      const pageSize = parseInt(req.query.pageSize);
+      const currentDate = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      const questionSentStatus = req.query.questionSentStatus ? req.query.questionSentStatus : null;
+      const { count, totalPages, questions } = await questionsService.getTodaysQuestions(currentPage, pageSize, currentDate, questionSentStatus);
+
+      if (questions.length === 0) {
+        logger.info("No questions found for today!");
+        return res.status(200).send({
+          success: true,
+          message: 'No questions found for today!',
+          data: { questions, count, totalPages }
+        });
+      } else {
+        logger.info("Today's questions fetched successfully!");
+        return res.status(200).send({
+          success: true,
+          message: "Today's questions fetched successfully!",
+          data: {
+            questions,
+            count
+          }
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+
 
   // Retrieves counts and data of questions by status
   getQuestionsByStatus: async (req, res) => {

@@ -300,6 +300,8 @@ router.get('/all', motionController.getAllMotions);
  */
 router.get('/inNotice', motionController.getAllMotionsInNotice);
 
+router.get('/todayMotion', motionController.findTodayMotion);
+
 /**
  * @swagger
  * /api/motion/{id}:

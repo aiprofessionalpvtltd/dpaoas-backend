@@ -141,6 +141,7 @@ db.users.hasOne(db.employees, { as: "employee", foreignKey: "fkUserId" });
 db.passes = require("./pass.model")(sequelize, SequelizeMain);
 db.visitors = require("./visitor.model")(sequelize, SequelizeMain);
 db.passVisitors = require("./passVisitor.model")(sequelize, SequelizeMain);
+db.legislationMovers = require("./legislationMovers.model.js")(sequelize, SequelizeMain);
 
 // Roles and Permissions
 db.permissions.belongsToMany(db.roles, {
@@ -1466,6 +1467,11 @@ db.members.hasMany(db.questions, {
   foreignKey: 'fkMemberId', 
   as: 'questions' 
 });
+
+//legislation movers
+db.legislationMovers.belongsTo(db.legislativeBills, { foreignKey: 'fklegislationBillId', as: 'legislativeBills' });
+db.legislationMovers.belongsTo(db.members, { foreignKey: 'fkMemberId', as: 'member' });
+db.legislativeBills.hasMany(db.legislationMovers, { foreignKey: 'fklegislationBillId', as: 'legislationMovers' });
 
 sequelize.sync();
 module.exports = db;

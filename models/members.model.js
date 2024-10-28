@@ -100,6 +100,7 @@ module.exports = (sequelize, Sequelize) => {
         members.belongsTo(models.terms, { foreignKey: 'fkTermId', as: 'terms' });
         members.belongsTo(models.politicalParties, { foreignKey: 'politicalParty', as: 'politicalParties' });
         members.belongsToMany(models.resolutions, { through: 'resolutionMovers', foreignKey: 'fkResolutionId', otherKey: 'fkMemberId', as: 'resolutions' });
+        members.belongsToMany(models.legislativeBills, { through: 'legislationMovers', foreignKey: 'fklegislationBillId', otherKey: 'fkMemberId', as: 'legislativeBills' });
         members.hasMany(models.contactListUsers, { foreignKey: 'fkMemberId', as: 'member' });
         // members.belongsTo(models.groups, { foreignKey: 'fkGroupId', as: 'group' });
         // members.hasMany(models.questions, { foreignKey: 'fkMemberId', as: 'questions' });

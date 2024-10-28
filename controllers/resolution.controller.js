@@ -95,6 +95,42 @@ const resolutionController = {
         }
     },
 
+    // Retrieve Today's Resolutions with Pagination and Status
+    findTodayResolution: async (req, res) => {
+        try {
+            const currentPage = parseInt(req.query.currentPage) || 0;  // Default to 0 if not provided
+            const pageSize = parseInt(req.query.pageSize) || 10;       // Default to 10 if not provided
+            const resolutionSentStatus = req.query.resolutionSentStatus || null;  // Optional resolutionSentStatus filter
+            const currentDate = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+
+            const { count, totalPages, resolution } = await resolutionService.findTodayResolution(currentPage, pageSize, resolutionSentStatus, currentDate);
+
+            if (resolution.length === 0) {
+                logger.info("No data found for today's resolutions!");
+                return res.status(200).send({
+                    success: true,
+                    message: 'No data found for today\'s resolutions!',
+                    data: { resolution }
+                });
+            } else {
+                logger.info("Today's resolutions fetched successfully!");
+                return res.status(200).send({
+                    success: true,
+                    message: "Today's resolutions fetched successfully!",
+                    data: { resolution, totalPages, count }
+                });
+            }
+
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+
     // Retrieve Resolutions with Status 'Balloting'
     findAllBallotingResolutions: async (req, res) => {
         try {
@@ -377,7 +413,7 @@ const resolutionController = {
             const { fromSessionId, toSessionId } = req.query;
             const findAllSummary = await resolutionService.findAllSummary(fromSessionId, toSessionId);
 
-    
+
             logger.info("PDF generated and status counts fetched successfully!");
             return res.status(200).send({
                 success: true,
@@ -881,24 +917,24 @@ const resolutionController = {
             });
         }
     },
-        // Retrieves counts and data of motions by status
-  resolutionDiaryNumberGenerate: async (req, res) => {
-    try {
-       const result = await resolutionService.resolutionDiaryNumberGenerate();
+    // Retrieves counts and data of motions by status
+    resolutionDiaryNumberGenerate: async (req, res) => {
+        try {
+            const result = await resolutionService.resolutionDiaryNumberGenerate();
 
-       return res.status(200).send({
-           success: true,
-           message: "Resolution new noticeOfficeDiaryNo fetched successfully!",
-           data: result
-       });
-   } catch (error) {
-       logger.error(error.message);
-       return res.status(400).send({
-           success: false,
-           message: error.message
-       });
-   }
-},
+            return res.status(200).send({
+                success: true,
+                message: "Resolution new noticeOfficeDiaryNo fetched successfully!",
+                data: result
+            });
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
 
 }
 

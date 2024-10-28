@@ -326,6 +326,134 @@ const questionsService = {
     }
   },
 
+  // Retrieve Today's Questions in Question Branch
+  getTodaysQuestions: async (currentPage, pageSize, currentDate, questionSentStatus) => {
+    try {
+      const offset = currentPage * pageSize;
+      const limit = pageSize;
+
+      const { count, rows } = await Questions.findAndCountAll({
+        where: {
+          questionSentStatus: questionSentStatus,
+          createdAt: {
+            [Op.gte]: currentDate + " 00:00:00", // From start of the day
+            [Op.lte]: currentDate + " 23:59:59"  // Until the end of the day
+          }
+        },
+        include: [
+          {
+            model: Users,
+            as: "questionDeletedBy",
+            attributes: ["id"],
+            include: [
+              {
+                model: Employees,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+              },
+            ],
+          },
+          {
+            model: Users,
+            as: "questionSubmittedBy",
+            attributes: ["id"],
+            include: [
+              {
+                model: Employees,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+              },
+            ],
+          },
+          {
+            model: QuestionRevival,
+            as: "questionRevival",
+            include: [
+              {
+                model: Sessions,
+                as: "ToSession",
+                attributes: ["id", "sessionName"],
+              },
+              {
+                model: Sessions,
+                as: "FromSession",
+                attributes: ["id", "sessionName"],
+              },
+            ],
+            attributes: ["id", "fkFromSessionId", "fkToSessionId"],
+          },
+          {
+            model: Sessions,
+            attributes: ["id", "sessionName"],
+          },
+          {
+            model: QuestionStatus,
+            as: "questionStatus",
+            attributes: ["id", "questionStatus"],
+          },
+          {
+            model: Members,
+            attributes: ["id", "memberName"],
+          },
+          {
+            model: QuestionDiary,
+            attributes: ["id", "questionID", "questionDiaryNo"],
+          },
+          {
+            model: NoticeOfficeDairy,
+            as: "noticeOfficeDiary",
+            attributes: [
+              "id",
+              "noticeOfficeDiaryNo",
+              "noticeOfficeDiaryDate",
+              "noticeOfficeDiaryTime",
+            ],
+          },
+          {
+            model: Divisions,
+            as: "divisions",
+            attributes: ["id", "divisionName"],
+            include: [
+              {
+                model: db.ministries,
+                attributes: ["id", "ministryName"],
+              },
+            ]
+          },
+          {
+            model: Groups,
+            as: "groups",
+            attributes: ["id", "groupNameStarred", "groupNameUnstarred"],
+          },
+        ],
+        offset,
+        limit,
+        distinct: true,
+        order: [["id", "DESC"]],
+      });
+
+      // Parse questionImage attribute if present
+      rows.forEach((question) => {
+        if (question.questionImage && question.questionImage.length) {
+          question.questionImage = question.questionImage.map((imageString) =>
+            JSON.parse(imageString)
+          );
+        } else {
+          question.questionImage = [];
+        }
+      });
+
+      const totalPages = Math.ceil(count / pageSize);
+
+      return { count, totalPages, questions: rows };
+    } catch (error) {
+      throw new Error(error.message || "Error Fetching Today's Questions");
+    }
+  },
+
+
+
+
 
   getMemberWiseStatement: async (fromSession, toSession) => {
     try {
@@ -448,7 +576,7 @@ const questionsService = {
 
       return {
         sessions: {
-          fromSession: sessionMap[fromSession], 
+          fromSession: sessionMap[fromSession],
           toSession: sessionMap[toSession]
         },
         currentDate: formattedDate, // Current report generation date
@@ -467,13 +595,13 @@ const questionsService = {
       const admittedStatus = await db.questionStatus.findOne({
         where: { questionStatus: 'Admitted' }
       });
-  
+
       if (!admittedStatus) {
         throw new Error('Admitted status not found');
       }
-  
+
       const admittedStatusId = admittedStatus.id;
-  
+
       // Step 2: Fetch sessions between fromSession and toSession
       const sessions = await db.sessions.findAll({
         where: {
@@ -483,13 +611,13 @@ const questionsService = {
         },
         attributes: ['id', 'sessionName']
       });
-  
+
       // Step 3: Map session names by their IDs
       const sessionMap = sessions.reduce((acc, session) => {
         acc[session.id] = session.sessionName;
         return acc;
       }, {});
-  
+
       // Step 4: Query to fetch all relevant questions, grouped by division and category
       const questions = await db.questions.findAll({
         where: {
@@ -517,16 +645,16 @@ const questionsService = {
         ],
         group: ['divisions.id', 'groups.id', 'questionCategory'] // Group by division, group, and question category
       });
-  
+
       // Step 5: Format the result into the desired structure
       const result = {};
-  
+
       questions.forEach(question => {
         const group = question.groups;
         const division = question.divisions;
         const category = question.questionCategory;
         const count = parseInt(question.dataValues.count, 10);
-  
+
         // Ensure group and division are not null before processing
         if (group && division) {
           // Initialize group if it doesn't exist
@@ -543,7 +671,7 @@ const questionsService = {
               }
             };
           }
-  
+
           // Initialize division if it doesn't exist
           if (!result[group.id].divisions[division.id]) {
             result[group.id].divisions[division.id] = {
@@ -555,29 +683,29 @@ const questionsService = {
               }
             };
           }
-  
+
           // Add the count to the respective category for the division
           result[group.id].divisions[division.id].categories[category] += count;
-  
+
           // Add the count to the respective category in the group's total
           result[group.id].total.categories[category] += count;
         }
       });
-  
+
       // Step 6: Get current date
       const currentDate = new Date();
       const formattedDate = currentDate.toLocaleDateString('en-GB');
-  
+
       // Step 7: Convert the result object into the desired array format
       const formattedResult = Object.values(result).map(group => ({
         groupName: group.groupName,
         divisions: Object.values(group.divisions),
         total: group.total // Include total for each group
       }));
-  
+
       return {
         sessions: {
-          fromSession: sessionMap[fromSession], 
+          fromSession: sessionMap[fromSession],
           toSession: sessionMap[toSession]
         },
         currentDate: formattedDate, // Current report generation date
@@ -588,7 +716,7 @@ const questionsService = {
       throw new Error(error.message);
     }
   },
-  
+
 
 
   getQuestionsByStatus: async (statuses) => {

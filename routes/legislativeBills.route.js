@@ -12,6 +12,9 @@ router.get("/findall", legislativeBills.findAllLegislativeBills);
 // Retrieve all legislativeBills
 router.get("/inNotice", legislativeBills.findAllLegislativeBillsInNotice);
 
+// Retrieve today legislativeBills
+router.get('/todaylegislativeBills', legislativeBills.getTodaysLegislativeBills);
+
 // Create legislativeBill
 router.post("/", uploadFile("legislativeBill"), legislativeBills.createLegislativeBill);
 

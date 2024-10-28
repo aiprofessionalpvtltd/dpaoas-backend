@@ -79,6 +79,45 @@ const legislativeBillController = {
         }
     },
 
+    // Retrieve Today's legislative Bills
+    getTodaysLegislativeBills: async (req, res) => {
+        try {
+            logger.info(`legislativeBillsController: getTodaysLegislativeBills query ${JSON.stringify(req.query)}`);
+
+            const currentPage = parseInt(req.query.currentPage);
+            const pageSize = parseInt(req.query.pageSize);
+            const currentDate = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+            const legislativeSentStatus = req.query.legislativeSentStatus ? req.query.legislativeSentStatus : null;
+            const { count, totalPages, legislativeBills } = await legislativeBillService.getTodaysLegislativeBills(currentPage, pageSize, currentDate, legislativeSentStatus);
+
+            if (legislativeBills.length === 0) {
+                logger.info("No legislativeBills found for today!");
+                return res.status(200).send({
+                    success: true,
+                    message: 'No legislativeBills found for today!',
+                    data: { legislativeBills, count, totalPages }
+                });
+            } else {
+                logger.info("Today's legislativeBills fetched successfully!");
+                return res.status(200).send({
+                    success: true,
+                    message: "Today's legislativeBills fetched successfully!",
+                    data: {
+                        legislativeBills,
+                        count,
+                        totalPages
+                    }
+                });
+            }
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
     // Retrieve all legislativeBills by web_id
     findAllLegislativeBillsByWebId: async (req, res) => {
         try {
@@ -296,11 +335,11 @@ const legislativeBillController = {
         }
     },
 
-    
+
     generateDiaryNumber: async (req, res) => {
         try {
             const result = await legislativeBillService.generateDiaryNumber();
-     
+
             return res.status(200).send({
                 success: true,
                 message: "Resolution new noticeOfficeDiaryNo fetched successfully!",

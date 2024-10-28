@@ -201,6 +201,8 @@ router.get("/searchQuestion", questions.searchQuestion)
  */
 router.get("/all", questions.getAllQuestions)
 
+router.get('/todayQuestion', questions.getTodaysQuestions);
+
 // Get All Questions
 /**
  * @swagger

@@ -218,6 +218,41 @@ const MotionController = {
     }
   },
 
+  // Retrieve Today's Motions with Pagination and Status
+  findTodayMotion: async (req, res) => {
+    try {
+      const currentPage = parseInt(req.query.currentPage) || 0;  // Default to 0 if not provided
+      const pageSize = parseInt(req.query.pageSize) || 10;       // Default to 10 if not provided
+      const motionSentStatus = req.query.motionSentStatus || null;  // Optional motionSentStatus filter
+      const currentDate = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+
+      const { count, totalPages, rows } = await motionService.findTodayMotion(currentPage, pageSize, motionSentStatus, currentDate);
+
+      if (rows.length === 0) {
+        logger.info("No data found for today's motions!");
+        return res.status(200).send({
+          success: true,
+          message: 'No data found for today\'s motions!',
+          data: { rows }
+        });
+      } else {
+        logger.info("Today's motions fetched successfully!");
+        return res.status(200).send({
+          success: true,
+          message: "Today's motions fetched successfully!",
+          data: { rows, totalPages, count }
+        });
+      }
+
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
   // Motion Listing In Motion Branch
   getAllMotions: async (req, res) => {
     const { query } = req;

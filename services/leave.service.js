@@ -14,7 +14,8 @@ const leaveService = {
         try {
             let { fkRequestTypeId, fkUserId, fkMemberId, fkSessionId, applicationDate, subject, requestStartDate, requestEndDate, requestStatus, requestLeaveSubType, requestLeaveReason,
                 requestNumberOfDays, requestStationLeave, requestLeaveAttachment,
-                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leave_oneday, web_id, leaveComment, device } = req;
+                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leave_oneday, web_id, leaveComment, device, requestleavedates } = req;
+
 
             const leaveRequest = await requestLeaves.create({
                 fkRequestTypeId,
@@ -36,7 +37,8 @@ const leaveService = {
                 requestLeaveForwarder,
                 leave_oneday,
                 web_id,
-                device
+                device,
+                requestleavedates
             }, { transaction });
 
               // If leaveComment is provided, create an entry in the leaveComments table
@@ -65,7 +67,7 @@ const leaveService = {
                 fkRequestTypeId, fkUserId, fkMemberId, fkSessionId, applicationDate, subject,
                 requestStartDate, requestEndDate, requestStatus, requestLeaveSubType,
                 requestLeaveReason, requestNumberOfDays, requestStationLeave, requestLeaveAttachment,
-                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leaveComment, commentedBy, leave_oneday
+                requestLeaveSubmittedTo, requestLeaveApplyOnBehalf, requestLeaveForwarder, leaveComment, commentedBy, leave_oneday, requestleavedates
             } = payload;
     
             // Check if both requestStartDate and requestEndDate are provided, and leave_oneday has a value
@@ -100,7 +102,8 @@ const leaveService = {
                     requestLeaveSubmittedTo,
                     requestLeaveApplyOnBehalf,
                     requestLeaveForwarder,
-                    leave_oneday
+                    leave_oneday,
+                    requestleavedates
                 },
                 {
                     where: { id: id } // Add the WHERE condition to filter by id
@@ -253,7 +256,8 @@ const leaveService = {
                     "requestLeaves"."web_id",                  
                     "requestLeaves"."device",   
                     "requestLeaves"."requestStatus",               
-                    "requestLeaves"."file"         
+                    "requestLeaves"."file",        
+                    "requestLeaves"."requestleavedates"
                 FROM 
                     "requestLeaves"
                 LEFT JOIN 

@@ -16,7 +16,7 @@ const legislativeBillService = {
             const limit = pageSize;
 
             const { count, rows } = await LegislativeBills.findAndCountAll({
-                where: { legislativeSentStatus: 'toLegislation'},
+                where: { legislativeSentStatus: 'toLegislation' },
                 offset,
                 limit,
                 order: [['createdAt', 'DESC']],
@@ -33,8 +33,20 @@ const legislativeBillService = {
                     {
                         model: db.members,
                         as: 'member',
-                        attributes: ['memberName'] // Include only the member name
-                    }
+                        attributes: ['id','memberName'] // Include only the member name
+                    },
+                    {
+                        model: db.legislationMovers,
+                        as: 'legislationMovers',
+                        attributes: ['id', 'fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'member',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
                 ],
             });
 
@@ -54,7 +66,7 @@ const legislativeBillService = {
             const limit = pageSize;
 
             const { count, rows } = await LegislativeBills.findAndCountAll({
-                where: {legislativeSentStatus: 'inNotice'},
+                where: { legislativeSentStatus: 'inNotice' },
                 offset,
                 limit,
                 order: [['createdAt', 'DESC']],
@@ -71,8 +83,20 @@ const legislativeBillService = {
                     {
                         model: db.members,
                         as: 'member',
-                        attributes: ['memberName'] // Include only the member name
-                    }
+                        attributes: ['id','memberName'] // Include only the member name
+                    },
+                    {
+                        model: db.legislationMovers,
+                        as: 'legislationMovers',
+                        attributes: ['id', 'fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'member',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
                 ],
             });
 
@@ -85,11 +109,110 @@ const legislativeBillService = {
             throw new Error(error.message || "Error Fetching All contactList");
         }
     },
+
+    // Retrieve Today's legislativeBills
+    getTodaysLegislativeBills: async (currentPage, pageSize, currentDate, legislativeSentStatus) => {
+        try {
+            const offset = currentPage * pageSize;
+            const limit = pageSize;
+
+            const { count, rows } = await LegislativeBills.findAndCountAll({
+                where: {
+                    legislativeSentStatus: legislativeSentStatus,
+                    createdAt: {
+                        [Op.gte]: currentDate + " 00:00:00", // From start of the day
+                        [Op.lte]: currentDate + " 23:59:59"  // Until the end of the day
+                    }
+                },
+                include: [
+                    {
+                        model: Sessions,
+                        as: 'session',
+                        attributes: ['sessionName']
+                    },
+                    {
+                        model: BillStatuses,
+                        as: 'billStatuses'
+                    },
+                    {
+                        model: db.members,
+                        as: 'member',
+                        attributes: ['id','memberName'] // Include only the member name
+                    },
+                    {
+                        model: db.legislationMovers,
+                        as: 'legislationMovers',
+                        attributes: ['id', 'fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'member',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
+                ],
+                offset,
+                limit,
+                order: [["id", "DESC"]],
+            });
+
+            const totalPages = Math.ceil(count / pageSize);
+
+            return { count, totalPages, legislativeBills: rows };
+        } catch (error) {
+            throw new Error(error.message || "Error Fetching Today's legislativeBills");
+        }
+    },
+
+
     // Create A New LegislativeBill
     createLegislativeBill: async (req) => {
 
         try {
             const legislativeBill = await LegislativeBills.create(req);
+            // console.log("Resolutions", resolutions)
+            const legislativeBillId = legislativeBill.id;
+
+            if (Array.isArray(req.legislationMovers)) {
+
+                for (const moverData of req.legislationMovers) {
+                    const fkMemberId = moverData.fkMemberId;
+
+                    // Determine the fkMemberId value
+                    const fkMemberIdValue = moverData.fkMemberId ? moverData.fkMemberId : (req.web_id ? req.web_id : null);
+                    // console.log("fkMemberIdValue=------", fkMemberIdValue)
+
+
+
+                    // Prepare the data for legislationMovers table
+                    const legislationMoversData = {
+                        fklegislationBillId: legislativeBillId,
+                        fkMemberId: fkMemberIdValue
+                    };
+
+                    const legislationMover = await db.legislationMovers.create(legislationMoversData);
+                    // console.log("resolutionMover------", resolutionMover)
+
+                }
+            } else {
+                // Handle the case when legislationMovers does not exist
+                const fkMemberIdValue = req.web_id ? req.web_id : null;
+                // console.log("fkMemberIdValue when legislationMovers is not present=------", fkMemberIdValue);
+
+                // If fkMemberIdValue is not null, create a resolution mover entry
+                if (fkMemberIdValue !== null) {
+                    const legislationMoversData = {
+                        fklegislationBillId: legislativeBillId,
+                        fkMemberId: fkMemberIdValue
+                    };
+
+                    const legislationMover = await db.legislationMovers.create(legislationMoversData);
+                    console.log("legislationMover when legislationMovers is not present------", legislationMover);
+                } else {
+                    console.log("No fkMemberId or web_id provided for legislationMover.");
+                }
+            }
 
             return legislativeBill;
         } catch (error) {
@@ -97,8 +220,8 @@ const legislativeBillService = {
         }
     },
 
- // Send To Legislation
-    sendToLegislation: async(req,billId) => {
+    // Send To Legislation
+    sendToLegislation: async (req, billId) => {
         try {
             const updatedData = {
                 legislativeSentStatus: "toLegislation",
@@ -113,7 +236,7 @@ const legislativeBillService = {
             throw { message: error.message || "Error Sending Legislative Bill To Legislation!" };
         }
     },
-     
+
     generateDiaryNumber: async () => {
         try {
             // Determine the current session year
@@ -122,21 +245,21 @@ const legislativeBillService = {
             const sessionStartDate = moment(`${currentYear}-03-12`);
             const nextYear = currentYear + 1;
             const sessionEndDate = moment(`${nextYear}-03-11`);
-    
+
             // Fetch the latest legislative bill
             const latestBill = await LegislativeBills.findOne({
                 order: [["createdAt", "DESC"]],
             });
-    
+
             let newDiaryNumber;
-            
+
             if (latestBill) {
                 const currentDateMoment = moment(currentDate, 'YYYY-MM-DD');
                 const sessionEndDateMoment = moment(sessionEndDate, 'YYYY-MM-DD').startOf('day'); // Make sure it's in 'day' precision
-    
+
                 console.log('sessionEndDate', sessionEndDateMoment);
                 console.log('currentDateMoment', currentDateMoment);
-    
+
                 // Check if the latest diary date is after the session end date
                 if (currentDateMoment.isAfter(sessionEndDateMoment, 'day')) {
                     // If diary number is after sessionEndDate, start from "01"
@@ -150,21 +273,21 @@ const legislativeBillService = {
                 // If no diary number is found, start from "01"
                 newDiaryNumber = `01`;
             }
-    
+
             console.log('newDiaryNumber', newDiaryNumber);
 
             const result = {
                 newDiaryNumber: newDiaryNumber, // Include the new newDiaryNumber
             };
-    
+
             return result;
-         } catch (error) {
+        } catch (error) {
             throw { message: error.message || "Error Generating Diary Number!" };
         }
     }
-     ,
-    
-     findSingleLegislativeBill : async (legislativeBillId) => {
+    ,
+
+    findSingleLegislativeBill: async (legislativeBillId) => {
         try {
             // Fetch the legislative bill
             const legislativeBill = await LegislativeBills.findOne({
@@ -179,27 +302,39 @@ const legislativeBillService = {
                     {
                         model: BillStatuses,
                         as: 'billStatuses'
-                    }
+                    },
+                    {
+                        model: db.legislationMovers,
+                        as: 'legislationMovers',
+                        attributes: ['id', 'fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'member',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
                 ],
             });
-    
+
             if (!legislativeBill) {
                 throw ({ message: "Legislative Bill Not Found!" });
             }
-    
-             // Check if the legislative bill already has a diary number
-             if (!legislativeBill.diary_number) {
+
+            // Check if the legislative bill already has a diary number
+            if (!legislativeBill.diary_number) {
                 // Generate the new diary number
                 const newDiaryNumber = await module.exports.generateDiaryNumber();
                 legislativeBill.diary_number = newDiaryNumber;
                 // await legislativeBill.save(); // Save the new diary number to the database
             }
-    
+
             return legislativeBill;
         } catch (error) {
             throw { message: error.message || "Error Fetching Single Legislative Bill" };
         }
-    } ,
+    },
 
     // Retrieve all LegislativeBill by web_id
     findAllLegislativeBillsByWebId: async (webId) => {
@@ -236,7 +371,7 @@ const legislativeBillService = {
             if (req.body.diary_number) {
                 // Check for duplicate diary_number
                 const duplicateDiaryNumber = await LegislativeBills.findOne({
-                    where: { 
+                    where: {
                         diary_number: req.body.diary_number,
                         id: { [Op.ne]: legislativeBillId } // Exclude current legislative bill
                     }
@@ -244,6 +379,25 @@ const legislativeBillService = {
 
                 if (duplicateDiaryNumber) {
                     throw { message: "Duplicate diary number exists!" };
+                }
+            }
+
+            if (req.body.legislationMovers) {
+                // Delete existing resolutionMovers entries
+                await db.legislationMovers.destroy({
+                    where: { fklegislationBillId: legislativeBillId }
+                });
+
+                // Create new resolutionMovers entries
+                for (const moverData of req.body.legislationMovers) {
+                    const { fkMemberId } = moverData;
+
+                    const legislationMoverData = {
+                        fklegislationBillId: legislativeBillId,
+                        fkMemberId: fkMemberId
+                    };
+
+                    await db.legislationMovers.create(legislationMoverData);
                 }
             }
 

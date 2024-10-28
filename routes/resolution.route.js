@@ -217,6 +217,9 @@ router.get("/searchInactiveResoultion", resolution.searchInactiveResolution);
  */
 router.get("/all", resolution.findAllResolution);
 
+router.get("/todayResolution", resolution.findTodayResolution);
+
+
 router.get("/findAllBalloting", resolution.findAllBallotingResolutions);
 router.put("/resolutionsBalloting/status", resolution.updateResolutionsStatus);
 
