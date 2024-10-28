@@ -2,6 +2,7 @@ const db = require("../models");
 const Sessions = db.sessions
 const Motions = db.motions
 const Questions = db.questions
+const legislativeBills = db.legislativeBills
 const NoticeOfficeDairy = db.noticeOfficeDairies
 const resolutionDiaries = db.resolutionDiaries;
 const resolutionMovers = db.resolutionMovers;
@@ -27,6 +28,7 @@ const noticeOfficeReportService = {
     // Retrieve Questions, Motions and Resolutions on the basis of Notice Diary Date
     getNoticeOfficeReports: async (searchCriteria) => {
         try {
+            console.log("searchCriteria", searchCriteria);
             let dateFilter = {};
             if (searchCriteria.noticeOfficeDiaryDateFrom && searchCriteria.noticeOfficeDiaryDateTo) {
                 dateFilter = {
@@ -42,6 +44,24 @@ const noticeOfficeReportService = {
                     [Op.lte]: searchCriteria.noticeOfficeDiaryDateTo,
                 };
             }
+
+            let legislativeDateFilter = {};
+
+            if (searchCriteria.noticeOfficeDiaryDateFrom && searchCriteria.noticeOfficeDiaryDateTo) {
+                legislativeDateFilter = {
+                    [Op.and]: [
+                        db.sequelize.literal(`date >= '${searchCriteria.noticeOfficeDiaryDateFrom}'`),
+                        db.sequelize.literal(`date <= '${searchCriteria.noticeOfficeDiaryDateTo}'`)
+                    ]
+                };
+            } else if (searchCriteria.noticeOfficeDiaryDateFrom) {
+                legislativeDateFilter = db.sequelize.literal(`date >= '${searchCriteria.noticeOfficeDiaryDateFrom}'`);
+            } else if (searchCriteria.noticeOfficeDiaryDateTo) {
+                legislativeDateFilter = db.sequelize.literal(`date <= '${searchCriteria.noticeOfficeDiaryDateTo}'`);
+            }
+            
+
+            console.log("dateFilter: ", legislativeDateFilter);
             // Query options for Questions
             let questionsQueryOptions = {
                 include: [
@@ -207,6 +227,51 @@ const noticeOfficeReportService = {
                     "$noticeOfficeDairies.noticeOfficeDiaryDate$": dateFilter,
                 },
             };
+
+            let legislativeBillsQueryOptions = {
+                include: [
+                    {
+                        model: Sessions,
+                        as: 'session',
+                        attributes: ['sessionName']
+                    },
+                    {
+                        model: db.billStatuses,
+                        as: 'billStatuses',
+                        attributes: ['id', 'billStatusName'] // Assuming 'statusName' is a field in BillStatuses
+                    },
+                    {
+                        model: Members,
+                        as: 'member',
+                        attributes: ['id', 'memberName'],
+                    }
+                ],
+                attributes: [
+                    'id',
+                    'title',
+                    'description',
+                    'attachment',
+                    'date',
+                    'device',
+                    'legislativeSentDate',
+                    'legislativeSentStatus',
+                    'noticeOfficeDiaryTime',
+                    'diary_number',
+                    'isActive',
+                ],
+                subQuery: false,
+                distinct: true,
+                where: {
+                    date: legislativeDateFilter, // Apply date filter here
+                },
+                order: [['id', 'ASC']],
+            };
+
+            // Fetch legislative bills
+        const legislativeBills = await db.legislativeBills.findAll(legislativeBillsQueryOptions);
+
+            
+
             // Fetch questions
             const questions = await Questions.findAll(questionsQueryOptions);
 
@@ -218,7 +283,8 @@ const noticeOfficeReportService = {
             return {
                 questions,
                 resolutions,
-                motions
+                motions,
+                legislativeBills
             };
         } catch (error) {
             throw new Error(error.message || "Error Fetching Reports");
@@ -226,143 +292,272 @@ const noticeOfficeReportService = {
     },
 
 
-    // Total And Individual Stats for Questions,Motions and Resoultions
-    getNoticeOfficeStats: async () => {
-        try {
-            // Get today's date in the format YYYY-MM-DD
-            const today = moment().format('YYYY-MM-DD');
-            const currentMonth = moment(today).format('MM');
-            const currentMonthStart = moment(`${moment().format('YYYY')}-${currentMonth}-01`).format('YYYY-MM-DD HH:mm:ss');
-            const currentMonthEnd = moment(`${moment().format('YYYY')}-${currentMonth}-${moment().daysInMonth()}`).format('YYYY-MM-DD HH:mm:ss');
+    // // Total And Individual Stats for Questions,Motions and Resoultions
+    // getNoticeOfficeStats: async () => {
+    //     try {
+    //         // Get today's date in the format YYYY-MM-DD
+    //         const today = moment().format('YYYY-MM-DD');
+    //         const currentMonth = moment(today).format('MM');
+    //         const currentMonthStart = moment(`${moment().format('YYYY')}-${currentMonth}-01`).format('YYYY-MM-DD HH:mm:ss');
+    //         const currentMonthEnd = moment(`${moment().format('YYYY')}-${currentMonth}-${moment().daysInMonth()}`).format('YYYY-MM-DD HH:mm:ss');
 
-            // Count Send Questions from Notice to Question Branch
-            const dailySendQuestions = await Questions.count({
-                where: {
-                    questionSentStatus: "toQuestion",
-                    createdAt: {
-                        [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
-                    }
-                },
+    //         // Count Send Questions from Notice to Question Branch
+    //         const dailySendQuestions = await Questions.count({
+    //             where: {
+    //                 questionSentStatus: "toQuestion",
+    //                 createdAt: {
+    //                     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+    //                 }
+    //             },
 
-            })
+    //         })
 
-            // Count Recieved Question from Question Branch to Notice Office
-            const dailyRecievedQuestions = await Questions.count({
-                where: {
-                    questionSentStatus: "inNotice",
-                    createdAt: {
-                        [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
-                    }
-                },
-            })
+    //         // Count Recieved Question from Question Branch to Notice Office
+    //         const dailyRecievedQuestions = await Questions.count({
+    //             where: {
+    //                 questionSentStatus: "inNotice",
+    //                 createdAt: {
+    //                     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+    //                 }
+    //             },
+    //         })
 
-            // Count Send Motions from Notice To Motion Branch
-            const dailySendMotions = await Motions.count({
-                where: {
-                    motionSentStatus: "toMotion",
-                    createdAt: {
-                        [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
-                    }
-                },
+    //         // Count Send Motions from Notice To Motion Branch
+    //         const dailySendMotions = await Motions.count({
+    //             where: {
+    //                 motionSentStatus: "toMotion",
+    //                 createdAt: {
+    //                     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+    //                 }
+    //             },
 
-            })
+    //         })
 
-            // Count Recieved Question from Question Branch to Notice Office
-            const dailyRecievedMotions = await Motions.count({
-                where: {
-                    motionSentStatus: "inNotice",
-                    createdAt: {
-                        [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
-                    }
-                },
+    //         // Count Recieved Question from Question Branch to Notice Office
+    //         const dailyRecievedMotions = await Motions.count({
+    //             where: {
+    //                 motionSentStatus: "inNotice",
+    //                 createdAt: {
+    //                     [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`]
+    //                 }
+    //             },
 
-            })
-
-
-            // Monthly(Current Month) Total Send Questions
-            const totalSendQuestions = await Questions.count({
-                where: {
-                    questionSentStatus: "toQuestion",
-                    createdAt: {
-                        [Op.between]: [currentMonthStart, currentMonthEnd]
-                    }
-                },
-            })
-
-            // Monthly(Current Month) Total Received Questions
-            const totalReceivedQuestions = await Questions.count({
-                where: {
-                    questionSentStatus: { [Op.in]: ["inNotice", "inQuestion"] },
-                    createdAt: {
-                        [Op.between]: [currentMonthStart, currentMonthEnd]
-                    }
-                },
-            })
+    //         })
 
 
-            // Monthly(Current Month) Total Send Motions
-            const totalSendMotions = await Motions.count({
-                where: {
-                    motionSentStatus: "toMotion",
-                    createdAt: {
-                        [Op.between]: [currentMonthStart, currentMonthEnd]
-                    }
-                },
-            })
+    //         // Monthly(Current Month) Total Send Questions
+    //         const totalSendQuestions = await Questions.count({
+    //             where: {
+    //                 questionSentStatus: "toQuestion",
+    //                 createdAt: {
+    //                     [Op.between]: [currentMonthStart, currentMonthEnd]
+    //                 }
+    //             },
+    //         })
 
-            // Monthly(Current Month) Total Received Motions
-            const totalReceivedMotions = await Motions.count({
-                where: {
-                    motionSentStatus: { [Op.or]: ['inNotice', 'inMotion'] },
-                    createdAt: {
-                        [Op.between]: [currentMonthStart, currentMonthEnd]
-                    }
-                },
-            })
-
-
-            // Session Wise Questions Count (sent to Notice Branch)
-            const sessionWiseQuestions = await Questions.count({
-                where: {
-                    fkSessionId: {
-                        [Op.eq]: db.sequelize.literal('(SELECT MAX(id) FROM sessions)')
-                    },
-                    questionSentStatus: "inNotice"
-                }
-            });
-
-            // Session Wise Motions Count (sent to Notice Branch)
-            const sessionWiseMotions = await Motions.count({
-                where: {
-                    fkSessionId: {
-                        [Op.eq]: db.sequelize.literal('(SELECT MAX(id) FROM sessions)')
-                    },
-                    motionSentStatus: "inNotice"
-                }
-            });
+    //         // Monthly(Current Month) Total Received Questions
+    //         const totalReceivedQuestions = await Questions.count({
+    //             where: {
+    //                 questionSentStatus: { [Op.in]: ["inNotice", "inQuestion"] },
+    //                 createdAt: {
+    //                     [Op.between]: [currentMonthStart, currentMonthEnd]
+    //                 }
+    //             },
+    //         })
 
 
-            const monthlyQuestions = totalSendQuestions + totalReceivedQuestions
-            const monthlyMotions = totalSendMotions + totalReceivedMotions
+    //         // Monthly(Current Month) Total Send Motions
+    //         const totalSendMotions = await Motions.count({
+    //             where: {
+    //                 motionSentStatus: "toMotion",
+    //                 createdAt: {
+    //                     [Op.between]: [currentMonthStart, currentMonthEnd]
+    //                 }
+    //             },
+    //         })
 
-            const questions = { dailySendQuestions, dailyRecievedQuestions }
-            const motions = { dailySendMotions, dailyRecievedMotions, }
+    //         // Monthly(Current Month) Total Received Motions
+    //         const totalReceivedMotions = await Motions.count({
+    //             where: {
+    //                 motionSentStatus: { [Op.or]: ['inNotice', 'inMotion'] },
+    //                 createdAt: {
+    //                     [Op.between]: [currentMonthStart, currentMonthEnd]
+    //                 }
+    //             },
+    //         })
 
-            const stats = {
-                questions,
-                motions,
-                monthlyQuestions,
-                monthlyMotions,
-                sessionWiseQuestions,
-                sessionWiseMotions
-            };
 
-            return stats;
+    //         // Session Wise Questions Count (sent to Notice Branch)
+    //         const sessionWiseQuestions = await Questions.count({
+    //             where: {
+    //                 fkSessionId: {
+    //                     [Op.eq]: db.sequelize.literal('(SELECT MAX(id) FROM sessions)')
+    //                 },
+    //                 questionSentStatus: "inNotice"
+    //             }
+    //         });
 
-        } catch (error) {
-            throw new Error(error.message || "Error Fetching Stats");
-        }
+    //         // Session Wise Motions Count (sent to Notice Branch)
+    //         const sessionWiseMotions = await Motions.count({
+    //             where: {
+    //                 fkSessionId: {
+    //                     [Op.eq]: db.sequelize.literal('(SELECT MAX(id) FROM sessions)')
+    //                 },
+    //                 motionSentStatus: "inNotice"
+    //             }
+    //         });
+
+
+    //         const monthlyQuestions = totalSendQuestions + totalReceivedQuestions
+    //         const monthlyMotions = totalSendMotions + totalReceivedMotions
+
+    //         const questions = { dailySendQuestions, dailyRecievedQuestions }
+    //         const motions = { dailySendMotions, dailyRecievedMotions, }
+
+    //         const stats = {
+    //             questions,
+    //             motions,
+    //             monthlyQuestions,
+    //             monthlyMotions,
+    //             sessionWiseQuestions,
+    //             sessionWiseMotions
+    //         };
+
+    //         return stats;
+
+    //     } catch (error) {
+    //         throw new Error(error.message || "Error Fetching Stats");
+    //     }
+    // }
+
+    // Total And Individual Stats for Questions, Motions, Resolutions, and Legislative Bills
+getNoticeOfficeStats: async () => {
+    try {
+        // Get today's date in the format YYYY-MM-DD
+        const today = moment().format('YYYY-MM-DD');
+        const currentMonth = moment(today).format('MM');
+        const currentMonthStart = moment(`${moment().format('YYYY')}-${currentMonth}-01`).format('YYYY-MM-DD HH:mm:ss');
+        const currentMonthEnd = moment(`${moment().format('YYYY')}-${currentMonth}-${moment().daysInMonth()}`).format('YYYY-MM-DD HH:mm:ss');
+
+        // Questions Daily and Monthly Stats
+        const dailySendQuestions = await Questions.count({
+            where: {
+                questionSentStatus: "toQuestion",
+                createdAt: { [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`] }
+            },
+        });
+        const dailyRecievedQuestions = await Questions.count({
+            where: {
+                questionSentStatus: "inNotice",
+                createdAt: { [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`] }
+            },
+        });
+        const totalSendQuestions = await Questions.count({
+            where: {
+                questionSentStatus: "toQuestion",
+                createdAt: { [Op.between]: [currentMonthStart, currentMonthEnd] }
+            },
+        });
+        const totalReceivedQuestions = await Questions.count({
+            where: {
+                questionSentStatus: "inNotice",
+                //createdAt: { [Op.between]: [currentMonthStart, currentMonthEnd] }
+            },
+        });
+
+        // Motions Daily and Monthly Stats
+        const dailySendMotions = await Motions.count({
+            where: {
+                motionSentStatus: "toMotion",
+                createdAt: { [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`] }
+            },
+        });
+        const dailyRecievedMotions = await Motions.count({
+            where: {
+                motionSentStatus: "inNotice",
+                createdAt: { [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`] }
+            },
+        });
+        const totalSendMotions = await Motions.count({
+            where: {
+                motionSentStatus: "toMotion",
+                createdAt: { [Op.between]: [currentMonthStart, currentMonthEnd] }
+            },
+        });
+        const totalReceivedMotions = await Motions.count({
+            where: {
+                motionSentStatus: "inNotice",
+                //createdAt: { [Op.between]: [currentMonthStart, currentMonthEnd] }
+            },
+        });
+
+        // Resolutions Daily and Monthly Stats
+        const dailySendResolutions = await Resolutions.count({
+            where: {
+                resolutionSentStatus: "toResolution",
+                createdAt: { [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`] }
+            },
+        });
+        const dailyReceivedResolutions = await Resolutions.count({
+            where: {
+                resolutionSentStatus: "inNotice",
+                createdAt: { [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`] }
+            },
+        });
+        const totalSendResolutions = await Resolutions.count({
+            where: {
+                resolutionSentStatus: "toResolution",
+                createdAt: { [Op.between]: [currentMonthStart, currentMonthEnd] }
+            },
+        });
+        const totalReceivedResolutions = await Resolutions.count({
+            where: {
+                resolutionSentStatus: "inNotice",
+                //createdAt: { [Op.between]: [currentMonthStart, currentMonthEnd] }
+            },
+        });
+
+        // Legislative Bills Daily and Monthly Stats
+        const dailySendLegislativeBills = await legislativeBills.count({
+            where: {
+                legislativeSentStatus: "toLegislation",
+                createdAt: { [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`] }
+            },
+        });
+        const dailyReceivedLegislativeBills = await legislativeBills.count({
+            where: {
+                legislativeSentStatus: "inNotice",
+                createdAt: { [Op.between]: [`${today} 00:00:00`, `${today} 23:59:59`] }
+            },
+        });
+        const totalSendLegislativeBills = await legislativeBills.count({
+            where: {
+                legislativeSentStatus: "toLegislation",
+                createdAt: { [Op.between]: [currentMonthStart, currentMonthEnd] }
+            },
+        });
+        const totalReceivedLegislativeBills = await legislativeBills.count({
+            where: {
+                legislativeSentStatus: "inNotice",
+                //createdAt: { [Op.between]: [currentMonthStart, currentMonthEnd] }
+            },
+        });
+
+        // Prepare the response object
+        const stats = {
+            questions: { dailySendQuestions, dailyRecievedQuestions, totalSendQuestions, totalReceivedQuestions },
+            motions: { dailySendMotions, dailyRecievedMotions, totalSendMotions, totalReceivedMotions },
+            resolutions: { dailySendResolutions, dailyReceivedResolutions, totalSendResolutions, totalReceivedResolutions },
+            legislativeBills: { dailySendLegislativeBills, dailyReceivedLegislativeBills, totalSendLegislativeBills, totalReceivedLegislativeBills },
+        };
+
+        return stats;
+
+    } catch (error) {
+        throw new Error(error.message || "Error Fetching Stats");
     }
+}
+
 
 
 

@@ -79,6 +79,7 @@ module.exports = (sequelize, Sequelize) => {
         LegislativeBills.belongsTo(models.sessions, { foreignKey: 'fkSessionNo', as: 'session' });
         LegislativeBills.belongsTo(models.billStatuses, { foreignKey: 'fkBillStatus', as: 'billStatuses' });
         LegislativeBills.belongsTo(models.members, { foreignKey: 'web_id', targetKey: 'id', as: 'member' });
+        LegislativeBills.hasMany(models.legislationMovers, { foreignKey: 'fklegislationBillId', as: 'legislationMovers' });
 
     };
 

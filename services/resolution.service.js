@@ -91,12 +91,12 @@ const resolutionService = {
             // Link Resolutions (Clubbing)
             if (Array.isArray(linkedResolutionsArray)) {
                 for (const linkedResolutionId of linkedResolutionsArray) {
-                
-                        const resolutionClubData = {
-                            fkResolutionId: resolutionId,
-                            linkedResolutionId: linkedResolutionId
-                        };
-                        await resolutionClubs.create(resolutionClubData);
+
+                    const resolutionClubData = {
+                        fkResolutionId: resolutionId,
+                        linkedResolutionId: linkedResolutionId
+                    };
+                    await resolutionClubs.create(resolutionClubData);
                 }
             }
 
@@ -268,6 +268,106 @@ const resolutionService = {
             throw { message: error.message || "Error Fetching All resolutions!" };
         }
     },
+
+    // Retrieve Today's Resolutions with Pagination and Status
+    findTodayResolution: async (currentPage, pageSize, resolutionSentStatus, currentDate) => {
+        try {
+            const offset = currentPage * pageSize;
+            const limit = pageSize;
+
+            let whereClause = {
+                createdAt: {
+                    [Op.gte]: currentDate + " 00:00:00",  // Filter resolutions created from the start of today
+                    [Op.lte]: currentDate + " 23:59:59"   // Until the end of today
+                }
+            };
+
+            // Add resolutionSentStatus to the where clause only if it's provided
+            if (resolutionSentStatus) {
+                whereClause.resolutionSentStatus = resolutionSentStatus;
+            }
+
+            const { count, rows } = await resolution.findAndCountAll({
+                where: whereClause,
+                include: [
+                    {
+                        model: sessions,
+                        as: 'session',
+                        attributes: ['sessionName']
+                    },
+                    {
+                        model: resolutionStatus,
+                        as: 'resolutionStatus',
+                        attributes: ['resolutionStatus']
+                    },
+                    {
+                        model: resolutionMovers,
+                        as: 'resolutionMoversAssociation',
+                        attributes: ['fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'memberAssociation',
+                                attributes: ['memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
+                            }
+                        ]
+                    },
+                    {
+                        model: noticeOfficeDairies,
+                        as: 'noticeDiary',
+                        attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
+                    },
+                    {
+                        model: resolutionDiaries,
+                        as: 'resolutionDiaries',
+                        attributes: ['resolutionId', 'resolutionDiaryNo']
+                    },
+                    {
+                        model: Users,
+                        as: 'createdBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    },
+                    {
+                        model: Users,
+                        as: 'deletedBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    }
+                ],
+                offset,
+                limit,
+                order: [['id', 'DESC']]  // Order by latest
+            });
+
+            const totalPages = Math.ceil(count / pageSize);  // Calculate total pages
+            return { count, totalPages, resolution: rows };
+
+        } catch (error) {
+            throw { message: error.message || "Error fetching today's resolutions!" };
+        }
+    },
+
 
     // Retrieve Resolutions with Status 'Balloting'
     findAllBallotingResolutions: async (currentPage, pageSize) => {

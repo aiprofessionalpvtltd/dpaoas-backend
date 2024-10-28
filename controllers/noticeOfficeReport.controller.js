@@ -20,8 +20,8 @@ const noticeOfficeReportController = {
             if (Object.keys(req.query).length !== 0) {
                 const searchCriteria = req.query;
                 const noticeOfficeResults = await noticeOfficeReportService.getNoticeOfficeReports(searchCriteria);
-                const { questions, resolutions, motions } = noticeOfficeResults;
-                if (questions.length > 0 || resolutions.length > 0 || motions.length > 0) {
+                const { questions, resolutions, motions, legislativeBills } = noticeOfficeResults;
+                if (questions.length > 0 || resolutions.length > 0 || motions.length > 0 || legislativeBills > 0) {
                     logger.info("Notice Office Report Retrieved Successfully!");
                     return res.status(200).send({
                         success: true,

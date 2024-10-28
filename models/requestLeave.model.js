@@ -99,6 +99,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true
     },
+    requestleavedates: {
+      type: Sequelize.JSON, // Use JSON to store an array of dates
+      allowNull: true
+    },
     leave_oneday: {
       type: Sequelize.DATE,
       allowNull: true

@@ -373,6 +373,102 @@ const motionService = {
     }
   },
 
+  // Retrieve Today's Motions with Pagination and Status
+  findTodayMotion: async (currentPage, pageSize, motionSentStatus, currentDate) => {
+    try {
+        const offset = currentPage * pageSize;
+        const limit = pageSize;
+
+        let whereClause = {
+            createdAt: {
+                [Op.gte]: currentDate + " 00:00:00",  // Filter motions created from the start of today
+                [Op.lte]: currentDate + " 23:59:59"   // Until the end of today
+            }
+        };
+
+        // Add motionSentStatus to the where clause only if it's provided
+        if (motionSentStatus) {
+            whereClause.motionSentStatus = motionSentStatus;
+        }
+
+        const { count, rows } = await motions.findAndCountAll({
+            where: whereClause,
+            include: [
+              {
+                model: sessions,
+                as: "sessions",
+                attributes: ["sessionName", "id"],
+              },
+              {
+                model: motionStatuses,
+                as: "motionStatuses",
+                attributes: ["statusName", "id"],
+              },
+              {
+                model: noticeOfficeDairies,
+                as: "noticeOfficeDairies",
+                attributes: [
+                  "noticeOfficeDiaryNo",
+                  "noticeOfficeDiaryDate",
+                  "noticeOfficeDiaryTime",
+                  "businessType",
+                  "businessId",
+                ],
+              },
+              {
+                model: motionMovers,
+                as: "motionMovers",
+                attributes: ["fkMemberId", "id"],
+                include: [
+                  {
+                    model: db.members,
+                    as: "members",
+                    attributes: ["memberName", "id"],
+                  },
+                ],
+              },
+              {
+                model: motionStatuses,
+                as: "motionStatuses",
+                attributes: ["statusName", "id"],
+              },
+              {
+                model: motionMinistries,
+                as: "motionMinistries",
+                attributes: ["fkMinistryId", "id"],
+                include: [
+                  {
+                    model: ministries,
+                    as: "ministries",
+                    attributes: ["ministryName", "id"],
+                  },
+                ],
+              },
+            ],
+            offset,
+            limit,
+            distinct:true,
+            order: [['id', 'DESC']]  // Order by latest
+        });
+
+        rows.forEach((motion) => {
+          if (motion.file && motion.file.length) {
+            motion.file = motion.file.map((imageString) =>
+              JSON.parse(imageString)
+            );
+          } else {
+            motion.file = [];
+          }
+        });
+
+        const totalPages = Math.ceil(count / pageSize);  // Calculate total pages
+        return { count, totalPages, rows };
+
+    } catch (error) {
+        throw { message: error.message || "Error fetching today's motions!" };
+    }
+},
+
   getMotionTypes: async () => {
     try {
       const result = await makeRequest("GET", "api/motiontypes");
