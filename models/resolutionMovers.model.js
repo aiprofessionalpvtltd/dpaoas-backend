@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
     const resolutionMovers = sequelize.define("resolutionMovers", {
         id: {
-            type: Sequelize.INTEGER,
+            type: Sequelize.INTEGER, 
             primaryKey: true,
             autoIncrement: true,
         },
@@ -26,8 +26,17 @@ module.exports = (sequelize, Sequelize) => {
     });
 
     resolutionMovers.associate = function (models) {
-        resolutionMovers.belongsTo(models.resolutions, { foreignKey: 'fkResolutionId', as: 'resolution' });
-        resolutionMovers.belongsTo(models.members, { foreignKey: 'fkMemberId', as: 'member' });
+        // resolutionMovers.belongsTo(models.resolutions, { foreignKey: 'fkResolutionId', as: 'resolution' });
+        // resolutionMovers.belongsTo(models.members, { foreignKey: 'fkMemberId', as: 'member' });
+
+        resolutionMovers.belongsTo(models.resolutions, {
+            foreignKey: 'fkResolutionId',
+            as: 'resolutionAssociation'
+        });
+        resolutionMovers.belongsTo(models.members, {
+            foreignKey: 'fkMemberId',
+            as: 'memberAssociation'
+        });
     };
 
 
