@@ -2138,9 +2138,10 @@ const resolutionService = {
                 memberPosition
             } = queryParams;
 
-
+ 
             const query = {
-                resolutionActive: 'active' // Ensure only active resolutions are included
+                resolutionActive: 'active',
+                resolutionSentStatus: 'inResolution'
             };
 
             if (fkSessionNoFrom && fkSessionNoTo) {
@@ -2190,9 +2191,12 @@ const resolutionService = {
                 };
             }
 
-            if (resolutionMovers) {
-                query["$resolutionMoversAssociation.fkMemberId$"] = resolutionMovers;
-            }
+        //             // Modified these conditions
+        // if (resolutionMovers) {
+        //     query['$resolutionMovers.fkMemberId$'] = resolutionMovers;
+        // }
+
+
             if (resolutionSentStatus) {
                 query["$resolutionSentStatus$"] = resolutionSentStatus;
             }
@@ -2222,15 +2226,16 @@ const resolutionService = {
                     },
                     {
                         model: db.resolutionMovers,
-                        as: 'resolutionMoversAssociation',
-                        attributes: ['id', 'fkMemberId'],
+                        as: 'resolutionMovers',
+                        required: resolutionMovers ? true : false, // Make it required only if filtering by mover
+                        where: resolutionMovers ? { fkMemberId: resolutionMovers } : {},
                         include: [
                             {
                                 model: db.members,
                                 as: 'memberAssociation',
-                                attributes: ['id', 'memberName'],
-                            },
-                        ],
+                                attributes: ['id', 'memberName', 'governmentType']
+                            }
+                        ]
                     },
                     {
                         model: resolutionMinistries, // Include the resolutionMinistries model
@@ -2279,11 +2284,14 @@ const resolutionService = {
                 ],
                 distinct: true,
                 where: query,
+                
                 offset,
                 limit,
                 order: [
                     ['id', 'DESC']
                 ],
+                subQuery: false,
+                // logging: console.log
 
             });
 

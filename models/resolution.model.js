@@ -173,7 +173,7 @@ module.exports = (sequelize, Sequelize) => {
         resolutions.belongsTo(models.noticeOfficeDairies, { foreignKey: 'fkNoticeOfficeDairyId', as: 'noticeDiary' });
         resolutions.belongsTo(models.resolutionStatuses, { foreignKey: 'fkResolutionStatus', as: 'resolutionStatus' });
         resolutions.belongsTo(models.resolutionDiaries, { foreignKey: 'fkResolutionDairyId', as: 'resolutionDiaries' });
-        resolutions.hasMany(models.resolutionMovers, { foreignKey: 'fkResolutionId', as: 'resolutionMovers' });
+        //resolutions.hasMany(models.resolutionMovers, { foreignKey: 'fkResolutionId', as: 'resolutionMovers' });
         resolutions.hasMany(models.resolutionMinistries, { foreignKey: 'fkResolutionId', as: 'resolutionMinistries' });
         resolutions.belongsTo(models.users, { foreignKey: 'createdByUser' })
         resolutions.belongsTo(models.users, { foreignKey: 'deletedByUser' })
@@ -184,7 +184,7 @@ module.exports = (sequelize, Sequelize) => {
 
           // Handling both directions of linking
           resolutions.belongsToMany(models.resolutions, {
-            through: models.resolutionClubs,
+            through: models.resolutionClubs, 
             as: 'linkedResolutions', // Outgoing links (from this resolution to others)
             foreignKey: 'fkResolutionId',
             otherKey: 'linkedResolutionId',
@@ -196,6 +196,12 @@ module.exports = (sequelize, Sequelize) => {
             foreignKey: 'linkedResolutionId',
             otherKey: 'fkResolutionId',
         });
+
+            // ... other associations ...
+            resolutions.hasMany(models.resolutionMovers, {
+                foreignKey: 'fkResolutionId',
+                as: 'resolutionMovers'
+            });
     };
 
     return resolutions;
