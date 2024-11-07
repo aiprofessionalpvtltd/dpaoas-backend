@@ -2226,7 +2226,7 @@ const resolutionService = {
                     },
                     {
                         model: db.resolutionMovers,
-                        as: 'resolutionMovers',
+                        as: 'resolutionMoversAssociation',
                         required: resolutionMovers ? true : false, // Make it required only if filtering by mover
                         where: resolutionMovers ? { fkMemberId: resolutionMovers } : {},
                         include: [

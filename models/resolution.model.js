@@ -200,7 +200,7 @@ module.exports = (sequelize, Sequelize) => {
             // ... other associations ...
             resolutions.hasMany(models.resolutionMovers, {
                 foreignKey: 'fkResolutionId',
-                as: 'resolutionMovers'
+                as: 'resolutionMoversAssociation'
             });
     };
 
