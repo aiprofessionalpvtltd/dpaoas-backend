@@ -958,24 +958,52 @@ db.resolutions.belongsTo(db.resolutionDiaries, {
   foreignKey: "fkResolutionDairyId",
   as: "resolutionDiaries",
 });
+// db.resolutions.hasMany(db.resolutionMovers, {
+//   foreignKey: "fkResolutionId",
+//   as: "resolutionMoversAssociation",
+// });
+// db.resolutionMovers.belongsTo(db.resolutions, {
+//   foreignKey: "fkResolutionId",
+//   as: "resolutionAssociation",
+// });
+// db.resolutionMovers.belongsTo(db.members, {
+//   foreignKey: "fkMemberId",
+//   as: "memberAssociation",
+// });
+// db.members.belongsToMany(db.resolutions, {
+//   through: "resolutionMovers",
+//   foreignKey: "fkMemberId",
+//   otherKey: "fkResolutionId",
+//   as: "associatedResolutions",
+// });
 db.resolutions.hasMany(db.resolutionMovers, {
-  foreignKey: "fkResolutionId",
-  as: "resolutionMoversAssociation",
+  foreignKey: 'fkResolutionId',
+  as: 'resolutionMovers'
 });
+
+// ResolutionMovers to Resolution (many-to-one)
 db.resolutionMovers.belongsTo(db.resolutions, {
-  foreignKey: "fkResolutionId",
-  as: "resolutionAssociation",
+  foreignKey: 'fkResolutionId',
+  as: 'resolution'
 });
+
+// ResolutionMovers to Members (many-to-one)
 db.resolutionMovers.belongsTo(db.members, {
-  foreignKey: "fkMemberId",
-  as: "memberAssociation",
+  foreignKey: 'fkMemberId',
+  as: 'memberAssociation'
 });
-db.members.belongsToMany(db.resolutions, {
-  through: "resolutionMovers",
-  foreignKey: "fkMemberId",
-  otherKey: "fkResolutionId",
-  as: "associatedResolutions",
+
+// Members to ResolutionMovers (one-to-many)
+db.members.hasMany(db.resolutionMovers, {
+  foreignKey: 'fkMemberId',
+  as: 'resolutionMovers'
 });
+
+
+
+
+
+
 db.resolutions.belongsTo(db.users, {
   as: "createdBy",
   foreignKey: "createdByUser",
