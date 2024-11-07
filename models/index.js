@@ -978,7 +978,7 @@ db.resolutions.belongsTo(db.resolutionDiaries, {
 // });
 db.resolutions.hasMany(db.resolutionMovers, {
   foreignKey: 'fkResolutionId',
-  as: 'resolutionMovers'
+  as: 'resolutionMoversAssociation'
 });
 
 // ResolutionMovers to Resolution (many-to-one)
