@@ -44,6 +44,9 @@ router.post("/login", users.loginUser);
 // isAuthenticated, checkPrivileges("View Users")
 router.get("/", users.findAllUsers);
 
+// Change Password
+router.post("/change-password", users.changePassword);
+
 // // Retrieve Single User
 // router.get("/:id", isAuthenticated, checkPrivileges(),  users.findSingleUser);
 

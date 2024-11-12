@@ -364,14 +364,26 @@ updateEmployee: async (employee, req) => {
     const t = await db.sequelize.transaction();
 
     try {
+      let hashedPasswordUser;
+      // Check if a new password is provided and hash it before updating
+      if (req.body.password) {
+        const saltRounds = 10;
+        hashedPasswordUser = await bcrypt.hash(req.body.password, saltRounds);
+      }
+
+      const userPayloadWithoutPassword = {
+        email: req.body.email,
+        fkRoleId: req.body.fkRoleId
+      };
+
       const userPayload = {
         email: req.body.email,
-        // password: req.body.password,
+        password: hashedPasswordUser,
         fkRoleId: req.body.fkRoleId
       };
 
       // Update the User
-      await db.users.update(userPayload, { where: { id: employee.fkUserId }, transaction: t });
+      await db.users.update(req.body.password ? userPayload : userPayloadWithoutPassword, { where: { id: employee.fkUserId }, transaction: t });
 
       const employeePayload = {
         firstName: req.body.firstName,
@@ -401,8 +413,6 @@ updateEmployee: async (employee, req) => {
     throw { message: error.message || "Error Updating Employee!" };
   }
 },
-
-
 
   // Delete the Employee
   deleteEmployee: async (employee) => {

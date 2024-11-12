@@ -129,6 +129,29 @@ const userController = {
     }
   },
 
+  changePassword: async (req, res) => {
+    try {
+      const { userId, currentPassword, newPassword } = req.body;
+
+      if (!userId || !currentPassword || !newPassword) {
+        throw { message: "Please provide userId, current password, and new password." };
+      }
+
+      // Call the service method to change the password
+      const result = await userService.changePassword(userId, currentPassword, newPassword);
+      return res.status(200).send({
+        success: true,
+        message: "Password changed successfully.",
+        data: result,
+      });
+    } catch (error) {
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
   // // Login's User
   // loginUser: async (req, res) => {
   //   const { email, password } = req.body;
