@@ -256,6 +256,7 @@ const casesService = {
                 paragraph: para.description,
                 createdBy: createdBy,
                 flags: para.references.map((ref) => ref.flag).join(","),
+                assignedTo: para?.assignedTo || null,
               },
               { transaction }
             );
@@ -1540,21 +1541,20 @@ const casesService = {
       if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
         const createdParas = await Promise.all(
           paragraphArray.map(async (para, index) => {
-            const correspondencesIds = para.references.map((ref) => ref.id);
-            console.log("para.references", para.references);
-
-            allCorrespondencesIds =
-              allCorrespondencesIds.concat(correspondencesIds);
-
+            const correspondencesIds = para?.references?.map((ref) => ref.id);
+            console.log("para.references", para);
+      
+            allCorrespondencesIds = allCorrespondencesIds.concat(correspondencesIds);
+      
             const updateData = {
               fkCorrespondenceIds: allCorrespondencesIds,
             };
-
+      
             await CaseNotes.update(updateData, {
               where: { id: caseNotesId },
               transaction,
             });
-
+      
             return await NoteParagraphs.create(
               {
                 fkCaseNoteId: caseNotesId,
@@ -1562,12 +1562,13 @@ const casesService = {
                 paragraph: para.description,
                 createdBy: para.createdBy,
                 flags: para.references.map((ref) => ref.flag).join(","),
+                assignedTo: para.assignedTo || null,
               },
               { transaction }
             );
           })
         );
-      }
+      }      
 
       await transaction.commit();
       return await CaseNotes.findByPk(caseNotesId);
@@ -2703,12 +2704,31 @@ const casesService = {
               },
             ],
           },
+          {
+            model: Users,
+            as: "createdByUser",
+            attributes: ["id"],
+            include: [
+              {
+                model: Employees,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+                include: [
+                  {
+                    model: Designations,
+                    as: "designations",
+                    attributes: ["id", "designationName"],
+                  },
+                ],
+              },
+            ],
+          },
         ],
       });
 
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
-        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt"],
+        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt", "assignedTo"],
         order: [["paragraphTitle", orderBy]],
         include: [
           {
@@ -2726,12 +2746,41 @@ const casesService = {
                     as: "designations",
                     attributes: ["id", "designationName"],
                   },
+                  {
+                    model: Branches, // Include the branches model here
+                    as: "branches", // Ensure this alias matches the association in your Employee model
+                    attributes: ["id", "branchName"], // Include relevant branch attributes
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: Users,
+            as: "assignedUser", // Use the correct alias here
+            attributes: ["id"],
+            include: [
+              {
+                model: Employees,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName", "userType"],
+                include: [
+                  {
+                    model: Designations,
+                    as: "designations",
+                    attributes: ["id", "designationName"],
+                  },
+                  {
+                    model: Branches, // Include the branches model here
+                    as: "branches", // Ensure this alias matches the association in your Employee model
+                    attributes: ["id", "branchName"], // Include relevant branch attributes
+                  },
                 ],
               },
             ],
           },
         ],
-      });
+      });      
 
       // Ensure validCorrespondenceIds and validFreshReceiptIds are arrays
       const validCorrespondenceIds = caseNotes.fkCorrespondenceIds;
@@ -2883,11 +2932,18 @@ const casesService = {
           references: references,
           createdBy: para.createdBy,
           createdAt: para.createdAt,
-          createdByUserDesignation: `${para.createdByUser.employee.designations.designationName}`,
+          createdByUserDesignation: `${para?.createdByUser?.employee?.designations?.designationName}`,
+          createdByUserBranch: para?.createdByUser?.employee?.branches?.branchName,
           createdByUser:
-            para.createdByUser.employee.firstName +
+            para?.createdByUser?.employee?.firstName +
             " " +
-            para.createdByUser.employee.lastName,
+            para?.createdByUser?.employee?.lastName,
+          assignedTo: para?.assignedTo || null,  
+          assignedToUser: para?.assignedUser?.employee?.firstName +
+          " " +
+          para?.assignedUser?.employee?.lastName,
+          assignedToUserDesignation: para?.assignedUser?.employee?.designations?.designationName,
+          assignedToUserBranch: para?.assignedUser?.employee?.branches?.branchName,
           isSave: true,
         };
       });
@@ -2905,6 +2961,7 @@ const casesService = {
       const response = {
         cases: cases,
         caseNoteId: caseNotes.id,
+        caseCreatedBy: cases?.createdByUser?.employee?.id,
         fkBranchId: caseNotes.fkBranchId,
         notingSubject: caseNotes.notingSubject,
         paragraphArray: uniqueParagraphArray,

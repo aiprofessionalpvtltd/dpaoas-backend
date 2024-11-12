@@ -29,6 +29,14 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.ENUM("active", "inactive"),
       defaultValue: "active",
     },
+    assignedTo: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
     createdBy: {
@@ -45,6 +53,10 @@ module.exports = (sequelize, Sequelize) => {
     NoteParagraphs.belongsTo(models.users, {
       foreignKey: "createdBy",
       as: "createdByUser",
+    });
+    NoteParagraphs.belongsTo(models.users, {
+      foreignKey: "assignedTo",
+      as: "assignedUser", // Add an alias to reference `assignedTo` relationship
     });
   };
 
