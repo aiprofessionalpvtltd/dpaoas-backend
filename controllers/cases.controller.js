@@ -662,6 +662,33 @@ const casesController = {
       });
     }
   },
+
+  assignCasesToHigherLevel : async (req, res) => {
+    try {
+      const { userId, branchId, attendanceEnum } = req.body;
+      const currentPage = parseInt(req.query.currentPage) || 0;
+      const pageSize = parseInt(req.query.pageSize) || 10;
+  
+      logger.info(`casesController: assignCasesToHigherLevel - UserId: ${userId}, BranchId: ${branchId}, Attendeance enum: ${attendanceEnum}`);
+  
+      const result = await casesService.assignCaseToHigherLevel(userId, branchId, attendanceEnum, currentPage, pageSize);
+      
+      logger.info('Cases assigned successfully to higher level');
+      return res.status(200).send({
+        success: true,
+        data: {
+          message: 'Cases assigned successfully to higher level',
+          ...result
+        }
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      });
+    }
+  }
 };
 
 module.exports = casesController;

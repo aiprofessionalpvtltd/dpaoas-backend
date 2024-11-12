@@ -349,6 +349,35 @@ const userService = {
     }
   },
 
+  // Change the password  
+  changePassword: async (userId, currentPassword, newPassword) => {
+  try {
+      // Fetch the user by ID
+      const user = await Users.findByPk(userId);
+      if (!user) {
+        throw { message: "User not found." };
+      }
+
+      // Compare the current password with the hashed password stored in the database
+      const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isPasswordValid) {
+        throw { message: "Current password is incorrect." };
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+      // Update the user's password
+      user.password = hashedNewPassword;
+      await user.save();
+
+      return { message: "Password updated successfully.", data: user };
+    } catch (error) {
+      throw { message: error.message || "Error changing password." };
+    }
+  },
+
    //Delete the User
         suspendUser: async (req) => {
         try {

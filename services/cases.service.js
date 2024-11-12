@@ -25,6 +25,8 @@ const CorrespondenceAttachments = db.correspondenceAttachments;
 const Op = db.Sequelize.Op;
 const logger = require("../common/winston");
 const { error } = require("../validation/userValidation");
+const util = require('util');
+
 
 const moment = require("moment-timezone");
 
@@ -256,6 +258,7 @@ const casesService = {
                 paragraph: para.description,
                 createdBy: createdBy,
                 flags: para.references.map((ref) => ref.flag).join(","),
+                assignedTo: para?.assignedTo || null,
               },
               { transaction }
             );
@@ -439,7 +442,7 @@ const casesService = {
             { createdAt: new Date(0), assignedTo: null }
           );
 
-         // console.log("latestRemark", latestRemark)
+          // console.log("latestRemark", latestRemark)
 
           // If there is a latest remark, check if the user is the one it's assigned to
           // Determine caseStatus based on assigned user
@@ -473,6 +476,7 @@ const casesService = {
               caseNoteId: section.id,
               id: caseData.id,
               status: section.status,
+              caseSubject: section.notingSubject,
               fkCaseId: section.fkCaseId,
               caseStatus: caseStatus, // Include caseStatus from CaseNotes
               createdAt: caseData.createdAt,
@@ -492,17 +496,17 @@ const casesService = {
         }
       });
 
-    // Filter only active cases
-    const activeCases = Object.values(casesByCaseId).filter(caseItem => caseItem.status === "active");
+      // Filter only active cases
+      const activeCases = Object.values(casesByCaseId).filter(caseItem => caseItem.status === "active");
 
-    // Convert to array and sort by fkCaseId in descending order
-    const aggregatedCases = activeCases.sort((a, b) => b.fkCaseId - a.fkCaseId);
+      // Convert to array and sort by fkCaseId in descending order
+      const aggregatedCases = activeCases.sort((a, b) => b.fkCaseId - a.fkCaseId);
 
-    const paginatedCases = aggregatedCases.slice(
-      currentPage * pageSize,
-      (currentPage + 1) * pageSize
-    );
-    const totalPages = Math.ceil(aggregatedCases.length / pageSize);
+      const paginatedCases = aggregatedCases.slice(
+        currentPage * pageSize,
+        (currentPage + 1) * pageSize
+      );
+      const totalPages = Math.ceil(aggregatedCases.length / pageSize);
 
 
       return {
@@ -666,7 +670,7 @@ const casesService = {
             caseStatus = "pending"; // Assigned to current user
             isVisible = true;
             isEditable = true;
-          } else if (parseInt(latestRemark.submittedBy) === parseInt(userId)  && section?.dataValues?.caseStatus !== "approved") {
+          } else if (parseInt(latestRemark.submittedBy) === parseInt(userId) && section?.dataValues?.caseStatus !== "approved") {
             caseStatus = "sent";
             isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
             isEditable = false;
@@ -867,7 +871,7 @@ const casesService = {
 
           if (parseInt(latestRemark.assignedTo) === parseInt(userId) && section?.dataValues?.caseStatus !== "approved") {
             status = "pending";
-          } else if (parseInt(latestRemark.submittedBy) === parseInt(userId)  && section?.dataValues?.caseStatus !== "approved") {
+          } else if (parseInt(latestRemark.submittedBy) === parseInt(userId) && section?.dataValues?.caseStatus !== "approved") {
             status = "sent";
             // isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
             isEditable = false;
@@ -1133,7 +1137,7 @@ const casesService = {
     pageSize
   ) => {
     try {
-    
+
       const allRelevantSections = await CaseNotes.findAll({
         where: { caseStatus: "approved", fkBranchId: branchId },
         include: [
@@ -1261,12 +1265,12 @@ const casesService = {
       allRelevantSections.forEach((section) => {
         const caseData = section.cases;
         const createdByUser = caseData.createdByUser;
-  
+
         if (userId) {
           const remarks = caseData.casesRemarks || [];
           const createdBy = parseInt(caseData.createdBy);
 
- 
+
           // Determine visibility and isEditable
           let isVisible = false;
           let isEditable = true;
@@ -1303,6 +1307,7 @@ const casesService = {
               casesByCaseId[caseData.id] = {
                 id: caseData.id,
                 fkCaseId: section.fkCaseId,
+                caseSubject: section.notingSubject,
                 caseStatus: section.caseStatus, // Include caseStatus from CaseNotes
                 createdAt: caseData.createdAt,
                 createdBy: caseData.createdBy,
@@ -1540,21 +1545,20 @@ const casesService = {
       if (Array.isArray(paragraphArray) && paragraphArray.length > 0) {
         const createdParas = await Promise.all(
           paragraphArray.map(async (para, index) => {
-            const correspondencesIds = para.references.map((ref) => ref.id);
-            console.log("para.references", para.references);
-
-            allCorrespondencesIds =
-              allCorrespondencesIds.concat(correspondencesIds);
-
+            const correspondencesIds = para?.references?.map((ref) => ref.id);
+            console.log("para.references", para);
+      
+            allCorrespondencesIds = allCorrespondencesIds.concat(correspondencesIds);
+      
             const updateData = {
               fkCorrespondenceIds: allCorrespondencesIds,
             };
-
+      
             await CaseNotes.update(updateData, {
               where: { id: caseNotesId },
               transaction,
             });
-
+      
             return await NoteParagraphs.create(
               {
                 fkCaseNoteId: caseNotesId,
@@ -1562,12 +1566,13 @@ const casesService = {
                 paragraph: para.description,
                 createdBy: para.createdBy,
                 flags: para.references.map((ref) => ref.flag).join(","),
+                assignedTo: para.assignedTo || null,
               },
               { transaction }
             );
           })
         );
-      }
+      }      
 
       await transaction.commit();
       return await CaseNotes.findByPk(caseNotesId);
@@ -1599,12 +1604,30 @@ const casesService = {
   // Assign Case
   assignCase: async (fileId, caseId, files, req) => {
     try {
-      const sharedDesignations = [
-        "Superintendent",
-        "IT Assistant",
-        "Sub Assistant",
-        "Junior Assistant",
-      ];
+      // // Check if `paraId` is provided
+      // if (!req.paraId) {
+      //   throw new Error("Missing paraId in request payload.");
+      // }
+
+      // // Retrieve the noteParagraph based on paraId
+      // const noteParagraph = await NoteParagraphs.findOne({
+      //   where: { id: req.paraId },
+      // });
+
+      // if (!noteParagraph) {
+      //   throw new Error("Paragraph not found for the provided paraId.");
+      // }
+
+      // // Update the assignedTo field in the found noteParagraph
+      // await noteParagraph.update({
+      //   assignedTo: req.assignedTo,
+      // });
+      // // const sharedDesignations = [
+      // //   "Superintendent",
+      // //   "IT Assistant",
+      // //   "Sub Assistant",
+      // //   "Junior Assistant",
+      // // ];
 
       // Retrieve the employee details for the user who is submitting the case
       const employee = await Employees.findOne({
@@ -1712,6 +1735,12 @@ const casesService = {
         fkFileId: fileId,
         fkCaseId: caseId,
       });
+
+      console.log("cases idd ------", caseId)
+      await CaseNotes.update(
+        { caseStatus: "pending" },
+        { where: { fkCaseId: caseId } }
+      );
 
       // if (files && files.length > 0) {
       //     // await FileSignatures.destroy({ where: {fkUserId : req.submittedBy}})
@@ -2703,12 +2732,31 @@ const casesService = {
               },
             ],
           },
+          {
+            model: Users,
+            as: "createdByUser",
+            attributes: ["id"],
+            include: [
+              {
+                model: Employees,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+                include: [
+                  {
+                    model: Designations,
+                    as: "designations",
+                    attributes: ["id", "designationName"],
+                  },
+                ],
+              },
+            ],
+          },
         ],
       });
 
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
-        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt"],
+        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt", "assignedTo"],
         order: [["paragraphTitle", orderBy]],
         include: [
           {
@@ -2726,12 +2774,65 @@ const casesService = {
                     as: "designations",
                     attributes: ["id", "designationName"],
                   },
+                  {
+                    model: Branches, // Include the branches model here
+                    as: "branches", // Ensure this alias matches the association in your Employee model
+                    attributes: ["id", "branchName"], // Include relevant branch attributes
+                  },
                 ],
               },
             ],
           },
+          {
+            model: Users,
+            as: "assignedUser", // Use the correct alias here
+            attributes: ["id"],
+            include: [
+              {
+                model: Employees,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName", "userType"],
+                include: [
+                  {
+                    model: Designations,
+                    as: "designations",
+                    attributes: ["id", "designationName"],
+                  },
+                  {
+                    model: Branches, // Include the branches model here
+                    as: "branches", // Ensure this alias matches the association in your Employee model
+                    attributes: ["id", "branchName"], // Include relevant branch attributes
+                  },
+                ],
+              },
+            ],
+          },
+          // {
+          //   model: Users,
+          //   as: "assignedUser",
+          //   attributes: ["id"],
+          //   include: [
+          //     {
+          //       model: Employees,
+          //       as: "employee",
+          //       attributes: ["id", "firstName", "lastName", "userType"],
+          //       include: [
+          //         {
+          //           model: Designations,
+          //           as: "designations",
+          //           attributes: ["id", "designationName"],
+          //         },
+          //         {
+          //           model: Branches,
+          //           as: "branches",
+          //           attributes: ["id", "branchName"],
+          //         },
+          //       ],
+          //     },
+          //   ],
+          // },
         ],
-      });
+      });      
 
       // Ensure validCorrespondenceIds and validFreshReceiptIds are arrays
       const validCorrespondenceIds = caseNotes.fkCorrespondenceIds;
@@ -2883,11 +2984,18 @@ const casesService = {
           references: references,
           createdBy: para.createdBy,
           createdAt: para.createdAt,
-          createdByUserDesignation: `${para.createdByUser.employee.designations.designationName}`,
+          createdByUserDesignation: `${para?.createdByUser?.employee?.designations?.designationName}`,
+          createdByUserBranch: para?.createdByUser?.employee?.branches?.branchName,
           createdByUser:
-            para.createdByUser.employee.firstName +
+            para?.createdByUser?.employee?.firstName +
             " " +
-            para.createdByUser.employee.lastName,
+            para?.createdByUser?.employee?.lastName,
+          assignedTo: para?.assignedTo || null,  
+          assignedToUser: para?.assignedUser?.employee?.firstName +
+          " " +
+          para?.assignedUser?.employee?.lastName,
+          assignedToUserDesignation: para?.assignedUser?.employee?.designations?.designationName,
+          assignedToUserBranch: para?.assignedUser?.employee?.branches?.branchName,
           isSave: true,
         };
       });
@@ -2905,6 +3013,7 @@ const casesService = {
       const response = {
         cases: cases,
         caseNoteId: caseNotes.id,
+        caseCreatedBy: cases?.createdByUser?.employee?.id,
         fkBranchId: caseNotes.fkBranchId,
         notingSubject: caseNotes.notingSubject,
         paragraphArray: uniqueParagraphArray,
@@ -3109,6 +3218,11 @@ const casesService = {
               attributes: ["designationName"],
               where: { designationName: { [Op.in]: branchHierarchy } },
             },
+            {
+              model: Users,
+              as: "users", // Specify the alias 'users' to match the association in the Employee model
+              attributes: ["id", "email", "userStatus", "attendance_status"],
+            },
           ],
           where: { fkBranchId: userBranchId },
         });
@@ -3133,6 +3247,11 @@ const casesService = {
               as: "designations",
               attributes: ["id", "designationName"],
               where: { designationName: { [Op.in]: branchHierarchy } },
+            },
+            {
+              model: Users,
+              as: "users", // Specify the alias 'users' to match the association in the Employee model
+              attributes: ["id", "email", "userStatus", "attendance_status"],
             },
           ],
           where: { fkBranchId: userBranchId },
@@ -3164,6 +3283,7 @@ const casesService = {
         .map((employee) => ({
           ...employee.dataValues,
           color: designationColorMap[employee.designations.designationName],
+          // userInfo: employee.users.attendance_status,
         }))
         .sort((a, b) => {
           const positionA = branchHierarchy.indexOf(
@@ -3356,6 +3476,370 @@ const casesService = {
       return caseNote;
     } catch (error) {
       throw new Error(error.message || 'Error Deleting Case');
+    }
+  },
+
+  assignCaseToHigherLevel: async (
+    userId,
+    branchId,
+    attendanceEnum,
+    currentPage = 0,
+    pageSize = 10
+  ) => {
+    try {
+      console.log("service file");
+
+
+      // Step 1: Retrieve branch name by branchId from the branches table
+      const branch = await db.branches.findOne({
+        where: { id: branchId },
+        attributes: ["branchName"],
+      });
+
+      if (!branch) {
+        throw new Error("Branch not found for the specified branchId");
+      }
+
+      const branchName = branch.branchName;
+      console.log("Branch Name:", branchName);
+
+      // Step 2: Fetch the branch hierarchy using the branch name
+      const branchHierarchyData = await db.branchHierarchies.findOne({
+        where: { branchName },
+        attributes: ["branchHierarchy"],
+      });
+
+      if (!branchHierarchyData || !branchHierarchyData.branchHierarchy) {
+        throw new Error(
+          "Branch hierarchy not found for the specified branch name"
+        );
+      }
+
+      const branchHierarchy = branchHierarchyData.branchHierarchy;
+      console.log("Dynamic branch hierarchy:", branchHierarchy);
+
+      // Step 3: Get current user data, including their designation
+      const currentUser = await Users.findOne({
+        where: { id: userId },
+        include: [
+          {
+            model: Employees,
+            as: "employee",
+            include: [
+              {
+                model: Designations,
+                as: "designations",
+                attributes: ["id", "designationName"],
+              },
+            ],
+          },
+        ],
+      });
+
+      if (!currentUser) throw new Error("User not found");
+
+      // Check if the attendance status is 'PRESENT'
+      if (attendanceEnum === "PRESENT") {
+        // Update attendance status and return immediately
+        await currentUser.update({ attendance_status: attendanceEnum });
+        console.log("Updated attendance for user", userId);
+        return {
+          success: true,
+          message: "Attendance status updated to PRESENT.",
+        };
+      }
+
+      // Update attendance status
+      await currentUser.update({ attendance_status: attendanceEnum });
+      console.log("Updated attendance for user", userId);
+
+      const allPendingSections = await CaseNotes.findAll({
+        where: {
+          caseStatus: "pending"
+        },
+        include: [
+          {
+            model: Cases,
+            as: "cases",
+            required: true,
+            attributes: [
+              "id",
+              "fkFileId",
+              "isEditable",
+              "createdBy",
+              "createdAt",
+              "updatedAt",
+            ],
+            // // Conditionally apply the where clause if fileId is provided
+            // ...(fileId ? { where: { fkFileId: fileId } } : {}),
+            include: [
+              {
+                model: Files,
+                as: "files",
+                where: { fkBranchId: branchId },
+              },
+              {
+                model: FreshReceipts,
+                as: "freshReceipts",
+                include: [
+                  {
+                    model: FreshReceiptAttachments,
+                    as: "freshReceiptsAttachments",
+                    attributes: ["id", "filename"],
+                  },
+                ],
+              },
+              {
+                model: Users,
+                as: "createdByUser",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: Employees,
+                    as: "employee",
+                    attributes: ["id", "firstName", "lastName"],
+                    include: [
+                      {
+                        model: Designations,
+                        as: "designations",
+                        attributes: ["id", "designationName"],
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                model: FileRemarks,
+                as: "casesRemarks",
+                required: true,
+                attributes: [
+                  "id",
+                  "assignedTo",
+                  "submittedBy",
+                  "fkFileId",
+                  "fkCaseId",
+                  "comment",
+                  "priority",
+                  "CommentStatus",
+                  "createdAt",
+                  "updatedAt",
+                ],
+                where: {
+                  priority: "Immediate",
+                  assignedTo: userId, // Filter to get only cases assigned to the current user
+                },
+                include: [
+                  {
+                    model: Users,
+                    as: "submittedUser",
+                    attributes: ["id"],
+                    include: [
+                      {
+                        model: Employees,
+                        as: "employee",
+                        attributes: ["id", "firstName", "lastName"],
+                        include: [
+                          {
+                            model: Designations,
+                            as: "designations",
+                            attributes: ["id", "designationName"],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    model: Users,
+                    as: "assignedUser",
+                    attributes: ["id"],
+                    include: [
+                      {
+                        model: Employees,
+                        as: "employee",
+                        attributes: ["id", "firstName", "lastName"],
+                        include: [
+                          {
+                            model: Designations,
+                            as: "designations",
+                            attributes: ["id", "designationName"],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+                order: [["createdAt", "DESC"]],
+              },
+            ],
+          },
+        ],
+        attributes: [
+          "id",
+          "fkCaseId",
+          "caseStatus",
+          "notingSubject",
+          "fkCorrespondenceIds",
+          "createdAt",
+        ],
+        order: [["id", "DESC"]],
+      });
+
+      // console.log("pending cases:", allPendingSections);
+
+
+      // Get higher level employees
+      const higherLevelEmployees =
+        await casesService.getHigherLevelDesignations(userId);
+
+        console.log("High level employees", higherLevelEmployees)
+      // console.log("higherLevelEmployees:", higherLevelEmployees);
+
+      // Determine the current user's designation and position in hierarchy
+      const currentDesignation =
+        currentUser.employee.designations.designationName;
+      const currentLevelIndex = branchHierarchy.indexOf(currentDesignation);
+
+      console.log("curent currentDesignation: " + currentDesignation)
+
+      if (currentLevelIndex === -1 || currentLevelIndex === 0) {
+        throw new Error("No higher level found for this user's designation.");
+      }
+
+      // const nextHigherDesignation = branchHierarchy[currentLevelIndex - 1];
+      // console.log("nextHigherDesignation:", nextHigherDesignation);
+
+      // // Find an employee with the next higher designation
+      // const nextHigherEmployee = higherLevelEmployees.find(
+      //   (emp) => emp.designations.designationName === nextHigherDesignation
+      // );
+
+      // console.log("nextHigherEmployee", nextHigherEmployee)
+
+      // if (!nextHigherEmployee) {
+      //   throw new Error("No higher level employee found for assignment");
+      // }
+
+      // console.log("nextHigherEmployee:", nextHigherEmployee);
+
+      // New function to find next available present employee
+      const findNextPresentEmployee = async (startIndex) => {
+        for (let i = startIndex - 1; i >= 0; i--) {
+          const targetDesignation = branchHierarchy[i];
+          const employeeAtLevel = higherLevelEmployees.find(
+            (emp) => emp.designations.designationName === targetDesignation
+          );
+
+          if (employeeAtLevel) {
+            // Check if this employee is present
+            const employeeUser = await Users.findOne({
+              where: { 
+                id: employeeAtLevel.id,
+                attendance_status: 'PRESENT'
+              }
+            });
+
+            if (employeeUser) {
+              return employeeAtLevel;
+            }
+          }
+        }
+        return null;
+      };
+
+      // Find next present higher-level employee
+      const nextHigherEmployee = await findNextPresentEmployee(currentLevelIndex);
+
+      if (!nextHigherEmployee) {
+        throw new Error("No available higher level employee found for assignment");
+      }
+
+      console.log("nextHigherEmployee:", nextHigherEmployee);
+
+      // Assign cases to the next higher level employee
+      if (allPendingSections.length > 0) {
+        const assignedCases = await Promise.all(
+          allPendingSections.map(async (caseItem) => {
+            console.log("caseITem ----", caseItem)
+            const fileId = caseItem.cases?.files?.id;
+            const caseId = caseItem.fkCaseId;
+
+            // console.log("fileId----", fileId)
+            // console.log("caseId----", caseId)
+
+            if (!fileId || !caseId) {
+              throw new Error("File or case ID not found in pending sections data.");
+            }
+
+            // Check if there is already a remark for this case assigned to the current user
+            let existingRemark = await FileRemarks.findOne({
+              where: {
+                fkFileId: fileId,
+                fkCaseId: caseId,
+                assignedTo: userId, // Check if the case is currently assigned to the current user
+              },
+            });
+
+            // console.log("existing remarks", existingRemark)
+
+            let updatedRemark;
+            if (existingRemark) {
+              // Update the existing remark to assign it to the next higher level employee
+              updatedRemark = await existingRemark.update({
+                assignedTo: nextHigherEmployee.id,
+                submittedBy: userId, // Update submittedBy if needed
+                // comment: `Case escalated to ${nextHigherEmployee.designations.designationName}`,
+              });
+            }
+
+
+
+            return {
+              id: caseItem.id,
+              fkCaseId: caseItem.fkCaseId,
+              caseStatus: caseItem.caseStatus,
+              notingSubject: caseItem.notingSubject,
+              createdAt: caseItem.createdAt,
+              assignedTo: {
+                id: nextHigherEmployee.id,
+                designation: nextHigherEmployee.designations.designationName,
+              },
+              remarkId: updatedRemark.id,
+            };
+          })
+        );
+
+        // console.log("Assigned cases:", assignedCases);
+        // console.log("Next higher-level employee:", nextHigherEmployee);
+
+        // const response = {
+        //   success: true,
+        //   assignedCases,
+        //   assignedTo: {
+        //     id: nextHigherEmployee.id,
+        //     name: `${nextHigherEmployee.firstName} ${nextHigherEmployee.lastName}`,
+        //     designation: nextHigherEmployee.designations.designationName,
+        //   },
+        // };
+
+        // return response;
+        return {
+          success: true,
+          message: "Cases assigned to higher level employee.",
+          assignedCases,
+          assignedTo: {
+            id: nextHigherEmployee.id,
+            name: `${nextHigherEmployee.firstName} ${nextHigherEmployee.lastName}`,
+            designation: nextHigherEmployee.designations.designationName
+          }
+        };
+      }
+      else {
+        throw new Error(error.message || "There is no pending case for this user");
+      }
+
+
+    } catch (error) {
+      throw new Error(error.message || "Error assigning cases to higher level");
     }
   },
 };

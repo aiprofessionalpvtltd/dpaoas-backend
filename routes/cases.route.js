@@ -368,5 +368,8 @@ router.get(
 // Delete Case by caseId (mark as inactive)
 router.delete('/delete-case/:caseId', cases.deleteCaseById);
 
+//get pending cases and assign to next branch herarchy user
+router.post('/assign-to-higher-level', cases.assignCasesToHigherLevel);
+
 
 module.exports = router;
