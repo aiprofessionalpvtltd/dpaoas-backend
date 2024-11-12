@@ -47,6 +47,14 @@ module.exports = (sequelize, Sequelize) => {
         key: "id",
       },
     },
+    // assignedTo: {
+    //   type: Sequelize.INTEGER,
+    //   allowNull: true,
+    //   references: {
+    //     model: "users",
+    //     key: "id",
+    //   },
+    // },
   });
 
   NoteParagraphs.associate = function (models) {

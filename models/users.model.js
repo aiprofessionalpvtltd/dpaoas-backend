@@ -34,6 +34,12 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
 
+    attendance_status: {
+      type: Sequelize.ENUM('PRESENT', 'ABSENT' , 'LEAVE'),
+      defaultValue: 'PRESENT',
+      allowNull : true
+    },
+
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });
