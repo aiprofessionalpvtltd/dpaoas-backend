@@ -134,12 +134,11 @@ const casesController = {
         req.body
       );
 
-      console.log('====================================');
-      console.log('req.body.assignedTo',req.body.assignedTo);
-      console.log('====================================');
-
       if (req.body.assignedTo) {
         const io = getSocketIo();
+        console.log('====================================');
+        console.log('req.body.assignedTo',req.body.assignedTo);
+        console.log('====================================');
         // Generate a unique notificationId
         const uniqueNotificationId = uuidv4();
   
