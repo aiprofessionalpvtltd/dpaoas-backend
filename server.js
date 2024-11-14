@@ -3,14 +3,20 @@ const bodyParser = require("body-parser");
 const cors = require('cors')
 require('dotenv').config();
 const path = require('path');
+const http = require('http');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swaggerConfig');
 const serveIndex = require('serve-index')
 const appRoot = require('app-root-path')
-
+const { initSocket, getSocketIo } = require('./socket');
 
 const app = express();
 const ngrokUrl = 'https://324c-39-33-242-31.ngrok-free.app';
+
+// Initialize Socket.IO with the server
+const server = http.createServer(app);
+initSocket(server);
+
 //app.use(cors({ origin: ngrokUrl }));
 app.use(cors());
 // app.use((req, res, next) => {
@@ -91,7 +97,8 @@ const requestResearchRouter = require("./routes/researchServices.route")
 // LDU  Routes
 const lawActRoutes = require('./routes/LDU/lawAct.route');
 
-
+// Notifications Routes
+const notificationRouter = require("./routes/Notifications/casesNotification.route");
 
 //mobile-app
 const senatorAppRoute = require('./routes/senator-app.router')
@@ -287,6 +294,9 @@ app.use('/api/correspondence', correspondenceRouter)
 // LDU Routes
 app.use('/api/lawActs', lawActRoutes);
 
+// Notifications Routes
+app.use("/api/caseNotifications", notificationRouter);
+
 app.use(
   '/assets',
   express.static('pdfDownload'),
@@ -310,6 +320,11 @@ app.use('/api/years', yearsRouter);
 
 
 const PORT = process.env.LOCAL_PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
+
+// Example of emitting a notification (ensure this is after initialization)
+const io = getSocketIo();
+io.emit('test', { message: 'Server-side test message' });
