@@ -98,7 +98,9 @@ const requestResearchRouter = require("./routes/researchServices.route")
 const lawActRoutes = require('./routes/LDU/lawAct.route');
 
 // Notifications Routes
-const notificationRouter = require("./routes/Notifications/casesNotification.route");
+const casesNotificationRouter = require("./routes/Notifications/casesNotification.route");
+const frNotificationRouter = require("./routes/Notifications/frNotification.route");
+const approvedCaseNotificationRouter = require("./routes/Notifications/approvedCaseNotification.route");
 
 //mobile-app
 const senatorAppRoute = require('./routes/senator-app.router')
@@ -295,7 +297,9 @@ app.use('/api/correspondence', correspondenceRouter)
 app.use('/api/lawActs', lawActRoutes);
 
 // Notifications Routes
-app.use("/api/caseNotifications", notificationRouter);
+app.use("/api/caseNotifications", casesNotificationRouter);
+app.use("/api/frNotifications", frNotificationRouter);
+app.use("/api/approvedCaseNotifications", approvedCaseNotificationRouter);
 
 app.use(
   '/assets',

@@ -7,7 +7,7 @@ function initSocket(server) {
       origin: "*",
       credentials: true,
       defaultErrorHandler: false,
-      methods: ["GET", "POST"],
+      methods: ["GET", "POST", "PUT", "DELETE"],
     },
   });
 

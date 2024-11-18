@@ -1664,7 +1664,7 @@ const casesService = {
         { where: { fkCaseId: caseId } }
       );
   
-      console.log('Step 3: Fetching fileRemarks');
+      console.log('Step 3: Fetching fileRemarks', caseId);
   
       // Step 2: Extract fileRemarks from the fetched case
       const fileRemarks = caseDetails.casesRemarks;
@@ -1676,7 +1676,7 @@ const casesService = {
         ...fileRemarks.map((remark) => remark.submittedUser),
       ].filter(Boolean); // Filter out any null values
   
-      console.log('Step 3: Involved Users:', involvedUsers);
+      console.log('Step 3: Involved Users:');
   
       // Step 5: Remove duplicate user IDs and create a list of unique users
       const uniqueUserIds = Array.from(new Set(involvedUsers.map(user => user.id)));

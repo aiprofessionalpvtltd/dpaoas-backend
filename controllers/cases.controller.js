@@ -134,6 +134,8 @@ const casesController = {
         req.body
       );
 
+      console.log('====================================', req.body);
+
       if (req.body.assignedTo) {
         const io = getSocketIo();
         console.log('====================================');
