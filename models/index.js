@@ -389,6 +389,10 @@ db.eventCalenders = require("./eventCalenders.model.js")(
 
 // bill statuses
 db.billStatuses = require("./billStatuses.model.js")(sequelize, SequelizeMain);
+db.casesNotification = require("./Notifications/casesNotification.model.js")(sequelize, SequelizeMain);
+db.frNotification = require("./Notifications/FRNotification.model.js")(sequelize, SequelizeMain);
+db.approvedCaseNotification = require("./Notifications/ApprovedCaseNotification.model.js")(sequelize, SequelizeMain);
+
 // Manage Committee
 db.manageCommittees = require("./manageCommittees.model.js")(
   sequelize,
@@ -606,6 +610,22 @@ db.filesNotifications.belongsTo(db.cases, {
   foreignKey: "fkCaseId",
   as: "case",
 });
+
+db.casesNotification.belongsTo(db.users, {
+  foreignKey: "userId",
+  as: "users",
+});
+
+db.frNotification.belongsTo(db.users, {
+  foreignKey: "userId",
+  as: "users",
+});
+
+db.approvedCaseNotification.belongsTo(db.users, {
+  foreignKey: "userId",
+  as: "users",
+});
+
 db.fileSignatures.belongsTo(db.users, { as: "users", foreignKey: "fkUserId" });
 
 db.correspondences.belongsTo(db.branches, {

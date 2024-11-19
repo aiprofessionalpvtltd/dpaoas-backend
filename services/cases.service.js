@@ -25,10 +25,12 @@ const CorrespondenceAttachments = db.correspondenceAttachments;
 const Op = db.Sequelize.Op;
 const logger = require("../common/winston");
 const { error } = require("../validation/userValidation");
+const { v4: uuidv4 } = require('uuid');
 const util = require('util');
 
 
 const moment = require("moment-timezone");
+const { getSocketIo } = require("../socket");
 
 const casesService = {
   // Create Case For The File
@@ -1585,21 +1587,127 @@ const casesService = {
 
   updateCaseStatus: async (caseId, newStatus) => {
     try {
-      // Update status to 'approved'
+      console.log('Step 1: Fetching case details');
+  
+      // Step 1: Fetch case details
+      const caseDetails = await Cases.findOne({
+        where: { id: caseId },
+        include: [
+          {
+            model: FileRemarks,
+            as: "casesRemarks",
+            separate: true,
+            attributes: [
+              "id",
+              "assignedTo",
+              "submittedBy",
+              "fkFileId",
+              "fkCaseId",
+              "comment",
+              "priority",
+              "CommentStatus",
+              "createdAt",
+              "updatedAt",
+            ],
+            include: [
+              {
+                model: Users,
+                as: "submittedUser",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: Employees,
+                    as: "employee",
+                    attributes: ["id", "firstName", "lastName"],
+                    include: [
+                      {
+                        model: Designations,
+                        as: "designations",
+                        attributes: ["id", "designationName"],
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                model: Users,
+                as: "assignedUser",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: Employees,
+                    as: "employee",
+                    attributes: ["id", "firstName", "lastName"],
+                    include: [
+                      {
+                        model: Designations,
+                        as: "designations",
+                        attributes: ["id", "designationName"],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            order: [["createdAt", "DESC"]],
+          },
+        ],
+      });
+  
+      if (!caseDetails) {
+        throw new Error('Case not found');
+      }
+
+      // Step 2: Update the case status in the CaseNotes table
       const caseNoteData = await CaseNotes.update(
         { caseStatus: newStatus },
         { where: { fkCaseId: caseId } }
       );
-      console.log(caseNoteData);
+  
+      console.log('Step 3: Fetching fileRemarks', caseId);
+  
+      // Step 2: Extract fileRemarks from the fetched case
+      const fileRemarks = caseDetails.casesRemarks;
+      console.log('File Remarks:', JSON.stringify(fileRemarks, 0, 2));
+  
+      // Step 4: Extract user IDs from fileRemarks
+      const involvedUsers = [
+        ...fileRemarks.map((remark) => remark.assignedUser),
+        ...fileRemarks.map((remark) => remark.submittedUser),
+      ].filter(Boolean); // Filter out any null values
+  
+      console.log('Step 3: Involved Users:');
+  
+      // Step 5: Remove duplicate user IDs and create a list of unique users
+      const uniqueUserIds = Array.from(new Set(involvedUsers.map(user => user.id)));
+      console.log('Unique User IDs:', uniqueUserIds);
+  
+       // Step 6: Send notifications to these users
+      for (const user of uniqueUserIds) {
+      console.log('User IDs:', user);
+        const io = getSocketIo();
+        const uniqueNotificationId = uuidv4();
+
+        // Emit a socket notification for the involved users
+        io.emit(`notificationApprovedCase:${user}`, {
+          notificationId: uniqueNotificationId,
+          message: `Case ${caseId} is approved`,
+          data: caseDetails, // Pass case data for reference
+        });
+      }
+  
+      // Example return to signify successful processing
       return {
-        message: "Case status updated successfully.",
-        data: caseNoteData,
+        message: 'Case status updated successfully',
+        data: caseNoteData
       };
+  
     } catch (error) {
-      console.log(error);
-      throw new Error(error.message || "Error updating case status");
+      console.error('Error during case status update:', error);
+      throw new Error(error.message || 'Error updating case status');
     }
-  },
+  },  
+  
 
   // Assign Case
   assignCase: async (fileId, caseId, files, req) => {
