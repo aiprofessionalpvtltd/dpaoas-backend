@@ -2,6 +2,7 @@ const casesService = require("../services/cases.service");
 const logger = require("../common/winston");
 const { uploadFile } = require("../common/upload");
 const db = require("../models");
+const { getSocketIo } = require("../socket");
 const File = db.files;
 const newFiles = db.newFiles;
 const FreshReceipts = db.freshReceipts;
@@ -10,6 +11,7 @@ const FileDiaries = db.fileDiaries;
 const CaseAttachments = db.caseAttachments;
 const CaseNotes = db.caseNotes;
 const Op = db.Sequelize.Op;
+const { v4: uuidv4 } = require('uuid');
 
 const casesController = {
   // Create Case For The File
@@ -131,6 +133,25 @@ const casesController = {
         req.files,
         req.body
       );
+
+      console.log('====================================', req.body);
+
+      if (req.body.assignedTo) {
+        const io = getSocketIo();
+        console.log('====================================');
+        console.log('req.body.assignedTo',req.body.assignedTo);
+        console.log('====================================');
+        // Generate a unique notificationId
+        const uniqueNotificationId = uuidv4();
+  
+        // Emit a socket notification for the assigned user
+        io.emit(`notificationCases:${req.body.assignedTo}`, {
+          notificationId: uniqueNotificationId, // Include the unique notificationId
+          message: `You have a new assigned case ${caseId}`,
+          data: cases,
+        });
+      }
+
       return res.status(200).send({
         success: true,
         message: "Case Assigned Successfully!",
@@ -296,7 +317,6 @@ const casesController = {
 
   getPendingCases: async (req, res) => {
     try {
-      console.log("sdfsdfsdfsd")
       const userId = req.query.userId;
       const branchId = req.query.branchId;
       const currentPage = req.query.currentPage;

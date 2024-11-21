@@ -3,12 +3,14 @@ const freshReceiptService = require('../services/freshReceipt.service');
 const logger = require('../common/winston');
 const { uploadFile } = require('../common/upload');
 const db = require("../models");
+const { getSocketIo } = require('../socket');
 const File = db.files;
 const newFiles = db.newFiles
 const FreshReceipts = db.freshReceipts
 const FreshReceiptAttachments = db.freshReceiptsAttachments
 const FileDiaries = db.fileDiaries
 const Op = db.Sequelize.Op;
+const { v4: uuidv4 } = require('uuid');
 
 const freshReceiptController = {
 
@@ -334,6 +336,27 @@ const freshReceiptController = {
             const freshReceiptId = req.params.id;
             const fr = await freshReceiptService.assignFR(freshReceiptId, req.body);
             logger.info("Fresh Receipt(FR) Assigned Successfully!")
+
+            console.log('====================================');
+            console.log("req.body?.assignedTo",req.body?.assignedTo);
+            console.log('====================================');
+
+            console.log('====================================');
+            console.log("freshReceiptId",freshReceiptId);
+            console.log('====================================');
+            if (req.body?.assignedTo) {
+                const io = getSocketIo();
+                // Generate a unique notificationId
+                const uniqueNotificationId = uuidv4();
+
+                // Emit a socket notification for the assigned user
+                io.emit(`notificationFRs:${req.body.assignedTo}`, {
+                    notificationId: uniqueNotificationId, // Include the unique notificationId
+                    message: "You have a new assigned FR",
+                    data: fr, // Passing caseData as requested
+                });
+            }
+
             return res.status(200).send({
                 success: true,
                 message: "Fresh Receipt(FR) Assigned Successfully!",
