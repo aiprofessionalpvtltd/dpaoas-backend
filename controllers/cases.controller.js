@@ -174,11 +174,13 @@ const casesController = {
       );
       const fileId = req.query.fileId;
       const userId = req.query.userId;
+      const branchId = req.query.branchId;
       const currentPage = req.query.currentPage;
       const pageSize = req.query.pageSize;
       const { count, totalPages, cases } = await casesService.getCasesByFileId(
         fileId,
         userId,
+        branchId,
         currentPage,
         pageSize
       );
@@ -319,12 +321,14 @@ const casesController = {
     try {
       const userId = req.query.userId;
       const branchId = req.query.branchId;
+      const branches = req.query.branches?.split(",").map(Number);
       const currentPage = req.query.currentPage;
       const pageSize = req.query.pageSize;
       const { cases, count, totalPages } =
         await casesService.getPendingCases(
           userId,
           branchId,
+          branches,
           currentPage,
           pageSize
         );
@@ -507,7 +511,8 @@ const casesController = {
         )}`
       );
       const userId = req.params.id;
-      const cases = await casesService.getLowerLevelDesignations(userId);
+      const branchName = req.query.branchName;
+      const cases = await casesService.getLowerLevelDesignations(userId, branchName);
       logger.info("Employees Retrieved Successfully!");
       return res.status(200).send({
         success: true,
@@ -532,7 +537,8 @@ const casesController = {
         )}`
       );
       const userId = req.params.id;
-      const cases = await casesService.getHigherLevelDesignations(userId);
+      const branchName = req.query.branchName;
+      const cases = await casesService.getHigherLevelDesignations(userId, branchName);
       logger.info("Employees Retrieved Successfully!");
       return res.status(200).send({
         success: true,
@@ -558,6 +564,30 @@ const casesController = {
       );
       const userId = req.params.id;
       const cases = await casesService.getBranchesByUserLogin(userId);
+      logger.info("Branches Retrieved Successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "Branches Retrieved Successfully!",
+        data: cases,
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  getBranchesByBranchId: async (req, res) => {
+    try {
+      logger.info(
+        `casesController: getBranchesByUserLogin id ${JSON.stringify(
+          req.params.id
+        )}`
+      );
+      const branchId = req.params.id;
+      const cases = await casesService.getBranchesByBranchId(branchId);
       logger.info("Branches Retrieved Successfully!");
       return res.status(200).send({
         success: true,

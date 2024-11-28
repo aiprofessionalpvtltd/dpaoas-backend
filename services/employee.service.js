@@ -188,6 +188,7 @@ const employeeService = {
         fkUserId: userId, // Set the foreign key to the User's ID
         fkDesignationId: req.fkDesignationId,
         fkBranchId: req.fkBranchId,
+        fkMultiBranchId: req.fkMultiBranchId || [],
         userType: req.userType || null,
         reportingTo: req.reportingTo || null,
       };
@@ -395,6 +396,7 @@ updateEmployee: async (employee, req) => {
         fileNumber: req.body.fileNumber,
         supervisor: req.body.supervisor,
         fkBranchId: req.body.fkBranchId,
+        fkMultiBranchId: req.body.fkMultiBranchId || [],
         fkDesignationId: req.body.fkDesignationId
       };
 

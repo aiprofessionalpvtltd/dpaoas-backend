@@ -10,15 +10,30 @@ const divisionsService = {
 
     // Create Division
     createDivision: async (req) => {
+        const transaction = await db.sequelize.transaction();
+    
         try {
-            // Create the Division and save it in the database
-            const division = await Divisions.create(req);
+            // Create the Division within a transaction
+            const division = await Divisions.create(req, { transaction });
+    
+            // Commit the transaction if successful
+            await transaction.commit();
+    
             return division;
         } catch (error) {
+            // Rollback the transaction in case of an error
+            if (transaction) await transaction.rollback();
+    
+            if (error.errors) {
+                error.errors.forEach(err => {
+                    console.error("Validation error:", err.message, "Field:", err.path, "Value:", err.value);
+                });
+            }
+            console.error("Error Creating Division:", error);
+    
             throw { message: error.message || "Error Creating Division!" };
-
         }
-    },
+    },    
 
     // Route to get group by division ID 
     groupByDivision: async (divisionId) => {

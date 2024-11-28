@@ -12,7 +12,7 @@ function initSocket(server) {
   });
 
   io.on('connection', (socket) => {
-    console.log('A user connected');
+    // console.log('A user connected');
 
     // Example event for testing
     socket.on('test', (data) => {
@@ -20,7 +20,7 @@ function initSocket(server) {
     });
 
     socket.on('disconnect', () => {
-      console.log('A user disconnected');
+      // console.log('A user disconnected');
     });
   });
   return io;
