@@ -110,156 +110,149 @@ const userService = {
       console.log(err);
     }
   },
-  // Login's A User
-  loginUser: async (email, password, ipAddress) => {
+// Login's A User
+loginUser: async (email, password, ipAddress) => {
 
-    if (!email || !password) {
-      throw ({ message: 'Please provide both email and password!' })
+  if (!email || !password) {
+    throw ({ message: 'Please provide both email and password!' });
+  }
+
+  // Check if the user exists in the database
+  const user = await Users.findOne({ where: { email: email } });
+
+  // If user does not exist, throw an error
+  if (!user) {
+    throw ({ message: 'Invalid Email!' });
+  } else {
+
+    const employee = await Employee.findOne({
+      where: { fkUserId: user.id },
+      attributes: {
+        exclude: ['updatedAt', 'createdAt'],
+        include: [],
+      },
+    });
+
+    const branch = await Branches.findOne({
+      where: { id: employee.fkBranchId },
+      attributes: [
+        'id',
+        'branchName'
+      ],
+    })
+
+    // Fetching multiple branches based on fkMultiBranchId
+    let branches = [];
+    if (employee.fkMultiBranchId && Array.isArray(employee.fkMultiBranchId)) {
+      branches = await Branches.findAll({
+        where: { id: employee.fkMultiBranchId }, // Using array condition
+        attributes: ['id', 'branchName'],
+      });
     }
-    // Check if the user exists in the database
-    const user = await Users.findOne({ where: { email: email } });
 
-    // If user does not exist, throw an error
-    if (!user) {
-      throw ({ message: 'Invalid Email!' });
-    }
-    else {
+    // Getting Role Name For That User
+    const role = await Roles.findOne({
+      where: { id: user.fkRoleId },
+      attributes: ['name'],
+    });
 
-      const employee = await Employee.findOne({
-        where: { fkUserId: user.id },
-        attributes: {
-          exclude: ['updatedAt', 'createdAt'],
-          include: [],
+    // Getting Department Name For That User
+    const department = await Departments.findOne({
+      where: { id: employee.fkDepartmentId },
+      attributes: ['id', 'departmentName'],
+    });
+
+    // Getting Designation Name For That User
+    const designation = await Designations.findOne({
+      where: { id: employee.fkDesignationId },
+      attributes: ['id', 'designationName'],
+    });
+
+    // Getting Permission Name For That Role Attached to a User      
+    const userPermissions = await RolesPermissions.findAll({
+      where: { roleId: user.fkRoleId },
+      include: [
+        {
+          model: Permissions,
+          as: 'PermissionsRoles',
+          attributes: ['name'],
+          include: [
+            {
+              model: Modules,
+              as: 'modules',
+              attributes: ['name'],
+            },
+          ],
         },
-      });
+      ],
+    });
 
+    // Aggregating permissions as before
+    const aggregatedPermissions = {};
+    userPermissions.forEach(rolesPermission => {
+      const permissionsRolesArray = rolesPermission.PermissionsRoles;
+      const moduleName = permissionsRolesArray.dataValues.modules.name;
+      const permissionName = permissionsRolesArray.dataValues.name;
 
-
-      // Getting Role Name For That User
-      const role = await Roles.findOne({
-        where: { id: user.fkRoleId },
-        attributes: [
-          'name'
-        ],
-
-      });
-
-      // Getting Department Name For That User
-      const department = await Departments.findOne({
-        where: { id: employee.fkDepartmentId },
-        attributes: [
-          'id',
-          'departmentName'
-        ],
-      })
-
-      // Getting Designation Name For That User
-      const designation = await Designations.findOne({
-        where: { id: employee.fkDesignationId },
-        attributes: [
-          'id',
-          'designationName'
-        ],
-      })
-
-      const branch = await Branches.findOne({
-        where: { id: employee.fkBranchId },
-        attributes: [
-          'id',
-          'branchName'
-        ],
-      })
-
-      // Getting Permission Name For That Role Attached to a User      
-      const userPermissions = await RolesPermissions.findAll({
-        where: { roleId: user.fkRoleId },
-        include: [
-          {
-            model: Permissions,
-            as: 'PermissionsRoles',
-            attributes: ['name'],
-            include: [
-              {
-                model: Modules,
-                as: 'modules',
-                attributes: ['name'],
-
-              },
-            ],
-          },
-        ],
-      });
-
-      // Now, aggregate the permissions by label
-      const aggregatedPermissions = {};
-      userPermissions.forEach(rolesPermission => {
-        const permissionsRolesArray = rolesPermission.PermissionsRoles;
-        const moduleName = permissionsRolesArray.dataValues.modules.name;
-        const permissionName = permissionsRolesArray.dataValues.name;
-        // Include all permissions for Super Admin
-        if (role && role.name === "Super Admin") {
+      // Include all permissions for Super Admin
+      if (role && role.name === "Super Admin") {
+        if (!aggregatedPermissions[moduleName]) {
+          aggregatedPermissions[moduleName] = [];
+        }
+        aggregatedPermissions[moduleName].push(permissionName);
+      } else {
+        // Exclude default permissions for other roles
+        if (!["Roles", "Departments", "Designations", "Employee"].includes(moduleName)) {
           if (!aggregatedPermissions[moduleName]) {
             aggregatedPermissions[moduleName] = [];
           }
           aggregatedPermissions[moduleName].push(permissionName);
-        } else {
-          // Exclude default permissions for other roles
-          if (!["Roles", "Departments", "Designations", "Employee"].includes(moduleName)) {
-            if (!aggregatedPermissions[moduleName]) {
-              aggregatedPermissions[moduleName] = [];
-            }
-            aggregatedPermissions[moduleName].push(permissionName);
-          }
-        }
-      });
-
-      const formattedPermissions = Object.keys(aggregatedPermissions).map(label => ({
-        label: label,
-        hasAccess: aggregatedPermissions[label]
-      }));
-
-      // Response For Login
-      const { ...employeeData } = employee.toJSON();
-      const userWithRolePermission = {
-        ...employeeData,
-        email,
-        role,
-        department,
-        designation,
-        branch
-
-      };
-
-      // Compare the provided password with the hashed password in the database
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-
-      if (isPasswordValid) {
-        // Successful login, reset attempts and update last attempt time
-        // user.loginAttempts = 3;
-        await user.save();
-        // Generate and return the authentication token on successful login
-        const token = await userService.generateAuthToken(user.id);
-        await UserSession.createSession(user, ipAddress, token, true);
-        return { token, user: userWithRolePermission, permissions: formattedPermissions };
-      } else {
-        // Handle login attempts and status updates for incorrect password
-        const check = await userService.handleLoginAttempt(user, false);
-
-
-        if (check === 'locked') {
-          await UserSession.createSession(user, ipAddress, null, false);
-          // throw ({ message: "Your account has been locked!" })
-          throw ({ message: "Invalid username or password" })
-        }
-        else {
-          await UserSession.createSession(user, ipAddress, null, false);
-
-          throw ({ message: 'Invalid Password!' })
         }
       }
-    }
+    });
 
-  },
+    const formattedPermissions = Object.keys(aggregatedPermissions).map(label => ({
+      label: label,
+      hasAccess: aggregatedPermissions[label],
+    }));
+
+    // Response For Login
+    const { ...employeeData } = employee.toJSON();
+    const userWithRolePermission = {
+      ...employeeData,
+      email,
+      role,
+      department,
+      designation,
+      branch,
+      branches, // Include multiple branches here
+    };
+
+    // Compare the provided password with the hashed password in the database
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (isPasswordValid) {
+      // Successful login, reset attempts and update last attempt time
+      await user.save();
+      // Generate and return the authentication token on successful login
+      const token = await userService.generateAuthToken(user.id);
+      await UserSession.createSession(user, ipAddress, token, true);
+      return { token, user: userWithRolePermission, permissions: formattedPermissions };
+    } else {
+      // Handle login attempts and status updates for incorrect password
+      const check = await userService.handleLoginAttempt(user, false);
+
+      if (check === 'locked') {
+        await UserSession.createSession(user, ipAddress, null, false);
+        throw ({ message: "Invalid username or password" });
+      } else {
+        await UserSession.createSession(user, ipAddress, null, false);
+        throw ({ message: 'Invalid Password!' });
+      }
+    }
+  }
+},
+
 
   // Update the User 
   editUser: async (req) => {

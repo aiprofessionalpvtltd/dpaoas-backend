@@ -4,6 +4,27 @@ const freshReceipts = require('../controllers/freshReceipt.controller');
 const { uploadFile } = require('../common/upload');
 const { uploadMultipleFiles } = require('../common/upload');
 
+// Get Single FR
+/**
+ * @swagger
+ * /api/freshReceipt/getFR/{id}:
+ *   get:
+ *     summary: Retrieve Single FR
+ *     tags: [Fresh Receipts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Fresh Receipt Id
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
+router.get('/getFR/:id', freshReceipts.getSingleFR);
+
+router.get('/getAllPendingFRs', freshReceipts.getAllPendingFRs)
 
 router.post('/createExternal', freshReceipts.createExternalMinistry)
 
@@ -139,9 +160,9 @@ router.post('/uploadMultipleFRs/:id', uploadFile('freshReceipt') ,freshReceipts.
  *       '200':
  *         description: A successful response
  */
-router.get('/:id', freshReceipts.getAllFRs)
+router.get('/:id/:branchId', freshReceipts.getAllFRs)
 
-router.get('/getAllPendingFRs/:id', freshReceipts.getAllPendingFRs)
+
 
 
 
@@ -196,29 +217,9 @@ router.get('/ByBranch/:id', freshReceipts.getAllFRsByBranch)
  *       '200':
  *         description: A successful response
  */
-router.get('/frsHistory/:branchId/:userId', freshReceipts.getFRsHistory)
+router.get('/frsHistory/:branchId/:userId', freshReceipts.getFRsHistory);
 
-router.get('/frsUpperHerarchyHistory/:branchId/:userId', freshReceipts.getFRsUpperHerarchyHistory)
-
-// Get Single FR
-/**
- * @swagger
- * /api/freshReceipt/getFR/{id}:
- *   get:
- *     summary: Retrieve Single FR
- *     tags: [Fresh Receipts]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: Fresh Receipt Id
- *         schema:
- *           type: integer
- *     responses:
- *       '200':
- *         description: A successful response
- */
-router.get('/getFR/:id', freshReceipts.getSingleFR)
+router.get('/frsUpperHerarchyHistory/:branchId/:userId', freshReceipts.getFRsUpperHerarchyHistory);
 
 
 // Update FR

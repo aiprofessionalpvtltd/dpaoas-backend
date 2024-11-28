@@ -286,7 +286,7 @@ const casesService = {
   },
 
   // Get Cases By File Id
-  getCasesByFileId: async (fileId, userId, currentPage, pageSize) => {
+  getCasesByFileId: async (fileId, userId, branchId, currentPage, pageSize) => {
     try {
       const allRelevantSections = await CaseNotes.findAll({
         where: {
@@ -313,6 +313,7 @@ const casesService = {
               {
                 model: Files,
                 as: "files",
+                where: { fkBranchId: branchId },
               },
               {
                 model: FreshReceipts,
@@ -921,8 +922,11 @@ const casesService = {
   },
 
   // getPendingCases API
-  getPendingCases: async (userId, branchId, currentPage, pageSize, fileId = null) => {
+  getPendingCases: async (userId, branchId, branches, currentPage, pageSize, fileId = null) => {
     try {
+      console.log('====================================');
+      console.log(branches);
+      console.log('====================================');
       const allPendingSections = await CaseNotes.findAll({
         include: [
           {
@@ -943,6 +947,11 @@ const casesService = {
               {
                 model: Files,
                 as: "files",
+                where: {
+                  fkBranchId: {
+                    [Op.in]: branches, // Use the array of branch IDs
+                  },
+                },
               },
               {
                 model: FreshReceipts,
@@ -969,6 +978,11 @@ const casesService = {
                         model: Designations,
                         as: "designations",
                         attributes: ["id", "designationName"],
+                      },
+                      {
+                        model: Branches,
+                        as: "branches", // Ensure this alias matches your association
+                        attributes: ["id", "branchName"], // Include branch attributes you need
                       },
                     ],
                   },
@@ -1101,6 +1115,10 @@ const casesService = {
                 firstName: createdByUser.employee.firstName,
                 lastName: createdByUser.employee.lastName,
                 designation: createdByUser.employee.designations.designationName,
+              },
+              branch: {
+                id: createdByUser.employee.branches.id,
+                name: createdByUser.employee.branches.branchName,
               },
               isEditable: isEditable,
               fileData: section.cases.files,
@@ -3121,7 +3139,7 @@ const casesService = {
       const response = {
         cases: cases,
         caseNoteId: caseNotes.id,
-        caseCreatedBy: cases?.createdByUser?.employee?.id,
+        caseCreatedBy: cases?.createdByUser?.id,
         fkBranchId: caseNotes.fkBranchId,
         notingSubject: caseNotes.notingSubject,
         paragraphArray: uniqueParagraphArray,
@@ -3135,7 +3153,7 @@ const casesService = {
   },
 
   // Get Employees on Lower Level By User's Login
-  getLowerLevelDesignations: async (userId) => {
+  getLowerLevelDesignations: async (userId, branchName) => {
     try {
       // Find the user and their branch
       const userWithBranch = await Users.findOne({
@@ -3168,11 +3186,11 @@ const casesService = {
       let branchHierarchy;
 
       const branchHierarchyConfig = await BranchHierarchy.findOne({
-        where: { branchName: userBranchName },
+        where: { branchName: branchName },
       });
       branchHierarchy = branchHierarchyConfig.branchHierarchy;
 
-      if (specialBranches.includes(userBranchName)) {
+      if (specialBranches.includes(branchName)) {
         const noticeOfficeBranchId = await Branches.findOne({
           where: { branchName: "Notice Office" },
           attributes: ["id"],
@@ -3249,7 +3267,7 @@ const casesService = {
   },
 
   // Get Employees on Higher Level By User's Login
-  getHigherLevelDesignations: async (userId) => {
+  getHigherLevelDesignations: async (userId, branchName) => {
     try {
       // Find the user and their branch
       const userWithBranch = await Users.findOne({
@@ -3283,7 +3301,7 @@ const casesService = {
       let highLevelDesignations = [];
       let lowLevelDesignations = [];
 
-      if (specialBranches.includes(userBranchName)) {
+      if (specialBranches.includes(branchName)) {
         const noticeOfficeBranchId = await Branches.findOne({
           where: { branchName: "Notice Office" },
           attributes: ["id"],
@@ -3301,7 +3319,7 @@ const casesService = {
         // });
 
         const branchHierarchyConfig = await BranchHierarchy.findOne({
-          where: { branchName: userBranchName },
+          where: { branchName: branchName },
           attributes: [
             "id",
             "branchHierarchy",
@@ -3338,7 +3356,7 @@ const casesService = {
         employees = [...userBranchSuperintendent];
       } else {
         const branchHierarchyConfig = await BranchHierarchy.findOne({
-          where: { branchName: userBranchName },
+          where: { branchName: branchName },
         });
         if (branchHierarchyConfig) {
           branchHierarchy = branchHierarchyConfig.branchHierarchy;
@@ -3434,6 +3452,19 @@ const casesService = {
 
       const branchId = user.employee.branches.id;
       // Find all employees who belong to the same department
+      const branches = await Branches.findOne({
+        where: { id: branchId },
+      });
+
+      return branches;
+    } catch (error) {
+      console.error("Error Fetching Branches:", error.message);
+      throw new Error("Error Fetching Branches");
+    }
+  },
+
+  getBranchesByBranchId: async (branchId) => {
+    try {
       const branches = await Branches.findOne({
         where: { id: branchId },
       });

@@ -83,7 +83,8 @@ const freshReceiptController = {
             const currentPage = req.query.currentPage;
             const pageSize = req.query.pageSize;
             const userId = req.params.id;
-            const { count, totalPages, freshReceipts } = await freshReceiptService.getAllFRs(currentPage, pageSize, userId);
+            const branchId = req.params.branchId;
+            const { count, totalPages, freshReceipts } = await freshReceiptService.getAllFRs(currentPage, pageSize, userId, branchId);
             if (freshReceipts.length === 0) {
                 logger.info(`No Data Found On This Page!`);
                 return res.status(200).send({
@@ -116,29 +117,31 @@ const freshReceiptController = {
     // Get All Fresh Receipts (FR) On User Basis
     getAllPendingFRs: async (req, res) => {
         try {
-            logger.info(`freshReceiptController: getAllFRs query ${JSON.stringify(req.query)}`);
+            const userId = req.query.userId;
+            const branchId = req.query.branchId;
+            const branches = req.query.branches?.split(",").map(Number);
             const currentPage = req.query.currentPage;
             const pageSize = req.query.pageSize;
-            const userId = req.params.id;
-            const { count, totalPages, freshReceipts } = await freshReceiptService.getAllPendingFRs(currentPage, pageSize, userId);
+            console.log("userId, currentPage, pageSize", userId, currentPage, pageSize);
+    
+            if (isNaN(currentPage) || isNaN(pageSize) || isNaN(userId)) {
+                throw new Error("Invalid input. userId, currentPage, and pageSize must be integers.");
+            }
+    
+            const { count, totalPages, freshReceipts } =
+                await freshReceiptService.getAllPendingFRs(currentPage, pageSize, branchId, branches, userId);
+    
             if (freshReceipts.length === 0) {
-                logger.info(`No Data Found On This Page!`);
                 return res.status(200).send({
                     success: true,
                     message: "No Data Found On This Page!",
-                    data: []
+                    data: [],
                 });
-            }
-            else {
-                logger.info(`Fresh Receipts (FRs) Retrieved Successfully!`);
+            } else {
                 return res.status(200).send({
                     success: true,
                     message: "Fresh Receipts (FRs) Retrieved Successfully!",
-                    data: {
-                        freshReceipts,
-                        count,
-                        totalPages
-                    }
+                    data: { freshReceipts, count, totalPages },
                 });
             }
         } catch (error) {
@@ -149,6 +152,7 @@ const freshReceiptController = {
             });
         }
     },
+    
 
     // Retrieve External Ministry
     getAllExternalMinistries: async (req, res) => {
