@@ -2290,7 +2290,7 @@ const resolutionService = {
                 order: [
                     ['id', 'DESC']
                 ],
-                subQuery: false,
+                // subQuery: false,
                 // logging: console.log
 
             });
