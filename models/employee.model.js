@@ -85,6 +85,15 @@ module.exports = (sequelize, Sequelize) => {
         key: "id",
       },
     },
+    // Update fkMultiBranchId to accept an array
+    fkMultiBranchId: {
+      type: Sequelize.ARRAY(Sequelize.INTEGER), // Changed from INTEGER to an array of INTEGER
+      allowNull: true,
+      references: {
+        model: "branches",
+        key: "id",
+      },
+    },
     employeeStatus: {
       type: Sequelize.ENUM("active", "inactive"),
       defaultValue: "active",

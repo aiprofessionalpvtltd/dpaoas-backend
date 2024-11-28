@@ -355,6 +355,9 @@ router.get("/getHLEmployees/:id", cases.getHigherLevelDesignations);
  */
 router.get("/getBranch/:id", cases.getBranchesByUserLogin);
 
+// get branch by branchId
+router.get("/getBranchByBranchId/:id", cases.getBranchesByBranchId);
+
 
 // delete single Para With Correspondence
 router.get("/deleteSingleCorrespondence/", cases.deleteSingleCorrespondence);

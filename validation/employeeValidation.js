@@ -14,6 +14,7 @@ exports.createEmployeeValidation = (req, res, next) => {
         fkDepartmentId: Joi.number().optional(),
         fkDesignationId: Joi.number().required(),
         fkBranchId: Joi.number().required(),
+        fkMultiBranchId: Joi.array().items(Joi.number()).required(),
         userType: Joi.string().valid("Section User", "Section", "Officer").optional(),
         reportingTo: Joi.string().valid("Director", "Director General", "Senior Director General", "Secretary", "Chairman").optional()
     })
