@@ -1349,6 +1349,7 @@ const questionsService = {
         sentToBranch: req.sentToBranch,
         device: req.device,
         web_id: req.web_id,
+        replyDate: req.replyDate,
         description: req.description,
         submittedBy: req.submittedBy,
         questionActive: req.questionActive,
