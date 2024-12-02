@@ -29,8 +29,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // -----------------------------------------------------------------
 
-
 const isAuthenticated = require("./middleware/authToken");
+
 
 const swaggerMiddleware = require('./middleware/swagger'); // Path to your swaggerMiddleware file
 app.use('/', swaggerMiddleware);
@@ -87,6 +87,7 @@ const privateMemberBillRouter = require("./routes/privateMemberBills.route")
 const legislativeBillRouter = require("./routes/legislativeBills.route")
 const speechOnDemandRouter = require("./routes/speechOnDemands.route")
 const requestResearchRouter = require("./routes/researchServices.route")
+const translationRoutes = require("./routes/translationRemakrs.routes")
 
 // LDU  Routes
 const lawActRoutes = require('./routes/LDU/lawAct.route');
@@ -307,6 +308,11 @@ app.use('/api/flags', flagRoutes);
 
 const yearsRouter = require("./routes/years.route")
 app.use('/api/years', yearsRouter);
+
+app.use(bodyParser.json()); // OR app.use(express.json());
+
+// Translation 
+app.use("/api/translation"  ,isAuthenticated, translationRoutes);
 
 
 const PORT = process.env.LOCAL_PORT || 3000;

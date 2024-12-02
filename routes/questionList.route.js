@@ -358,4 +358,8 @@ router.put('/updateSupplementaryList/:id', questionList.updateSupplementaryList)
  */
 router.delete('/deleteSupplementaryList/:id', questionList.deleteSupplementaryList)
 
+
+// Get Question List by Qustion Id
+// router.get('/getByQuestionId/:id', questionList.getQuestionListByQuestionId);
+
 module.exports = router;

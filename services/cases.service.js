@@ -24,9 +24,8 @@ const Correspondences = db.correspondences;
 const CorrespondenceAttachments = db.correspondenceAttachments;
 const Op = db.Sequelize.Op;
 const logger = require("../common/winston");
-const { error } = require("../validation/userValidation");
-const util = require('util');
-
+const { error, message } = require("../validation/userValidation");
+const util = require("util");
 
 const moment = require("moment-timezone");
 
@@ -290,8 +289,8 @@ const casesService = {
         where: {
           [Op.and]: [
             { status: "active" },
-            { caseStatus: { [Op.or]: ["draft", "pending"] } }
-          ]
+            { caseStatus: { [Op.or]: ["draft", "pending"] } },
+          ],
         },
         include: [
           {
@@ -410,7 +409,7 @@ const casesService = {
           "notingSubject",
           "fkCorrespondenceIds",
           "createdAt",
-          "status"
+          "status",
         ],
       });
 
@@ -428,7 +427,11 @@ const casesService = {
         let latestRemark;
 
         // Initial visibility is only for the creator
-        if (parseInt(userId) === createdBy || parseInt(latestRemark?.submittedBy) === parseInt(userId)) { // i remove this one (=== createdBy)
+        if (
+          parseInt(userId) === createdBy ||
+          parseInt(latestRemark?.submittedBy) === parseInt(userId)
+        ) {
+          // i remove this one (=== createdBy)
           isVisible = true;
           isEditable = remarks.length === 0; // Creator can edit if no remarks
         }
@@ -450,11 +453,15 @@ const casesService = {
             caseStatus = "pending"; // Assigned to current user
             isVisible = true;
             isEditable = true;
-          } else if (parseInt(latestRemark.submittedBy) !== parseInt(userId) && parseInt(latestRemark.assignedTo) !== parseInt(userId)) {
-            caseStatus = "sent"
+          } else if (
+            parseInt(latestRemark.submittedBy) !== parseInt(userId) &&
+            parseInt(latestRemark.assignedTo) !== parseInt(userId)
+          ) {
+            caseStatus = "sent";
             // Hide case if the current user is not involved in the latest remark
-            if (parseInt(userId) !== createdBy) { // But still show if the user is the creator
-              caseStatus = "sent"
+            if (parseInt(userId) !== createdBy) {
+              // But still show if the user is the creator
+              caseStatus = "sent";
               isVisible = false;
               isEditable = false;
             }
@@ -485,7 +492,8 @@ const casesService = {
                 id: createdByUser.id,
                 firstName: createdByUser.employee.firstName,
                 lastName: createdByUser.employee.lastName,
-                designation: createdByUser.employee.designations.designationName,
+                designation:
+                  createdByUser.employee.designations.designationName,
               },
               isEditable: isEditable,
               fileData: section.cases.files,
@@ -497,17 +505,20 @@ const casesService = {
       });
 
       // Filter only active cases
-      const activeCases = Object.values(casesByCaseId).filter(caseItem => caseItem.status === "active");
+      const activeCases = Object.values(casesByCaseId).filter(
+        (caseItem) => caseItem.status === "active"
+      );
 
       // Convert to array and sort by fkCaseId in descending order
-      const aggregatedCases = activeCases.sort((a, b) => b.fkCaseId - a.fkCaseId);
+      const aggregatedCases = activeCases.sort(
+        (a, b) => b.fkCaseId - a.fkCaseId
+      );
 
       const paginatedCases = aggregatedCases.slice(
         currentPage * pageSize,
         (currentPage + 1) * pageSize
       );
       const totalPages = Math.ceil(aggregatedCases.length / pageSize);
-
 
       return {
         cases: paginatedCases,
@@ -666,11 +677,17 @@ const casesService = {
           );
 
           // Update visibility and editability based on remarks
-          if (parseInt(latestRemark.assignedTo) === parseInt(userId) && section?.dataValues?.caseStatus !== "approved") {
+          if (
+            parseInt(latestRemark.assignedTo) === parseInt(userId) &&
+            section?.dataValues?.caseStatus !== "approved"
+          ) {
             caseStatus = "pending"; // Assigned to current user
             isVisible = true;
             isEditable = true;
-          } else if (parseInt(latestRemark.submittedBy) === parseInt(userId) && section?.dataValues?.caseStatus !== "approved") {
+          } else if (
+            parseInt(latestRemark.submittedBy) === parseInt(userId) &&
+            section?.dataValues?.caseStatus !== "approved"
+          ) {
             caseStatus = "sent";
             isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
             isEditable = false;
@@ -693,7 +710,8 @@ const casesService = {
                 id: createdByUser.id,
                 firstName: createdByUser.employee.firstName,
                 lastName: createdByUser.employee.lastName,
-                designation: createdByUser.employee.designations.designationName,
+                designation:
+                  createdByUser.employee.designations.designationName,
               },
               isEditable: isEditable,
               fileData: section.cases.files,
@@ -720,7 +738,6 @@ const casesService = {
       throw new Error(error.message || "Error Fetching Cases");
     }
   },
-
 
   getAllCasesHistory: async (
     // fileId,
@@ -859,7 +876,6 @@ const casesService = {
         const remarks = caseData.casesRemarks || [];
         const createdByUser = caseData.createdByUser;
 
-
         // Determine the case status based on the assigned user
         let status = "draft";
         if (remarks.length > 0) {
@@ -869,14 +885,19 @@ const casesService = {
             { createdAt: new Date(0), assignedTo: null }
           );
 
-          if (parseInt(latestRemark.assignedTo) === parseInt(userId) && section?.dataValues?.caseStatus !== "approved") {
+          if (
+            parseInt(latestRemark.assignedTo) === parseInt(userId) &&
+            section?.dataValues?.caseStatus !== "approved"
+          ) {
             status = "pending";
-          } else if (parseInt(latestRemark.submittedBy) === parseInt(userId) && section?.dataValues?.caseStatus !== "approved") {
+          } else if (
+            parseInt(latestRemark.submittedBy) === parseInt(userId) &&
+            section?.dataValues?.caseStatus !== "approved"
+          ) {
             status = "sent";
             // isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
             isEditable = false;
-          }
-          else {
+          } else {
             status = section?.dataValues?.caseStatus;
           }
         }
@@ -919,7 +940,13 @@ const casesService = {
   },
 
   // getPendingCases API
-  getPendingCases: async (userId, branchId, currentPage, pageSize, fileId = null) => {
+  getPendingCases: async (
+    userId,
+    branchId,
+    currentPage,
+    pageSize,
+    fileId = null
+  ) => {
     try {
       const allPendingSections = await CaseNotes.findAll({
         include: [
@@ -1057,14 +1084,18 @@ const casesService = {
         let latestRemark;
 
         // Initial visibility and editability logic
-        if (parseInt(userId) === createdBy || parseInt(latestRemark?.submittedBy) === parseInt(userId)) {
+        if (
+          parseInt(userId) === createdBy ||
+          parseInt(latestRemark?.submittedBy) === parseInt(userId)
+        ) {
           isVisible = true;
           isEditable = remarks.length === 0;
         }
 
         if (remarks.length > 0) {
           latestRemark = remarks.reduce(
-            (latest, remark) => latest.createdAt > remark.createdAt ? latest : remark,
+            (latest, remark) =>
+              latest.createdAt > remark.createdAt ? latest : remark,
             { createdAt: new Date(0), assignedTo: null }
           );
 
@@ -1072,7 +1103,10 @@ const casesService = {
             caseStatus = "pending";
             isVisible = true;
             isEditable = true;
-          } else if (parseInt(latestRemark.submittedBy) !== parseInt(userId) && parseInt(latestRemark.assignedTo) !== parseInt(userId)) {
+          } else if (
+            parseInt(latestRemark.submittedBy) !== parseInt(userId) &&
+            parseInt(latestRemark.assignedTo) !== parseInt(userId)
+          ) {
             caseStatus = "sent";
             if (parseInt(userId) !== createdBy) {
               isVisible = false;
@@ -1086,7 +1120,11 @@ const casesService = {
         }
 
         // Add only if the case is pending and visible
-        if (caseStatus === "pending" && isVisible && section.dataValues.caseStatus !== "approved") {
+        if (
+          caseStatus === "pending" &&
+          isVisible &&
+          section.dataValues.caseStatus !== "approved"
+        ) {
           if (!pendingCasesByCaseId[caseData.id]) {
             pendingCasesByCaseId[caseData.id] = {
               id: caseData.id,
@@ -1098,7 +1136,8 @@ const casesService = {
                 id: createdByUser.id,
                 firstName: createdByUser.employee.firstName,
                 lastName: createdByUser.employee.lastName,
-                designation: createdByUser.employee.designations.designationName,
+                designation:
+                  createdByUser.employee.designations.designationName,
               },
               isEditable: isEditable,
               fileData: section.cases.files,
@@ -1126,8 +1165,6 @@ const casesService = {
     }
   },
 
-
-
   // Get Approved Case Hitory
   getApprovedCasesHistory: async (
     fileId,
@@ -1137,7 +1174,6 @@ const casesService = {
     pageSize
   ) => {
     try {
-
       const allRelevantSections = await CaseNotes.findAll({
         where: { caseStatus: "approved", fkBranchId: branchId },
         include: [
@@ -1270,7 +1306,6 @@ const casesService = {
           const remarks = caseData.casesRemarks || [];
           const createdBy = parseInt(caseData.createdBy);
 
-
           // Determine visibility and isEditable
           let isVisible = false;
           let isEditable = true;
@@ -1315,7 +1350,8 @@ const casesService = {
                   id: createdByUser.id,
                   firstName: createdByUser.employee.firstName,
                   lastName: createdByUser.employee.lastName,
-                  designation: createdByUser.employee.designations.designationName,
+                  designation:
+                    createdByUser.employee.designations.designationName,
                 },
                 fileData: caseData.files,
                 freshReceiptData: caseData.freshReceipts,
@@ -1547,18 +1583,19 @@ const casesService = {
           paragraphArray.map(async (para, index) => {
             const correspondencesIds = para?.references?.map((ref) => ref.id);
             console.log("para.references", para);
-      
-            allCorrespondencesIds = allCorrespondencesIds.concat(correspondencesIds);
-      
+
+            allCorrespondencesIds =
+              allCorrespondencesIds.concat(correspondencesIds);
+
             const updateData = {
               fkCorrespondenceIds: allCorrespondencesIds,
             };
-      
+
             await CaseNotes.update(updateData, {
               where: { id: caseNotesId },
               transaction,
             });
-      
+
             return await NoteParagraphs.create(
               {
                 fkCaseNoteId: caseNotesId,
@@ -1572,7 +1609,7 @@ const casesService = {
             );
           })
         );
-      }      
+      }
 
       await transaction.commit();
       return await CaseNotes.findByPk(caseNotesId);
@@ -1736,7 +1773,7 @@ const casesService = {
         fkCaseId: caseId,
       });
 
-      console.log("cases idd ------", caseId)
+      console.log("cases idd ------", caseId);
       await CaseNotes.update(
         { caseStatus: "pending" },
         { where: { fkCaseId: caseId } }
@@ -2606,7 +2643,7 @@ const casesService = {
   //   }
   // },
 
-  getSingleCaseDetails: async (fileId, caseId, orderBy = 'DESC') => {
+  getSingleCaseDetails: async (fileId, caseId, orderBy = "DESC") => {
     try {
       const caseNotes = await CaseNotes.findOne({
         where: {
@@ -2756,7 +2793,15 @@ const casesService = {
 
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
-        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt", "assignedTo"],
+        attributes: [
+          "id",
+          "paragraphTitle",
+          "paragraph",
+          "flags",
+          "createdBy",
+          "createdAt",
+          "assignedTo",
+        ],
         order: [["paragraphTitle", orderBy]],
         include: [
           {
@@ -2832,7 +2877,7 @@ const casesService = {
           //   ],
           // },
         ],
-      });      
+      });
 
       // Ensure validCorrespondenceIds and validFreshReceiptIds are arrays
       const validCorrespondenceIds = caseNotes.fkCorrespondenceIds;
@@ -2985,17 +3030,21 @@ const casesService = {
           createdBy: para.createdBy,
           createdAt: para.createdAt,
           createdByUserDesignation: `${para?.createdByUser?.employee?.designations?.designationName}`,
-          createdByUserBranch: para?.createdByUser?.employee?.branches?.branchName,
+          createdByUserBranch:
+            para?.createdByUser?.employee?.branches?.branchName,
           createdByUser:
             para?.createdByUser?.employee?.firstName +
             " " +
             para?.createdByUser?.employee?.lastName,
-          assignedTo: para?.assignedTo || null,  
-          assignedToUser: para?.assignedUser?.employee?.firstName +
-          " " +
-          para?.assignedUser?.employee?.lastName,
-          assignedToUserDesignation: para?.assignedUser?.employee?.designations?.designationName,
-          assignedToUserBranch: para?.assignedUser?.employee?.branches?.branchName,
+          assignedTo: para?.assignedTo || null,
+          assignedToUser:
+            para?.assignedUser?.employee?.firstName +
+            " " +
+            para?.assignedUser?.employee?.lastName,
+          assignedToUserDesignation:
+            para?.assignedUser?.employee?.designations?.designationName,
+          assignedToUserBranch:
+            para?.assignedUser?.employee?.branches?.branchName,
           isSave: true,
         };
       });
@@ -3462,7 +3511,7 @@ const casesService = {
     try {
       // Find the case note by caseId and update the status to 'inactive'
       const caseNote = await CaseNotes.findOne({
-        where: { id: caseId, status: 'active' },
+        where: { id: caseId, status: "active" },
       });
 
       if (!caseNote) {
@@ -3470,12 +3519,12 @@ const casesService = {
       }
 
       // Mark the case note as inactive
-      caseNote.status = 'inactive';
+      caseNote.status = "inactive";
       await caseNote.save();
 
       return caseNote;
     } catch (error) {
-      throw new Error(error.message || 'Error Deleting Case');
+      throw new Error(error.message || "Error Deleting Case");
     }
   },
 
@@ -3488,7 +3537,6 @@ const casesService = {
   ) => {
     try {
       console.log("service file");
-
 
       // Step 1: Retrieve branch name by branchId from the branches table
       const branch = await db.branches.findOne({
@@ -3555,7 +3603,7 @@ const casesService = {
 
       const allPendingSections = await CaseNotes.findAll({
         where: {
-          caseStatus: "pending"
+          caseStatus: "pending",
         },
         include: [
           {
@@ -3686,12 +3734,11 @@ const casesService = {
 
       // console.log("pending cases:", allPendingSections);
 
-
       // Get higher level employees
       const higherLevelEmployees =
         await casesService.getHigherLevelDesignations(userId);
 
-        console.log("High level employees", higherLevelEmployees)
+      console.log("High level employees", higherLevelEmployees);
       // console.log("higherLevelEmployees:", higherLevelEmployees);
 
       // Determine the current user's designation and position in hierarchy
@@ -3699,7 +3746,7 @@ const casesService = {
         currentUser.employee.designations.designationName;
       const currentLevelIndex = branchHierarchy.indexOf(currentDesignation);
 
-      console.log("curent currentDesignation: " + currentDesignation)
+      console.log("curent currentDesignation: " + currentDesignation);
 
       if (currentLevelIndex === -1 || currentLevelIndex === 0) {
         throw new Error("No higher level found for this user's designation.");
@@ -3732,10 +3779,10 @@ const casesService = {
           if (employeeAtLevel) {
             // Check if this employee is present
             const employeeUser = await Users.findOne({
-              where: { 
+              where: {
                 id: employeeAtLevel.id,
-                attendance_status: 'PRESENT'
-              }
+                attendance_status: "PRESENT",
+              },
             });
 
             if (employeeUser) {
@@ -3747,10 +3794,14 @@ const casesService = {
       };
 
       // Find next present higher-level employee
-      const nextHigherEmployee = await findNextPresentEmployee(currentLevelIndex);
+      const nextHigherEmployee = await findNextPresentEmployee(
+        currentLevelIndex
+      );
 
       if (!nextHigherEmployee) {
-        throw new Error("No available higher level employee found for assignment");
+        throw new Error(
+          "No available higher level employee found for assignment"
+        );
       }
 
       console.log("nextHigherEmployee:", nextHigherEmployee);
@@ -3759,7 +3810,7 @@ const casesService = {
       if (allPendingSections.length > 0) {
         const assignedCases = await Promise.all(
           allPendingSections.map(async (caseItem) => {
-            console.log("caseITem ----", caseItem)
+            console.log("caseITem ----", caseItem);
             const fileId = caseItem.cases?.files?.id;
             const caseId = caseItem.fkCaseId;
 
@@ -3767,7 +3818,9 @@ const casesService = {
             // console.log("caseId----", caseId)
 
             if (!fileId || !caseId) {
-              throw new Error("File or case ID not found in pending sections data.");
+              throw new Error(
+                "File or case ID not found in pending sections data."
+              );
             }
 
             // Check if there is already a remark for this case assigned to the current user
@@ -3790,8 +3843,6 @@ const casesService = {
                 // comment: `Case escalated to ${nextHigherEmployee.designations.designationName}`,
               });
             }
-
-
 
             return {
               id: caseItem.id,
@@ -3829,19 +3880,55 @@ const casesService = {
           assignedTo: {
             id: nextHigherEmployee.id,
             name: `${nextHigherEmployee.firstName} ${nextHigherEmployee.lastName}`,
-            designation: nextHigherEmployee.designations.designationName
-          }
+            designation: nextHigherEmployee.designations.designationName,
+          },
         };
+      } else {
+        throw new Error(
+          error.message || "There is no pending case for this user"
+        );
       }
-      else {
-        throw new Error(error.message || "There is no pending case for this user");
-      }
-
-
     } catch (error) {
       throw new Error(error.message || "Error assigning cases to higher level");
     }
   },
+
+  getAllStats: async (userId, branchId) => {
+    try {
+      const activeCases = await model.cases.count({
+        where: {
+          createdBy: userId,
+          branchId,
+          caseStatus: "active", 
+        },
+      });
+  
+      const pendingCases = await model.cases.count({
+        where: {
+          createdBy: userId,
+          branchId,
+          caseStatus: "pending", 
+        },
+      });
+  
+      const approvedCases = await model.cases.count({
+        where: {
+          createdBy: userId,
+          branchId,
+          caseStatus: "approved", 
+        },
+      });
+  
+      return {
+        activeCases,
+        pendingCases,
+        approvedCases,
+      };
+    } catch (error) {
+      throw new Error("Error fetching statistics: " + error.message);
+    }
+  },
+  
 };
 
 module.exports = casesService;

@@ -4,6 +4,7 @@ const questions = require('../controllers/questions.controller');
 //const { upload } = require("../middleware/questionMulter")
 const { questionValidation } = require('../validation/questionValidation')
 const { uploadFile } = require('../common/upload');
+const { sendTotranslation } = require('../services/questions.service');
 
 //get Questions By Status
 router.get("/questionsByStatus", questions.getQuestionsByStatus);
@@ -790,7 +791,36 @@ router.get('/getQuestionHistories/:id', questions.getQuestionHistories);
 router.put("/delete/:id", questions.deleteQuestion)
 
 
+/**
+ * @swagger
+ * /api/questions/sendToTranslation/{id}:
+ *   put:
+ *     summary: Update "questionSentStatus" to "toTranslation" of Question which is sent to Translation Branch
+ *     tags: [Questions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Question ID
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               translationSentDate:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
 
+router.put("/sendToTranslation/:id", questions.sendToTranslation);
+
+    
 
 
 

@@ -1504,6 +1504,33 @@ db.members.hasMany(db.questions, {
 db.legislationMovers.belongsTo(db.legislativeBills, { foreignKey: 'fklegislationBillId', as: 'legislativeBills' });
 db.legislationMovers.belongsTo(db.members, { foreignKey: 'fkMemberId', as: 'member' });
 db.legislativeBills.hasMany(db.legislationMovers, { foreignKey: 'fklegislationBillId', as: 'legislationMovers' });
+4
+
+
+//Translation Remarks 
+db.translationRemarks = require("./fileTranslationRemark.model")(sequelize, SequelizeMain);
+
+db.translationRemarks.belongsTo(db.users, {
+  foreignKey: "submittedBy",
+  as: "submittedUser",
+});
+
+db.translationRemarks.belongsTo(db.users, {
+  foreignKey: "assignedTo",
+  as: "assignedUser",
+});
+
+db.translationRemarks.belongsTo(db.questions, {
+  foreignKey: "fkQuestionId",
+  as: "question",
+});
+
+
+db.questions.hasMany(db.translationRemarks, {
+  as: "translationRemarks",
+  foreignKey: "fkQuestionId",
+});
+
 
 sequelize.sync();
 module.exports = db;

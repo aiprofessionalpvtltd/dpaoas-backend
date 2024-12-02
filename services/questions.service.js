@@ -32,8 +32,8 @@ const questionsService = {
       const fkMemberIdValue = req.fkMemberId
         ? req.fkMemberId
         : req.web_id
-          ? req.web_id
-          : null;
+        ? req.web_id
+        : null;
       const question = await Questions.create({
         fkSessionId: req.fkSessionId ? req.fkSessionId : null,
         questionCategory: req.questionCategory ? req.questionCategory : null,
@@ -175,7 +175,7 @@ const questionsService = {
                 model: db.ministries,
                 attributes: ["id", "ministryName"],
               },
-            ]
+            ],
           },
           {
             model: Groups,
@@ -296,7 +296,7 @@ const questionsService = {
                 model: db.ministries,
                 attributes: ["id", "ministryName"],
               },
-            ]
+            ],
           },
           {
             model: Groups,
@@ -327,7 +327,12 @@ const questionsService = {
   },
 
   // Retrieve Today's Questions in Question Branch
-  getTodaysQuestions: async (currentPage, pageSize, currentDate, questionSentStatus) => {
+  getTodaysQuestions: async (
+    currentPage,
+    pageSize,
+    currentDate,
+    questionSentStatus
+  ) => {
     try {
       const offset = currentPage * pageSize;
       const limit = pageSize;
@@ -337,8 +342,8 @@ const questionsService = {
           questionSentStatus: questionSentStatus,
           createdAt: {
             [Op.gte]: currentDate + " 00:00:00", // From start of the day
-            [Op.lte]: currentDate + " 23:59:59"  // Until the end of the day
-          }
+            [Op.lte]: currentDate + " 23:59:59", // Until the end of the day
+          },
         },
         include: [
           {
@@ -418,7 +423,7 @@ const questionsService = {
                 model: db.ministries,
                 attributes: ["id", "ministryName"],
               },
-            ]
+            ],
           },
           {
             model: Groups,
@@ -451,19 +456,15 @@ const questionsService = {
     }
   },
 
-
-
-
-
   getMemberWiseStatement: async (fromSession, toSession) => {
     try {
       // Step 1: Find the 'Admitted' status from the questionStatuses table
       const admittedStatus = await db.questionStatus.findOne({
-        where: { questionStatus: 'Admitted' }
+        where: { questionStatus: "Admitted" },
       });
 
       if (!admittedStatus) {
-        throw new Error('Admitted status not found');
+        throw new Error("Admitted status not found");
       }
 
       const admittedStatusId = admittedStatus.id;
@@ -471,10 +472,10 @@ const questionsService = {
       const sessions = await db.sessions.findAll({
         where: {
           id: {
-            [db.Sequelize.Op.in]: [fromSession, toSession] // Fetch all sessions between fromSession and toSession
-          }
+            [db.Sequelize.Op.in]: [fromSession, toSession], // Fetch all sessions between fromSession and toSession
+          },
         },
-        attributes: ['id', 'sessionName']
+        attributes: ["id", "sessionName"],
       });
 
       // Step 2: Map session names by their IDs
@@ -495,109 +496,109 @@ const questionsService = {
       // Step 3: Get all questions with admitted status and join groups, divisions, and members
       const questions = await db.questions.findAll({
         where: {
-          questionActive: 'active',
+          questionActive: "active",
           fkQuestionStatus: admittedStatusId,
           fkSessionId: {
-            [db.Sequelize.Op.between]: [fromSession, toSession] // Filter by session range
-          }
+            [db.Sequelize.Op.between]: [fromSession, toSession], // Filter by session range
+          },
         },
         include: [
           {
             model: db.members,
-            as: 'member',
-            attributes: ['id', 'memberName']
+            as: "member",
+            attributes: ["id", "memberName"],
           },
           {
             model: db.divisions,
-            as: 'divisions',
-            attributes: ['id', 'divisionName']
+            as: "divisions",
+            attributes: ["id", "divisionName"],
           },
           {
             model: db.groups,
-            as: 'groups',
-            attributes: ['id', 'groupNameStarred']
-          }
+            as: "groups",
+            attributes: ["id", "groupNameStarred"],
+          },
         ],
         attributes: [
-          [db.sequelize.fn('COUNT', db.sequelize.col('questions.id')), 'count'] // Count of questions
+          [db.sequelize.fn("COUNT", db.sequelize.col("questions.id")), "count"], // Count of questions
         ],
-        group: ['divisions.id', 'member.id', 'groups.id'] // Group by division, member, and group
+        group: ["divisions.id", "member.id", "groups.id"], // Group by division, member, and group
       });
 
       // Step 4: Format the response into groups, divisions, and members
       const result = {};
 
-      questions.forEach(question => {
+      questions.forEach((question) => {
         const group = question.groups;
         const division = question.divisions;
         const member = question.member;
 
         if (!group || !division || !member) {
-          console.warn('Skipping question due to missing associations:');
+          console.warn("Skipping question due to missing associations:");
           return;
         }
 
         if (!result[group.id]) {
           result[group.id] = {
             groupName: group.groupNameStarred,
-            divisions: {}
+            divisions: {},
           };
         }
 
         if (!result[group.id].divisions[division.id]) {
           result[group.id].divisions[division.id] = {
             divisionName: division.divisionName,
-            members: {}
+            members: {},
           };
         }
 
         if (!result[group.id].divisions[division.id].members[member.id]) {
           result[group.id].divisions[division.id].members[member.id] = {
             memberName: member.memberName,
-            count: 0
+            count: 0,
           };
         }
 
-        result[group.id].divisions[division.id].members[member.id].count += parseInt(question.dataValues.count, 10);
+        result[group.id].divisions[division.id].members[member.id].count +=
+          parseInt(question.dataValues.count, 10);
       });
 
       // Step 5: Convert result into the desired format
-      const formattedResult = Object.values(result).map(group => ({
+      const formattedResult = Object.values(result).map((group) => ({
         groupName: group.groupName,
-        divisions: Object.values(group.divisions).map(division => ({
+        divisions: Object.values(group.divisions).map((division) => ({
           divisionName: division.divisionName,
-          members: Object.values(division.members)
-        }))
+          members: Object.values(division.members),
+        })),
       }));
 
       // Step 6: Get current date
       const currentDate = new Date();
-      const formattedDate = currentDate.toLocaleDateString('en-GB');
+      const formattedDate = currentDate.toLocaleDateString("en-GB");
 
       return {
         sessions: {
           fromSession: sessionMap[fromSession],
-          toSession: sessionMap[toSession]
+          toSession: sessionMap[toSession],
         },
         currentDate: formattedDate, // Current report generation date
-        data: formattedResult // Grouped data
+        data: formattedResult, // Grouped data
       };
     } catch (error) {
-      console.error('Error fetching member-wise statement:', error);
+      console.error("Error fetching member-wise statement:", error);
       throw new Error(error.message);
     }
   },
-
 
   getDivisionWiseCategoryCount: async (fromSession, toSession) => {
     try {
       // Step 1: Find the 'Admitted' status from the questionStatuses table
       const admittedStatus = await db.questionStatus.findOne({
-        where: { questionStatus: 'Admitted' }
+        where: { questionStatus: "Admitted" },
       });
 
       if (!admittedStatus) {
-        throw new Error('Admitted status not found');
+        throw new Error("Admitted status not found");
       }
 
       const admittedStatusId = admittedStatus.id;
@@ -606,10 +607,10 @@ const questionsService = {
       const sessions = await db.sessions.findAll({
         where: {
           id: {
-            [db.Sequelize.Op.in]: [fromSession, toSession] // Fetch sessions in this range
-          }
+            [db.Sequelize.Op.in]: [fromSession, toSession], // Fetch sessions in this range
+          },
         },
-        attributes: ['id', 'sessionName']
+        attributes: ["id", "sessionName"],
       });
 
       // Step 3: Map session names by their IDs
@@ -621,35 +622,35 @@ const questionsService = {
       // Step 4: Query to fetch all relevant questions, grouped by division and category
       const questions = await db.questions.findAll({
         where: {
-          questionActive: 'active',
+          questionActive: "active",
           fkQuestionStatus: admittedStatusId,
           fkSessionId: {
-            [db.Sequelize.Op.between]: [fromSession, toSession]
-          }
+            [db.Sequelize.Op.between]: [fromSession, toSession],
+          },
         },
         include: [
           {
             model: db.divisions, // Associated division
-            as: 'divisions',
-            attributes: ['id', 'divisionName']
+            as: "divisions",
+            attributes: ["id", "divisionName"],
           },
           {
             model: db.groups, // Associated group
-            as: 'groups',
-            attributes: ['id', 'groupNameStarred'] // Group name (alias)
-          }
+            as: "groups",
+            attributes: ["id", "groupNameStarred"], // Group name (alias)
+          },
         ],
         attributes: [
-          'questionCategory', // Group by question category
-          [db.sequelize.fn('COUNT', db.sequelize.col('questions.id')), 'count'] // Count of questions
+          "questionCategory", // Group by question category
+          [db.sequelize.fn("COUNT", db.sequelize.col("questions.id")), "count"], // Count of questions
         ],
-        group: ['divisions.id', 'groups.id', 'questionCategory'] // Group by division, group, and question category
+        group: ["divisions.id", "groups.id", "questionCategory"], // Group by division, group, and question category
       });
 
       // Step 5: Format the result into the desired structure
       const result = {};
 
-      questions.forEach(question => {
+      questions.forEach((question) => {
         const group = question.groups;
         const division = question.divisions;
         const category = question.questionCategory;
@@ -662,13 +663,14 @@ const questionsService = {
             result[group.id] = {
               groupName: group.groupNameStarred,
               divisions: {},
-              total: { // Initialize total for the group
+              total: {
+                // Initialize total for the group
                 categories: {
                   Starred: 0,
                   "Un-Starred": 0,
-                  "Short Notice": 0
-                }
-              }
+                  "Short Notice": 0,
+                },
+              },
             };
           }
 
@@ -679,8 +681,8 @@ const questionsService = {
               categories: {
                 Starred: 0,
                 "Un-Starred": 0,
-                "Short Notice": 0
-              }
+                "Short Notice": 0,
+              },
             };
           }
 
@@ -694,30 +696,28 @@ const questionsService = {
 
       // Step 6: Get current date
       const currentDate = new Date();
-      const formattedDate = currentDate.toLocaleDateString('en-GB');
+      const formattedDate = currentDate.toLocaleDateString("en-GB");
 
       // Step 7: Convert the result object into the desired array format
-      const formattedResult = Object.values(result).map(group => ({
+      const formattedResult = Object.values(result).map((group) => ({
         groupName: group.groupName,
         divisions: Object.values(group.divisions),
-        total: group.total // Include total for each group
+        total: group.total, // Include total for each group
       }));
 
       return {
         sessions: {
           fromSession: sessionMap[fromSession],
-          toSession: sessionMap[toSession]
+          toSession: sessionMap[toSession],
         },
         currentDate: formattedDate, // Current report generation date
-        data: formattedResult // Grouped data with totals
+        data: formattedResult, // Grouped data with totals
       };
     } catch (error) {
-      console.error('Error fetching division-wise category count:', error);
+      console.error("Error fetching division-wise category count:", error);
       throw new Error(error.message);
     }
   },
-
-
 
   getQuestionsByStatus: async (statuses) => {
     try {
@@ -900,7 +900,7 @@ const questionsService = {
                 model: db.ministries,
                 attributes: ["id", "ministryName"],
               },
-            ]
+            ],
           },
           {
             model: Groups,
@@ -1079,7 +1079,7 @@ const questionsService = {
                 model: db.ministries,
                 attributes: ["id", "ministryName"],
               },
-            ]
+            ],
           },
           {
             model: Groups,
@@ -1522,6 +1522,8 @@ const questionsService = {
     try {
       const updatedData = {
         sentForTranslation: true,
+        questionSentStatus: "toTranslation"
+
       };
       await Questions.update(updatedData, { where: { id: questionId } });
       // Fetch the updated question which is sent for tranlation
@@ -2260,7 +2262,6 @@ const questionsService = {
       // Static session end date for testing
       // const sessionEndDate = '2024-08-20';
 
-
       // Fetch the latest question
       const latestQuestion = await Questions.findOne({
         include: [
@@ -2276,19 +2277,25 @@ const questionsService = {
       let newNoticeOfficeDiaryNo;
 
       if (latestQuestion && latestQuestion.noticeOfficeDiary) {
-        const currentDateMoment = moment(currentDate, 'YYYY-MM-DD');
-        const sessionEndDateMoment = moment(sessionEndDate, 'YYYY-MM-DD').startOf('day'); // Make sure it's in 'day' precision
+        const currentDateMoment = moment(currentDate, "YYYY-MM-DD");
+        const sessionEndDateMoment = moment(
+          sessionEndDate,
+          "YYYY-MM-DD"
+        ).startOf("day"); // Make sure it's in 'day' precision
 
-        console.log('sessionEndDate', sessionEndDateMoment);
-        console.log('currentDateMoment', currentDateMoment);
+        console.log("sessionEndDate", sessionEndDateMoment);
+        console.log("currentDateMoment", currentDateMoment);
 
         // Check if the latest diary date is after the session end date
-        if (currentDateMoment.isAfter(sessionEndDateMoment, 'day')) {
+        if (currentDateMoment.isAfter(sessionEndDateMoment, "day")) {
           // If noticeOfficeDiaryDate is after sessionEndDate, start from "01"
           newNoticeOfficeDiaryNo = "01";
         } else {
           // If noticeOfficeDiaryDate is on or before sessionEndDate, increment the number
-          const latestNo = parseInt(latestQuestion.noticeOfficeDiary.noticeOfficeDiaryNo, 10);
+          const latestNo = parseInt(
+            latestQuestion.noticeOfficeDiary.noticeOfficeDiaryNo,
+            10
+          );
           newNoticeOfficeDiaryNo = String(latestNo + 1).padStart(2, "0");
         }
       } else {
@@ -2296,7 +2303,7 @@ const questionsService = {
         newNoticeOfficeDiaryNo = "01";
       }
 
-      console.log('newNoticeOfficeDiaryNo', newNoticeOfficeDiaryNo);
+      console.log("newNoticeOfficeDiaryNo", newNoticeOfficeDiaryNo);
 
       const result = {
         noticeOfficeDiaryNo: newNoticeOfficeDiaryNo, // Include the new noticeOfficeDiaryNo
@@ -2309,6 +2316,9 @@ const questionsService = {
   },
 
 
+
+
+  
 };
 
 module.exports = questionsService;

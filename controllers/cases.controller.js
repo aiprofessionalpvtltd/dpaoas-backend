@@ -2,6 +2,7 @@ const casesService = require("../services/cases.service");
 const logger = require("../common/winston");
 const { uploadFile } = require("../common/upload");
 const db = require("../models");
+const { message, error } = require("../validation/userValidation");
 const File = db.files;
 const newFiles = db.newFiles;
 const FreshReceipts = db.freshReceipts;
@@ -165,7 +166,7 @@ const casesController = {
         return res.status(200).send({
           success: true,
           message: "No Data Found!",
-          data: {cases: cases},
+          data: { cases: cases },
         });
       } else {
         return res.status(200).send({
@@ -296,23 +297,22 @@ const casesController = {
 
   getPendingCases: async (req, res) => {
     try {
-      console.log("sdfsdfsdfsd")
+      console.log("sdfsdfsdfsd");
       const userId = req.query.userId;
       const branchId = req.query.branchId;
       const currentPage = req.query.currentPage;
       const pageSize = req.query.pageSize;
-      const { cases, count, totalPages } =
-        await casesService.getPendingCases(
-          userId,
-          branchId,
-          currentPage,
-          pageSize
-        );
+      const { cases, count, totalPages } = await casesService.getPendingCases(
+        userId,
+        branchId,
+        currentPage,
+        pageSize
+      );
       if (cases.length === 0) {
         return res.status(200).send({
           success: true,
           message: "No Data Found!",
-          data: {cases: cases},
+          data: { cases: cases },
         });
       } else {
         return res.status(200).send({
@@ -408,7 +408,11 @@ const casesController = {
       const caseId = req.params.caseId;
       const orderBy = req.params.orderBy;
 
-      const cases = await casesService.getSingleCaseDetails(fileId, caseId , orderBy);
+      const cases = await casesService.getSingleCaseDetails(
+        fileId,
+        caseId,
+        orderBy
+      );
       logger.info("Single Case Details Retrieved Successfully!");
       return res.status(200).send({
         success: true,
@@ -646,12 +650,12 @@ const casesController = {
       if (result) {
         return res.status(200).send({
           success: true,
-          message: 'Case deleted successfully!',
+          message: "Case deleted successfully!",
         });
       } else {
         return res.status(404).send({
           success: false,
-          message: 'Case not found!',
+          message: "Case not found!",
         });
       }
     } catch (error) {
@@ -663,32 +667,64 @@ const casesController = {
     }
   },
 
-  assignCasesToHigherLevel : async (req, res) => {
+  assignCasesToHigherLevel: async (req, res) => {
     try {
       const { userId, branchId, attendanceEnum } = req.body;
       const currentPage = parseInt(req.query.currentPage) || 0;
       const pageSize = parseInt(req.query.pageSize) || 10;
-  
-      logger.info(`casesController: assignCasesToHigherLevel - UserId: ${userId}, BranchId: ${branchId}, Attendeance enum: ${attendanceEnum}`);
-  
-      const result = await casesService.assignCaseToHigherLevel(userId, branchId, attendanceEnum, currentPage, pageSize);
-      
-      logger.info('Cases assigned successfully to higher level');
+
+      logger.info(
+        `casesController: assignCasesToHigherLevel - UserId: ${userId}, BranchId: ${branchId}, Attendeance enum: ${attendanceEnum}`
+      );
+
+      const result = await casesService.assignCaseToHigherLevel(
+        userId,
+        branchId,
+        attendanceEnum,
+        currentPage,
+        pageSize
+      );
+
+      logger.info("Cases assigned successfully to higher level");
       return res.status(200).send({
         success: true,
         data: {
-          message: 'Cases assigned successfully to higher level',
-          ...result
-        }
+          message: "Cases assigned successfully to higher level",
+          ...result,
+        },
       });
     } catch (error) {
       logger.error(error.message);
       return res.status(400).send({
         success: false,
-        message: error.message
+        message: error.message,
       });
     }
-  }
+  },
+
+  getstats: async (req, res) => {
+    try {
+      const { userId, branchId } = req.body;
+      logger.info(
+        `casesController: getstats - UserId: ${userId}, BranchId: ${branchId}`
+      );
+  
+      const result = await casesService.getAllStats(userId, branchId);
+  
+      return res.status(200).send({
+        success: true,
+        message: "Statistics fetched successfully",
+        data: result,
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+  
 };
 
 module.exports = casesController;

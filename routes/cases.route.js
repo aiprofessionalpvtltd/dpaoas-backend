@@ -371,5 +371,8 @@ router.delete('/delete-case/:caseId', cases.deleteCaseById);
 //get pending cases and assign to next branch herarchy user
 router.post('/assign-to-higher-level', cases.assignCasesToHigherLevel);
 
+// Get All Stats 
+router.post('/get-all-stats', cases.getstats);
+
 
 module.exports = router;

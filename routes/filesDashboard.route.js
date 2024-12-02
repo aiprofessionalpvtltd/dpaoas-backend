@@ -38,7 +38,7 @@ router.get("/stats", files.getFilesStats);
  *       '200':
  *         description: A successful response
  */
-router.get('/sentAndRecievedFiles/:id', files.getFileSentAndReceivedStats)
+router.get('/RecievedFiles/:id', files.getFileSentAndReceivedStats)
 
 //Stats For FRs Sent And Received
 /**
