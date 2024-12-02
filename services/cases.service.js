@@ -341,6 +341,11 @@ const casesService = {
                         as: "designations",
                         attributes: ["id", "designationName"],
                       },
+                      {
+                        model: Branches,
+                        as: "branches", // Ensure this alias matches your association
+                        attributes: ["id", "branchName"], // Include branch attributes you need
+                      },
                     ],
                   },
                 ],
@@ -489,6 +494,10 @@ const casesService = {
                 firstName: createdByUser.employee.firstName,
                 lastName: createdByUser.employee.lastName,
                 designation: createdByUser.employee.designations.designationName,
+              },
+              branch: {
+                id: createdByUser.employee.branches.id,
+                name: createdByUser.employee.branches.branchName,
               },
               isEditable: isEditable,
               fileData: section.cases.files,
