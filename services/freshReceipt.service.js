@@ -276,7 +276,7 @@ const freshReceiptService = {
           },
           {
             model: Users,
-            as: "createdByUser",
+            as: "createdByUser", // Alias for createdByUser association
             attributes: ["id"],
             include: [
               {
@@ -288,6 +288,11 @@ const freshReceiptService = {
                     model: Designations,
                     as: "designations",
                     attributes: ["id", "designationName"],
+                  },
+                  {
+                    model: Branches,
+                    as: "branches", // Ensure this alias matches your association
+                    attributes: ["id", "branchName"], // Include branch attributes you need
                   },
                 ],
               },
@@ -1118,6 +1123,30 @@ const freshReceiptService = {
           id: freshReceiptId,
         },
         include: [
+          {
+            model: Users,
+            as: "createdByUser", // Alias for createdByUser association
+            attributes: ["id"],
+            include: [
+              {
+                model: Employee,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+                include: [
+                  {
+                    model: Designations,
+                    as: "designations",
+                    attributes: ["id", "designationName"],
+                  },
+                  {
+                    model: Branches,
+                    as: "branches", // Ensure this alias matches your association
+                    attributes: ["id", "branchName"], // Include branch attributes you need
+                  },
+                ],
+              },
+            ],
+          },
           {
             model: FreshReceiptAttachments,
             as: "freshReceiptsAttachments",
