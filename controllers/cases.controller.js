@@ -538,7 +538,9 @@ const casesController = {
       );
       const userId = req.params.id;
       const branchName = req.query.branchName;
-      const cases = await casesService.getHigherLevelDesignations(userId, branchName);
+      const selectedBranchID = req.query.selectedBranchID;
+      console.log("selectedBranchID", selectedBranchID)
+      const cases = await casesService.getHigherLevelDesignations(userId, branchName, selectedBranchID);
       logger.info("Employees Retrieved Successfully!");
       return res.status(200).send({
         success: true,

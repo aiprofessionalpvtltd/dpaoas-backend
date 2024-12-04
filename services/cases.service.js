@@ -3276,7 +3276,7 @@ const casesService = {
   },
 
   // Get Employees on Higher Level By User's Login
-  getHigherLevelDesignations: async (userId, branchName) => {
+  getHigherLevelDesignations: async (userId, branchName, selectedBranchID) => {
     try {
       // Find the user and their branch
       const userWithBranch = await Users.findOne({
@@ -3359,7 +3359,11 @@ const casesService = {
               attributes: ["id", "email", "userStatus", "attendance_status"],
             },
           ],
-          where: { fkBranchId: userBranchId },
+          where: {
+            fkMultiBranchId: {
+              [Op.contains]: [parseInt(selectedBranchID)], 
+            },
+          },
         });
 
         employees = [...userBranchSuperintendent];
@@ -3389,7 +3393,11 @@ const casesService = {
               attributes: ["id", "email", "userStatus", "attendance_status"],
             },
           ],
-          where: { fkBranchId: userBranchId },
+          where: {
+            fkMultiBranchId: {
+              [Op.contains]: [parseInt(selectedBranchID)], 
+            },
+          },
         });
       }
       // Sort employees based on the branch hierarchy
