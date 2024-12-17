@@ -2891,7 +2891,7 @@ const casesService = {
 
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
-        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt", "assignedTo"],
+        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt", "updatedAt", "assignedTo"],
         order: [["paragraphTitle", orderBy]],
         include: [
           {
@@ -3119,6 +3119,7 @@ const casesService = {
           references: references,
           createdBy: para.createdBy,
           createdAt: para.createdAt,
+          updatedAt: para.updatedAt,
           createdByUserDesignation: `${para?.createdByUser?.employee?.designations?.designationName}`,
           createdByUserBranch: para?.createdByUser?.employee?.branches?.branchName,
           createdByUser:
@@ -3126,9 +3127,10 @@ const casesService = {
             " " +
             para?.createdByUser?.employee?.lastName,
           assignedTo: para?.assignedTo || null,  
-          assignedToUser: para?.assignedUser?.employee?.firstName +
-          " " +
-          para?.assignedUser?.employee?.lastName,
+          assignedToUser: para?.assignedUser?.employee?.firstName &&
+                para?.assignedUser?.employee?.lastName
+                ? para.assignedUser.employee.firstName + " " + para.assignedUser.employee.lastName
+                : "",
           assignedToUserDesignation: para?.assignedUser?.employee?.designations?.designationName,
           assignedToUserBranch: para?.assignedUser?.employee?.branches?.branchName,
           isSave: true,
