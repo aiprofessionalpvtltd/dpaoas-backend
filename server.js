@@ -125,6 +125,7 @@ const ordinances = require('./routes/ordinances.route')
 
 
 const correspondenceRouter = require('./routes/correspondences.route')
+const ministriesRoutes = require("./routes/ministries.route");
 
 // app.use((err, req, res, next) => {
 //   console.log("error", err);
@@ -318,6 +319,9 @@ const flagRoutes = require('./routes/flagRoutes.route');
 
 // Flag Module Routes
 app.use('/api/flags', flagRoutes);
+
+// ministries route
+app.use("/api", ministriesRoutes);
 
 const yearsRouter = require("./routes/years.route")
 app.use('/api/years', yearsRouter);
