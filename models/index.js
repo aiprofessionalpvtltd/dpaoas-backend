@@ -1525,5 +1525,11 @@ db.legislationMovers.belongsTo(db.legislativeBills, { foreignKey: 'fklegislation
 db.legislationMovers.belongsTo(db.members, { foreignKey: 'fkMemberId', as: 'member' });
 db.legislativeBills.hasMany(db.legislationMovers, { foreignKey: 'fklegislationBillId', as: 'legislationMovers' });
 
+// ministrie accossication 
+db.ministries.belongsTo(db.tenures, {
+  foreignKey: "fkTenureId",
+  as: "tenure",
+});
+
 sequelize.sync();
 module.exports = db;
