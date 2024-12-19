@@ -164,9 +164,15 @@ module.exports = (sequelize, Sequelize) => {
         },
 
         questionSentStatus: {
-            type: Sequelize.ENUM("inQuestion","toQuestion", "inNotice"),
+            type: Sequelize.ENUM("inQuestion","toQuestion", "inNotice" , "toTranslation"),
             defaultValue: "inNotice",
         },
+
+        // translationStatus: {
+        //     type: Sequelize.ENUM("in-Progress", "is-Assigned", "is-Translated"),
+        //     defaultValue: "in-Progress", 
+        // },
+        
 
         questionSentDate: {
             type: Sequelize.DATE,
@@ -228,6 +234,12 @@ module.exports = (sequelize, Sequelize) => {
         questions.belongsTo(models.users , { foreignKey: 'submittedBy', as: 'questionSubmittedBy'})
         // questions.belongsTo(models.members, { foreignKey: 'fkMemberId', as: 'member' });
 
+        questions.hasMany(models.translationRemarks, { 
+            as: "translationRemarks", 
+            foreignKey: "fkQuestionId" 
+        });
+
+       
 
     };
 

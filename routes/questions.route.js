@@ -199,7 +199,7 @@ router.get("/searchQuestion", questions.searchQuestion)
  *       '200':
  *         description: A successful response
  */
-router.get("/all", questions.getAllQuestions)
+router.get("/all" , questions.getAllQuestions)
 
 router.get('/todayQuestion', questions.getTodaysQuestions);
 

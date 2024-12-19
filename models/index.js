@@ -27,6 +27,10 @@ const db = {};
 
 db.Sequelize = SequelizeMain;
 db.sequelize = sequelize;
+
+//TRANSLATION
+db.translationRemarks = require("./TranslationRemark.model.js")(sequelize, SequelizeMain);
+
 db.roles = require("./roles.model.js")(sequelize, SequelizeMain);
 db.users = require("./users.model.js")(sequelize, SequelizeMain);
 db.permissions = require("./permissions.model")(sequelize, SequelizeMain);
@@ -1519,6 +1523,23 @@ db.members.hasMany(db.questions, {
   foreignKey: 'fkMemberId', 
   as: 'questions' 
 });
+
+
+
+// db.questions.hasMany(db.translationRemarks, { 
+//   as: "translationRemarks", 
+//   foreignKey: "fkQuestionId" 
+// });
+
+// Translation
+
+db.translationRemarks.belongsTo(db.users, { foreignKey: 'submittedBy', as: 'submittedUser' });
+db.translationRemarks.belongsTo(db.users, { foreignKey: 'assignedTo', as: 'assignedUser' });
+db.translationRemarks.belongsTo(db.questions, { foreignKey: 'fkQuestionId', as: 'question' });
+db.questions.hasMany(db.translationRemarks,{ foreignKey: "fkQuestionId", as: "remarks"})
+
+// User 
+
 
 //legislation movers
 db.legislationMovers.belongsTo(db.legislativeBills, { foreignKey: 'fklegislationBillId', as: 'legislativeBills' });
