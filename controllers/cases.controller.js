@@ -431,6 +431,8 @@ const casesController = {
       const fileId = req.params.fileId;
       const caseId = req.params.caseId;
       const orderBy = req.params.orderBy;
+      
+      // console.log(`fileId: ${fileId}, caseId: ${caseId}, orderBy: ${orderBy}`);
 
       const cases = await casesService.getSingleCaseDetails(fileId, caseId , orderBy);
       logger.info("Single Case Details Retrieved Successfully!");
