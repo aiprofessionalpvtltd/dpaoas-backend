@@ -261,6 +261,7 @@ const casesService = {
                 createdBy: createdBy,
                 flags: para.references.map((ref) => ref.flag).join(","),
                 assignedTo: para?.assignedTo || null,
+                paraCreatedAt: para?.paraCreatedAt, // Add current datetime here
               },
               { transaction }
             );
@@ -1596,6 +1597,7 @@ const casesService = {
                 createdBy: para.createdBy,
                 flags: para.references.map((ref) => ref.flag).join(","),
                 assignedTo: para.assignedTo || null,
+                paraCreatedAt: para?.paraCreatedAt, // Add current datetime here
               },
               { transaction }
             );
@@ -2891,7 +2893,7 @@ const casesService = {
 
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
-        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt", "updatedAt", "assignedTo"],
+        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt", "updatedAt", "assignedTo" , "paraCreatedAt"],
         order: [["paragraphTitle", orderBy]],
         include: [
           {
@@ -3134,6 +3136,7 @@ const casesService = {
           assignedToUserDesignation: para?.assignedUser?.employee?.designations?.designationName,
           assignedToUserBranch: para?.assignedUser?.employee?.branches?.branchName,
           isSave: true,
+          paraCreatedAt:para?.paraCreatedAt,
         };
       });
 
