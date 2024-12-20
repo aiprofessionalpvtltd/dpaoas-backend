@@ -2,7 +2,7 @@
 
 # dependencies
 /node_modules
-/.env
+# /.env
 /.pnp
 /logs/app.log
 /logs/error.log
