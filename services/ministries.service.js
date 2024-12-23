@@ -98,7 +98,20 @@ const MinistriesService = {
         } catch (error) {
             throw { message: error.message || "Error deleting Bill Status" };
         }
-    }
+    },
+
+    getMinistriesByTenure: async (fkTenureId) => {
+        try {
+            const ministries = await Ministries.findAll({
+                where: { fkTenureId },
+                attributes: ['id', 'ministryName', 'ministryStatus', 'fkTenureId'],
+                include: [{ model: Tenures, as: "tenure" }],
+            });
+            return ministries;
+        } catch (error) {
+            throw { message: error.message || "Error fetching ministries by tenure ID." };
+        }
+    },
 }
 
 module.exports = MinistriesService

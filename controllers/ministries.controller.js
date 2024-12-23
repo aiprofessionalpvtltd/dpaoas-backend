@@ -128,6 +128,41 @@ const MinistriesController = {
                 message: error.message
             })
         }
+    },
+
+    getMinistriesByTenure: async (req, res) => {
+        try {
+            const { fkTenureId } = req.params;
+    
+            if (!fkTenureId) {
+                return res.status(400).json({ message: "fkTenureId is required." });
+            }
+    
+            const ministries = await ministriesService.getMinistriesByTenure(fkTenureId);
+    
+            if (ministries.length === 0) {
+                logger.info("No data found on this page!")
+                return res.status(200).send({
+                    success: true,
+                    message: 'No data found on this page!'
+                });
+            }
+            else {
+                logger.info("All ministries Fetched Successfully!")
+                return res.status(200).send({
+                    success: true,
+                    message: "All ministries Fetched Successfully!",
+                    data: ministries
+                })
+            }
+        }  catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+
+            })
+        }
     }
 }
 module.exports = MinistriesController; 
