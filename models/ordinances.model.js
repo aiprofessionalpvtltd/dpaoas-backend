@@ -57,6 +57,14 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: true
         },
+        expiryDate: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        extension: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
         documentDate: {
             type: Sequelize.DATE,
             allowNull: true

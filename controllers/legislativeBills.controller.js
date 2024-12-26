@@ -342,7 +342,7 @@ const legislativeBillController = {
 
             return res.status(200).send({
                 success: true,
-                message: "Resolution new noticeOfficeDiaryNo fetched successfully!",
+                message: "Legislative Bill new diary number generated successfully!",
                 data: result
             });
         } catch (error) {
