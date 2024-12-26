@@ -552,7 +552,7 @@ const senateBillService = {
                     },
                     {
                         model: db.parliamentaryYearsMna,
-                        as: 'parliamentaryYearsMna'
+                        as: 'mnaParliamentaryYears'
                     },
                     {
                         model: db.tenures,
