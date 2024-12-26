@@ -1152,15 +1152,15 @@ const questionsService = {
       //   }
       // Build the query options based on search criteria
       for (const key in searchCriteria) {
-        if (key === "fromSessionNo") {
+        if (key === "fromSessionNo" && searchCriteria[key]) {
           queryOptions.where["$session.id$"] = {
             [Op.gte]: searchCriteria[key],
           };
         }
-        if (key === "toSessionNo") {
-          queryOptions.where["$session.id$"] = {
-            [Op.lte]: searchCriteria[key],
-          };
+        if (key === "toSessionNo" && searchCriteria[key]) {
+          // Check if fromSessionNo exists, and combine the conditions
+          queryOptions.where["$session.id$"] = queryOptions.where["$session.id$"] || {};
+          queryOptions.where["$session.id$"][Op.lte] = searchCriteria[key];
         }
         if (key === "questionID") {
           queryOptions.where["$questionDiary.questionID$"] = {
