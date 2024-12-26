@@ -85,8 +85,10 @@ const tonerModelRouter = require('./routes/tonerModel.route')
 
 const divisionsRouter = require("./routes/divisions.route")
 const tenuresRouter = require("./routes/tenures.route")
+const tenuresMinisterRouter = require("./routes/tenuresMinister.route")
 const politicalPartiesRouter = require("./routes/politicalParties.route")
 const parliamentaryYearsRouter = require("./routes/parliamentaryYears.route")
+const parliamentaryYearsMnaRouter = require("./routes/parliamentaryYearsMna.route")
 const termsRouter = require("./routes/terms.route")
 const groupsRouter = require("./routes/groups.route")
 const privateMemberBillRouter = require("./routes/privateMemberBills.route")
@@ -257,8 +259,10 @@ app.use("/api/sms", smsSentRouter);
 // Question Sub Modules
 app.use("/api/divisions", divisionsRouter)
 app.use("/api/tenures", tenuresRouter)
+app.use("/api/tenuresMinister", tenuresMinisterRouter)
 app.use("/api/politicalParties", politicalPartiesRouter)
 app.use("/api/parliamentaryYears", parliamentaryYearsRouter)
+app.use("/api/parliamentaryYearsMna", parliamentaryYearsMnaRouter)
 app.use("/api/terms", termsRouter)
 app.use("/api/groups", groupsRouter)
 //private member bill
