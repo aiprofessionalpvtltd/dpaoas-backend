@@ -17,7 +17,14 @@ module.exports = (sequelize, Sequelize) => {
               key: 'id'
             }
         },
-
+        fkMinisterTenureId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+              model: 'tenuresMinister',
+              key: 'id'
+            }
+        },
         fkTermId: {
             type: Sequelize.INTEGER,
             allowNull: true,
@@ -54,7 +61,7 @@ module.exports = (sequelize, Sequelize) => {
             foreignKey: 'fkTenureId',
             as: 'tenure' // Optional: Alias for the association
         });
-        parliamentaryYearsMna.belongsTo(models.Tenures, {
+        parliamentaryYearsMna.belongsTo(models.tenuresMinister, {
             foreignKey: 'fkMinisterTenureId',
             as: 'tenuresMinister' // Optional: Alias for the association
         });
