@@ -541,8 +541,16 @@ const senateBillService = {
                         as: 'parliamentaryYears'
                     },
                     {
+                        model: db.parliamentaryYearsMna,
+                        as: 'parliamentaryYearsMna'
+                    },
+                    {
                         model: db.tenures,
                         as: 'tenures'
+                    },
+                    {
+                        model: db.tenuresMinister,
+                        as: 'tenuresMinister'
                     },
                     {
                         model: db.terms,
