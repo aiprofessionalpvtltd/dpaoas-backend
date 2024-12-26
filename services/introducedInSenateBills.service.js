@@ -14,12 +14,12 @@ const ManageCommittees = db.manageCommittees;
 const ManageCommitteeRecomendations = db.manageCommitteeRecomendations;
 const Users = db.users;
 const ParliamentaryYears = db.parliamentaryYears;
+const ParliamentaryYearsMna = db.parliamentaryYearsMna;
 const Employees = db.employees;
 const BillStatuses = db.billStatuses;
 const { Sequelize } = require('sequelize');
 const Op = db.Sequelize.Op;
 const logger = require('../common/winston');
-
 
 const senateBillService = {
     // Create A New Senate Bill
@@ -60,7 +60,6 @@ const senateBillService = {
             return createdSenateBill;
         } catch (error) {
             throw { message: error.message || "Error Creating Senate Bill" };
-
         }
     },
 
@@ -97,6 +96,10 @@ const senateBillService = {
                     {
                         model: ParliamentaryYears,
                         as: 'parliamentaryYears'
+                    },
+                    {
+                        model: ParliamentaryYearsMna,
+                        as: 'mnaParliamentaryYears'
                     },
                     {
                         model: db.tenures,
@@ -215,6 +218,10 @@ const senateBillService = {
                         as: 'parliamentaryYears'
                     },
                     {
+                        model: ParliamentaryYearsMna,
+                        as: 'mnaParliamentaryYears'
+                    },
+                    {
                         model: db.tenures,
                         as: 'tenures'
                     },
@@ -292,7 +299,6 @@ const senateBillService = {
         }
     },
 
-
     // Search All Introduced In Senate Bills
     searchAllIntroducedInSenateBills: async (filters, currentPage, pageSize) => {
         try {
@@ -316,6 +322,10 @@ const senateBillService = {
                 {
                     model: ParliamentaryYears,
                     as: 'parliamentaryYears'
+                },
+                {
+                    model: ParliamentaryYearsMna,
+                    as: 'mnaParliamentaryYears'
                 },
                 {
                     model: db.tenures,

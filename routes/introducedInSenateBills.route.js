@@ -28,5 +28,5 @@ router.delete("/delete/:id", introducedInSenateBills.deleteIntroducedInSenateBil
 // Example route setup (adjust according to your setup)
 router.put('/:id/file', introducedInSenateBills.deleteFile);
 
-module.exports = router
+module.exports = router;
 
