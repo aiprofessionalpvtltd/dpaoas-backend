@@ -765,7 +765,6 @@ db.noteParagraphs.belongsTo(db.users, {
 // db.filesNotifications.belongsTo(db.cases, { foreignKey: 'fkCaseId', as: 'case' });
 
 db.members.belongsTo(db.tenures, { foreignKey: "fkTenureId", as: "tenures" });
-db.members.belongsTo(db.tenuresMinister, { foreignKey: "fkMinisterTenureId", as: "tenuresMinister" });
 
 db.members.belongsTo(db.terms, { foreignKey: "fkTermId", as: "terms" });
 db.members.belongsTo(db.politicalParties, {
