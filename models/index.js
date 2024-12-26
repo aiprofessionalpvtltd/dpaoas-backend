@@ -1128,7 +1128,6 @@ db.parliamentaryYears.belongsTo(db.tenures, { foreignKey: "fkTenureId" });
 db.parliamentaryYearsMna.belongsTo(db.tenures, { foreignKey: "fkMinisterTenureId" });
 db.parliamentaryYears.belongsTo(db.terms, { foreignKey: "fkTermId" });
 db.terms.belongsTo(db.tenures, { foreignKey: "fkTenureId" });
-db.terms.belongsTo(db.tenuresMinister, { foreignKey: "fkMinisterTenureId" });
 db.groupsDivisions.belongsTo(db.divisions, { foreignKey: "fkDivisionId" });
 db.groupsDivisions.belongsTo(db.groups, { foreignKey: "fkGroupId" , as: 'group' });
 db.groupsDivisions.belongsTo(db.sessions, { foreignKey: "fkSessionId" });
@@ -1584,10 +1583,6 @@ db.legislativeBills.hasMany(db.legislationMovers, { foreignKey: 'fklegislationBi
 db.ministries.belongsTo(db.tenures, {
   foreignKey: "fkTenureId",
   as: "tenure",
-});
-db.ministries.belongsTo(db.tenuresMinister, {
-  foreignKey: "fkMinisterTenureId",
-  as: "tenuresMinister",
 });
 
 sequelize.sync();
