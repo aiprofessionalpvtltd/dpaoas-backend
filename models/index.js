@@ -1294,7 +1294,7 @@ db.mnas.belongsTo(db.parliamentaryYears, {
 });
 db.mnas.belongsTo(db.parliamentaryYearsMna, {
   foreignKey: "fkMnaParliamentaryYearId",
-  as: "parliamentaryYearsMna",
+  as: "mnaParliamentaryYears",
 });
 
 
@@ -1306,7 +1306,7 @@ db.introducedInSenateBills.belongsTo(db.parliamentaryYears, {
 });
 db.introducedInSenateBills.belongsTo(db.parliamentaryYearsMna, {
   foreignKey: "fkMnaParliamentaryYearId",
-  as: "arliamentaryYearsMna",
+  as: "mnaParliamentaryYears",
 });
 db.introducedInSenateBills.belongsTo(db.tenures, {
   foreignKey: "fkTenureId",
