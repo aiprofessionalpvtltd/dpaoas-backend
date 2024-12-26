@@ -24,8 +24,23 @@ const ordinanceService = {
                     ordinanceTitle,
                     dateOfLayingInTheSenate,
                     dateOfLayingInTheNA,
+                    expiryDate,
+                    extension,
                     fkOrdinanceStatus,
                 } = req;
+
+                // Log the values to verify
+                console.log("Creating Ordinance with values:", {
+                    fkParliamentaryYearId,
+                    fkSessionId,
+                    fkUserId,
+                    ordinanceTitle,
+                    dateOfLayingInTheSenate,
+                    dateOfLayingInTheNA,
+                    expiryDate,
+                    extension,
+                    fkOrdinanceStatus,
+                });
         
                 // Create a payload that includes all other fields and handles empty dates
                 const payload = {
@@ -36,6 +51,8 @@ const ordinanceService = {
                    
                     dateOfLayingInTheSenate: dateOfLayingInTheSenate || null,
                     dateOfLayingInTheNA: dateOfLayingInTheNA || null,
+                    expiryDate: expiryDate || null,
+                    extension: extension || null,
                     fkOrdinanceStatus,
 
                 };
@@ -254,6 +271,8 @@ const ordinanceService = {
     // Update Ordinance
     updateOrdinance: async (req, ordinanceId) => {
         try {
+            // Log the values to verify
+            console.log("Updating Ordinance with values:", JSON.stringify(req, 0, 2));
 
             await Ordinances.update(req, { where: { id: ordinanceId } });
 

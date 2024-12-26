@@ -1292,6 +1292,26 @@ const questionsService = {
             questionStatusDate: currentDate.toISOString(),
           });
         }
+
+        // If the new status is 3, update the session to the current session
+        if (newQuestionStatus === "3") {
+          try {
+            const currentSession = await Sessions.findOne({
+              where: {
+                sessionStatus: "active",
+              },
+              order: [["createdAt", "DESC"]], // Order by creation date to get the most recent session
+            });
+
+            if (!currentSession) {
+              throw new Error("No active session found.");
+            }
+
+            req.fkSessionId = currentSession.id;
+          } catch (error) {
+            throw new Error(`Error fetching current session: ${error.message}`);
+          }
+        }
       }
 
       if (question) {
@@ -1342,7 +1362,7 @@ const questionsService = {
         memberPosition: req.memberPosition,
         englishText: req.englishText,
         urduText: req.urduText,
-        fkSessionId: req.fkSessionId,
+        fkSessionId: req.fkSessionId, // Updated session ID
         fkQuestionStatus: req.fkQuestionStatus,
         questionSentStatus: req.questionSentStatus,
         initiatedByBranch: req.initiatedByBranch,

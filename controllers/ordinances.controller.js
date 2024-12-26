@@ -7,6 +7,9 @@ const ordinanceController = {
   createOrdinance: async (req, res) => {
     try {
       const ordinanceData = req.body;
+      // Log the values to verify
+      console.log("Received Ordinance Data:", ordinanceData);
+
       const createdOrdinanceData = await ordinanceService.createOrdinance(
         ordinanceData
       );
@@ -120,6 +123,9 @@ const ordinanceController = {
     try {
       const ordinanceId = req.params.id;
       const updatedData = req.body;
+      // Log the values to verify
+      console.log("Updating Ordinance with ID:", ordinanceId, "with data:", updatedData);
+
       const ordinance = await Ordinances.findByPk(ordinanceId);
 
       if (!ordinance) {
