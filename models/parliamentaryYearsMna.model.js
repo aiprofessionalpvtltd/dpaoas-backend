@@ -65,12 +65,6 @@ module.exports = (sequelize, Sequelize) => {
             foreignKey: 'fkMinisterTenureId',
             as: 'tenuresMinister' // Optional: Alias for the association
         });
-
-        //Define an association with Terms if needed
-        parliamentaryYearsMna.belongsTo(models.Terms, {
-            foreignKey: 'fkTermId',
-            as: 'term' // Optional: Alias for the association
-        });
     };
 
 
