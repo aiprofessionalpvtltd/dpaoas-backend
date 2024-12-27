@@ -21,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {
-              model: 'tenuresMinister',
+              model: 'tenuresMinisters',
               key: 'id'
             }
         },
@@ -57,13 +57,13 @@ module.exports = (sequelize, Sequelize) => {
     
     parliamentaryYearsMna.associate = function(models) {
         // Define a belongsTo association with Tenures
-        parliamentaryYearsMna.belongsTo(models.Tenures, {
+        parliamentaryYearsMna.belongsTo(models.tenures, {
             foreignKey: 'fkTenureId',
             as: 'tenure' // Optional: Alias for the association
         });
-        parliamentaryYearsMna.belongsTo(models.tenuresMinister, {
+        parliamentaryYearsMna.belongsTo(models.tenuresMinisters, {
             foreignKey: 'fkMinisterTenureId',
-            as: 'tenuresMinister' // Optional: Alias for the association
+            as: 'tenuresMinisters' // Optional: Alias for the association
         });
     };
 

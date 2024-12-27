@@ -1285,7 +1285,7 @@ db.mnas.belongsTo(db.tenures, {
   foreignKey: "fkTenureId", as: "tenures"
 });
 db.mnas.belongsTo(db.tenuresMinister, {
-  foreignKey: "fkMinisterTenureId", as: "tenuresMinister"
+  foreignKey: "fkMinisterTenureId", as: "tenuresMinisters"
 });
 
 db.mnas.belongsTo(db.parliamentaryYears, {
@@ -1314,7 +1314,7 @@ db.introducedInSenateBills.belongsTo(db.tenures, {
 });
 db.introducedInSenateBills.belongsTo(db.tenuresMinister, {
   foreignKey: "fkMinisterTenureId",
-  as: "tenuresMinister",
+  as: "tenuresMinisters",
 });
 db.introducedInSenateBills.belongsTo(db.terms, {
   foreignKey: "fkTermId",
@@ -1582,6 +1582,18 @@ db.legislativeBills.hasMany(db.legislationMovers, { foreignKey: 'fklegislationBi
 db.ministries.belongsTo(db.tenures, {
   foreignKey: "fkTenureId",
   as: "tenure",
+});
+
+db.tenuresMinisters = require("./tenuresMinister.model.js")(sequelize, SequelizeMain);
+
+// Define associations for parliamentaryYearsMna
+db.parliamentaryYearsMna.belongsTo(db.tenures, {
+  foreignKey: 'fkTenureId',
+  as: 'tenure'
+});
+db.parliamentaryYearsMna.belongsTo(db.tenuresMinisters, {
+  foreignKey: 'fkMinisterTenureId',
+  as: 'tenuresMinisters'
 });
 
 sequelize.sync();

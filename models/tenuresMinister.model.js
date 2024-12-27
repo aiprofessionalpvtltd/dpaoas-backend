@@ -1,7 +1,7 @@
 const db = require(".");
 
 module.exports = (sequelize, Sequelize) => {
-  const tenuresMinister = sequelize.define("tenuresMinister", {
+  const TenuresMinister = sequelize.define("tenuresMinisters", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -32,11 +32,13 @@ module.exports = (sequelize, Sequelize) => {
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
   });
-  tenuresMinister.associate = function (models) {
-    tenuresMinister.hasMany(models.members, {
+
+  TenuresMinister.associate = function (models) {
+    TenuresMinister.hasMany(models.members, {
       foreignKey: "fkMinisterTenureId",
       as: "members",
     });
   };
-  return tenuresMinister;
+
+  return TenuresMinister;
 };

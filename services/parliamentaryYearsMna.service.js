@@ -25,7 +25,7 @@ const parliamentaryYearsMnaService = {
         include: [
           {
             model: Tenures,
-            as: 'tenuresMinister',
+            as: 'tenuresMinisters',
             attributes: [
               "id",
               "tenureName",
@@ -42,14 +42,14 @@ const parliamentaryYearsMnaService = {
           // Order by tenureType first
           [
             db.sequelize.literal(
-              `CASE WHEN "tenuresMinister"."tenureType" = 'Senators' THEN 1 ELSE 2 END`
+              `CASE WHEN "tenuresMinisters"."tenureType" = 'Senators' THEN 1 ELSE 2 END`
             ),
             "ASC",
           ],
           // Then by fromDate within each tenureType
-          [db.sequelize.col("tenuresMinister.fromDate"), "ASC"],
+          [db.sequelize.col("tenuresMinisters.fromDate"), "ASC"],
           // Then by toDate within each tenureType
-          [db.sequelize.col("tenuresMinister.toDate"), "ASC"],
+          [db.sequelize.col("tenuresMinisters.toDate"), "ASC"],
           // Then by parliamentaryTenure within each parliamentaryYears
           [db.sequelize.col("parliamentaryYearsMna.parliamentaryTenure"), "ASC"],
           // Finally, by ParliamentaryYears ID
@@ -73,7 +73,7 @@ const parliamentaryYearsMnaService = {
         include: [
           {
             model: Tenures,
-            as: 'tenuresMinister',
+            as: 'tenuresMinisters',
             attributes: ["id", "tenureName", "tenureType"],
           },
         ],
