@@ -1,20 +1,20 @@
-const parliamentaryYearsService = require("../services/parliamentaryYearsMna.service")
+const parliamentaryYearsMnaService = require("../services/parliamentaryYearsMna.service")
 const db = require("../models")
-const ParliamentaryYears = db.parliamentaryYearsMna
+const ParliamentaryYearsMna = db.parliamentaryYearsMna
 const logger = require('../common/winston');
 const {
     validationErrorResponse,
     notFoundResponse,
     unAuthorizedResponse,
 } = require('../common/validation-responses')
-const parliamentaryYearsController = {
+const parliamentaryYearsMnaController = {
 
     // Create Parliamentary Year 
     createParliamentaryYear: async(req,res) =>
     {
         try {
-            logger.info(`parliamentaryYearsController: createParliamentaryYear body ${JSON.stringify(req.body)}`)
-            const parliamentaryYear = await parliamentaryYearsService.createParliamentaryYear(req.body);
+            logger.info(`parliamentaryYearsMnaController: createParliamentaryYear body ${JSON.stringify(req.body)}`)
+            const parliamentaryYear = await parliamentaryYearsMnaService.createParliamentaryYear(req.body);
             logger.info("Parliamentary Year Created Successfully!")
             return res.status(200).send({
               success: true,
@@ -36,8 +36,8 @@ const parliamentaryYearsController = {
         try {
             const currentPage = parseInt(req.query.currentPage);
             const pageSize = parseInt(req.query.pageSize);
-            logger.info(`parliamentaryYearsController: getAllParliamentaryYears query ${JSON.stringify(req.query)}`)
-            const { count, totalPages, parliamentaryYears } = await parliamentaryYearsService.getAllParliamentaryYears(currentPage,pageSize);
+            logger.info(`parliamentaryYearsMnaController: getAllParliamentaryYears query ${JSON.stringify(req.query)}`)
+            const { count, totalPages, parliamentaryYears } = await parliamentaryYearsMnaService.getAllParliamentaryYears(currentPage,pageSize);
             // Check if there are no parliamentary years on the current page
             if (parliamentaryYears.length === 0) {
                 logger.info("No data found on this page!")
@@ -68,9 +68,9 @@ const parliamentaryYearsController = {
     getSingleParliamentaryYear: async(req,res) =>
     {
         try {
-            logger.info(`parliamentaryYearsController: getSingleParliamentaryYear id ${JSON.stringify(req.params.id)}`)
+            logger.info(`parliamentaryYearsMnaController: getSingleParliamentaryYear id ${JSON.stringify(req.params.id)}`)
             const parliamentaryYearId = req.params.id;
-            const fetchedParliamentaryYear = await parliamentaryYearsService.getSingleParliamentaryYear(parliamentaryYearId);
+            const fetchedParliamentaryYear = await parliamentaryYearsMnaService.getSingleParliamentaryYear(parliamentaryYearId);
             logger.info("Single Parliamentary Year Fetched Successfully!")
             return res.status(200).send({
               success: true,
@@ -90,9 +90,9 @@ const parliamentaryYearsController = {
     updateParliamentaryYear: async(req,res) =>
     {
         try{
-            logger.info(`parliamentaryYearsController: updateParliamentaryYear body ${JSON.stringify(req.body)}`)
+            logger.info(`parliamentaryYearsMnaController: updateParliamentaryYear body ${JSON.stringify(req.body)}`)
             const parliamentaryYearId = req.params.id;
-            const parliamentaryYear = await ParliamentaryYears.findByPk(parliamentaryYearId);
+            const parliamentaryYear = await ParliamentaryYearsMna.findByPk(parliamentaryYearId);
             if (!parliamentaryYear)
             {
                 return res.status(200).send({
@@ -100,7 +100,7 @@ const parliamentaryYearsController = {
                     message: "Parliamentary Year Not Found!",
                 })
             }     
-        const updatedParliamentaryYear = await parliamentaryYearsService.updateParliamentaryYear(req.body,parliamentaryYearId);
+        const updatedParliamentaryYear = await parliamentaryYearsMnaService.updateParliamentaryYear(req.body,parliamentaryYearId);
         logger.info("Parliamentary Year Updated Successfully!")
         return res.status(200).send({
           success: true,
@@ -121,9 +121,9 @@ const parliamentaryYearsController = {
     deleteParliamentaryYear: async(req,res) =>
     {
         try{
-            logger.info(`parliamentaryYearsController: deleteParliamentaryYear id ${JSON.stringify(req.params.id)}`)
+            logger.info(`parliamentaryYearsMnaController: deleteParliamentaryYear id ${JSON.stringify(req.params.id)}`)
             const parliamentaryYearId = req.params.id;
-            const parliamentaryYear = await ParliamentaryYears.findByPk(parliamentaryYearId);
+            const parliamentaryYear = await ParliamentaryYearsMna.findByPk(parliamentaryYearId);
             if (!parliamentaryYear)
             {
                 return res.status(200).send({
@@ -131,7 +131,7 @@ const parliamentaryYearsController = {
                     message: "Parliamentary Year Not Found!",
                 })
             }
-        const deletedParliamentaryYear = await parliamentaryYearsService.deleteParliamentaryYear(parliamentaryYearId);
+        const deletedParliamentaryYear = await parliamentaryYearsMnaService.deleteParliamentaryYear(parliamentaryYearId);
         logger.info("Parliamentary Year Deleted Successfully!")
         return res.status(200).send({
           success: true,
@@ -151,11 +151,11 @@ const parliamentaryYearsController = {
      // Retrieve Records by Tenure ID
 getRecordsByTenureId: async (req, res) => {
     try {
-      logger.info(`parliamentaryYearsController: getRecordsByTenureId tenureID ${JSON.stringify(req.params.tenureID)}`);
+      logger.info(`parliamentaryYearsMnaController: getRecordsByTenureId tenureID ${JSON.stringify(req.params.tenureID)}`);
       
         const tenureID = req.params.id;
      
-      const records = await parliamentaryYearsService.getRecordsByTenureId(tenureID);
+      const records = await parliamentaryYearsMnaService.getRecordsByTenureId(tenureID);
   
       if (records.length === 0) {
         logger.info("No records found for the provided Tenure ID.");
@@ -183,11 +183,11 @@ getRecordsByTenureId: async (req, res) => {
        // Retrieve Records by Term ID
 getRecordsByTermId: async (req, res) => {
   try {
-    logger.info(`parliamentaryYearsController: getRecordsByTermId tenureID ${JSON.stringify(req.params.termID)}`);
+    logger.info(`parliamentaryYearsMnaController: getRecordsByTermId tenureID ${JSON.stringify(req.params.termID)}`);
     
       const termID = req.params.id;
    
-    const records = await parliamentaryYearsService.getRecordsByTermId(termID);
+    const records = await parliamentaryYearsMnaService.getRecordsByTermId(termID);
 
     if (records.length === 0) {
       logger.info("No records found for the provided Term ID.");
@@ -215,4 +215,4 @@ getRecordsByTermId: async (req, res) => {
 }
 
 
-module.exports = parliamentaryYearsController
+module.exports = parliamentaryYearsMnaController

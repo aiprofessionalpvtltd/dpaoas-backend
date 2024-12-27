@@ -1,15 +1,15 @@
 const db = require("../models");
-const ParliamentaryYears = db.parliamentaryYearsMna;
+const ParliamentaryYearsMna = db.parliamentaryYearsMna;
 const Tenures = db.tenuresMinister;
 const Op = db.Sequelize.Op;
 const logger = require("../common/winston");
 
-const parliamentaryYearsService = {
+const parliamentaryYearsMnaService = {
   // Create Parliamentary Year
   createParliamentaryYear: async (req) => {
     try {
       // Create the Parliamentary Year and save it in the database
-      const parliamentaryYear = await ParliamentaryYears.create(req);
+      const parliamentaryYear = await ParliamentaryYearsMna.create(req);
       return parliamentaryYear;
     } catch (error) {
       throw { message: error.message || "Error Creating Parliamentary Year!" };
@@ -21,7 +21,7 @@ const parliamentaryYearsService = {
     try {
       const offset = currentPage * pageSize;
       const limit = pageSize;
-      const { count, rows } = await ParliamentaryYears.findAndCountAll({
+      const { count, rows } = await ParliamentaryYearsMna.findAndCountAll({
         include: [
           {
             model: Tenures,
@@ -68,7 +68,7 @@ const parliamentaryYearsService = {
   // Get Single Parliamentary Year
   getSingleParliamentaryYear: async (parliamentaryYearId) => {
     try {
-      const parliamentaryYear = await ParliamentaryYears.findOne({
+      const parliamentaryYear = await ParliamentaryYearsMna.findOne({
         where: { id: parliamentaryYearId },
         include: [
           {
@@ -90,11 +90,11 @@ const parliamentaryYearsService = {
   // Update Parliamentary Year
   updateParliamentaryYear: async (req, parliamentaryYearId) => {
     try {
-      await ParliamentaryYears.update(req, {
+      await ParliamentaryYearsMna.update(req, {
         where: { id: parliamentaryYearId },
       });
       // Fetch the updated parliamentary year after the update
-      const updatedParliamentaryYear = await ParliamentaryYears.findOne({
+      const updatedParliamentaryYear = await ParliamentaryYearsMna.findOne({
         where: { id: parliamentaryYearId },
       });
       return updatedParliamentaryYear;
@@ -109,11 +109,11 @@ const parliamentaryYearsService = {
       const updatedData = {
         status: "inactive",
       };
-      await ParliamentaryYears.update(updatedData, {
+      await ParliamentaryYearsMna.update(updatedData, {
         where: { id: parliamentaryYearId },
       });
       // Fetch the updated political party after the update
-      const deletedParliamentaryYear = await ParliamentaryYears.findOne({
+      const deletedParliamentaryYear = await ParliamentaryYearsMna.findOne({
         where: { id: parliamentaryYearId },
       });
       return deletedParliamentaryYear;
@@ -124,7 +124,7 @@ const parliamentaryYearsService = {
   getRecordsByTenureId: async (tenureID) => {
     try {
       // Fetch records where fkTenureId matches the provided tenureID
-      const records = await ParliamentaryYears.findAll({
+      const records = await ParliamentaryYearsMna.findAll({
         where: {
           fkTenureId: tenureID,
         },
@@ -141,7 +141,7 @@ const parliamentaryYearsService = {
   getRecordsByTermId: async (termID) => {
     try {
       // Fetch records where fkTermId matches the provided termID
-      const records = await ParliamentaryYears.findAll({
+      const records = await ParliamentaryYearsMna.findAll({
         where: {
           fkTermId: termID,
         },
@@ -156,4 +156,4 @@ const parliamentaryYearsService = {
   },
 };
 
-module.exports = parliamentaryYearsService;
+module.exports = parliamentaryYearsMnaService;

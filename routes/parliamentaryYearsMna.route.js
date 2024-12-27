@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const parliamentaryYears = require('../controllers/parliamentaryYearsMna.controller');
+const parliamentaryYearsMna = require('../controllers/parliamentaryYearsMna.controller');
 
 // Create Parliamentary Years
 /**
  * @swagger
- * /api/parliamentaryYears/create:
+ * /api/parliamentaryYearsMna/create:
  *   post:
  *     summary: Create a new Parliamentary Year
- *     tags: [Parliamentary Years]
+ *     tags: [Parliamentary Years Mna]
  *     security:
  *       - BearerAuth: []
  *     requestBody:
@@ -32,15 +32,15 @@ const parliamentaryYears = require('../controllers/parliamentaryYearsMna.control
  *       '200':
  *         description: A successful response
  */
-router.post("/create", parliamentaryYears.createParliamentaryYear)
+router.post("/create", parliamentaryYearsMna.createParliamentaryYear)
 
 // Get All Parliamentary Years
  /**
  * @swagger
-  * /api/parliamentaryYears:
+  * /api/parliamentaryYearsMna:
  *   get:
  *     summary: Get All Parliamentary Years with respect to currentPage and pageSize
- *     tags: [Parliamentary Years]
+ *     tags: [Parliamentary Years Mna]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -58,15 +58,15 @@ router.post("/create", parliamentaryYears.createParliamentaryYear)
  *       '200':
  *         description: A successful response
  */
-router.get("/", parliamentaryYears.getAllParliamentaryYears)
+router.get("/", parliamentaryYearsMna.getAllParliamentaryYears)
 
 // Get Single Parliamentary Year
 /**
  * @swagger
- * /api/parliamentaryYears/{id}:
+ * /api/parliamentaryYearsMna/{id}:
  *   get:
  *     summary: Get Single Parliamentary Year
- *     tags: [Parliamentary Years]
+ *     tags: [Parliamentary Years Mna]
  *     parameters:
  *       - in: path
  *         name: id
@@ -78,15 +78,15 @@ router.get("/", parliamentaryYears.getAllParliamentaryYears)
  *       '200':
  *         description: A successful response
  */
-router.get("/:id", parliamentaryYears.getSingleParliamentaryYear)
+router.get("/:id", parliamentaryYearsMna.getSingleParliamentaryYear)
 
 // Update Session
 /**
  * @swagger
- * /api/parliamentaryYears/update/{id}:
+ * /api/parliamentaryYearsMna/update/{id}:
  *   put:
  *     summary: Get Updated Parliamentary Year
- *     tags: [Parliamentary Years]
+ *     tags: [Parliamentary Years Mna]
  *     security:
  *       - BearerAuth: []
  *     requestBody:
@@ -119,15 +119,15 @@ router.get("/:id", parliamentaryYears.getSingleParliamentaryYear)
  *       '200':
  *         description: A successful response
  */
-router.put("/update/:id", parliamentaryYears.updateParliamentaryYear)
+router.put("/update/:id", parliamentaryYearsMna.updateParliamentaryYear)
 
 // Inactive/Delete Parliamentary Year
 /**
  * @swagger
- * /api/parliamentaryYears/delete/{id}:
+ * /api/parliamentaryYearsMna/delete/{id}:
  *   delete:
  *     summary: Delete Parliamentary Years
- *     tags: [Parliamentary Years]
+ *     tags: [Parliamentary Years Mna]
  *     parameters:
  *       - in: path
  *         name: id
@@ -139,11 +139,11 @@ router.put("/update/:id", parliamentaryYears.updateParliamentaryYear)
  *       '200':
  *         description: A successful response
  */
-router.delete("/delete/:id", parliamentaryYears.deleteParliamentaryYear)
+router.delete("/delete/:id", parliamentaryYearsMna.deleteParliamentaryYear)
 
 // Retrieve Records by Tenure ID
-router.get("/:id/tenure", parliamentaryYears.getRecordsByTenureId)
+router.get("/:id/tenure", parliamentaryYearsMna.getRecordsByTenureId)
 
-router.get("/:id/term", parliamentaryYears.getRecordsByTermId)
+router.get("/:id/term", parliamentaryYearsMna.getRecordsByTermId)
 
 module.exports = router;
