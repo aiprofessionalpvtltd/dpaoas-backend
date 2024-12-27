@@ -34,11 +34,6 @@ const parliamentaryYearsService = {
             ],
             required: false, // Include even if there's no matching Tenures record
           },
-          {
-            model: db.terms,
-            attributes: ["id", "termName"],
-            required: false,
-          },
         ],
         offset,
         limit,
@@ -78,10 +73,6 @@ const parliamentaryYearsService = {
           {
             model: Tenures,
             attributes: ["id", "tenureName", "tenureType"],
-          },
-          {
-            model: db.terms,
-            attributes: ["id", "termName"],
           },
         ],
       });
