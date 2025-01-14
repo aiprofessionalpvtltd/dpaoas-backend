@@ -25,6 +25,7 @@ const Op = db.Sequelize.Op;
 const questionsService = {
   // Create A New Question
   createQuestion: async (req, url, file) => {
+    const transaction = await db.sequelize.transaction();
     try {
       const formattedDate = moment(req.noticeOfficeDiaryDate).format(
         "DD-MM-YYYY"
@@ -53,7 +54,7 @@ const questionsService = {
           : "inNotice",
         fkGroupId: req.fkGroupId ? req.fkGroupId : null,
         fkDivisionId: req.fkDivisionId ? req.fkDivisionId : null,
-      });
+      }, { transaction });
 
       const noticeOfficeDiary = await NoticeOfficeDairy.create({
         noticeOfficeDiaryNo: req.noticeOfficeDiaryNo,
@@ -71,18 +72,50 @@ const questionsService = {
         questionStatusDate: db.sequelize.literal("CURRENT_TIMESTAMP"),
       });
 
+      // const questionDiary = await QuestionDiary.create({
+      //   questionID: question.id,
+      //   questionDiaryNo: req.questionDiaryNo,
+      // });
+
+      // Find the last diary number for this category
+      const lastDiaryEntry = await QuestionDiary.findOne({
+        include: [{
+          model: Questions,
+          as: 'questions',
+          where: {
+            questionCategory: req.questionCategory
+          },
+          required: true
+        }],
+        order: [['questionDiaryNo', 'DESC']],
+        transaction
+      });
+
+      console.log("lastDiaryEntry: " + JSON.stringify(lastDiaryEntry))
+
+      const nextDiaryNo = lastDiaryEntry ? lastDiaryEntry.questionDiaryNo + 1 : 1;
+
+      // Now create the question diary entry
       const questionDiary = await QuestionDiary.create({
         questionID: question.id,
-        questionDiaryNo: req.questionDiaryNo,
-      });
+        questionDiaryNo: nextDiaryNo, // Set the generated diary number
+      }, { transaction });
+
+
+
 
       await Questions.update(
         {
           fkNoticeDiary: noticeOfficeDiary.id,
           fkQuestionDiaryId: questionDiary.id,
         },
-        { where: { id: question.id } }
+        {
+          where: { id: question.id },
+          transaction
+        }
       );
+
+      await transaction.commit();
 
       return question;
     } catch (error) {
@@ -154,6 +187,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -275,6 +309,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -397,6 +432,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -450,10 +486,6 @@ const questionsService = {
       throw new Error(error.message || "Error Fetching Today's Questions");
     }
   },
-
-
-
-
 
   getMemberWiseStatement: async (fromSession, toSession) => {
     try {
@@ -717,8 +749,6 @@ const questionsService = {
     }
   },
 
-
-
   getQuestionsByStatus: async (statuses) => {
     try {
       const fetchQuestions = async (status) => {
@@ -783,6 +813,7 @@ const questionsService = {
             },
             {
               model: QuestionDiary,
+              as: "questionDiary",
               attributes: ["id", "questionID", "questionDiaryNo"],
             },
             {
@@ -879,6 +910,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -944,7 +976,11 @@ const questionsService = {
         ],
       });
 
-      if (question.questionImage && question.questionImage.length) {
+      if (!question) {
+        throw new Error(`Question with ID ${questionId} not found.`);
+      }
+
+      if (question?.questionImage && question?.questionImage?.length) {
         question.questionImage = question.questionImage.map((imageString) =>
           JSON.parse(imageString)
         );
@@ -994,6 +1030,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -1604,6 +1641,7 @@ const questionsService = {
             },
             {
               model: QuestionDiary,
+              as: "questionDiary",
               attributes: ["id", "questionID", "questionDiaryNo"],
             },
             {
@@ -1734,6 +1772,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -1845,6 +1884,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -2021,6 +2061,7 @@ const questionsService = {
               },
               {
                 model: QuestionDiary,
+                as: "questionDiary",
                 attributes: ["id", "questionID", "questionDiaryNo"],
               },
               {
