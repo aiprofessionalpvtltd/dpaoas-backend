@@ -828,7 +828,7 @@ db.motionMinistries.belongsTo(db.ministries, {
   foreignKey: "fkMinistryId",
   as: "ministries",
 });
-db.questions.belongsTo(db.questionDiary, { foreignKey: "fkQuestionDiaryId" });
+// db.questions.belongsTo(db.questionDiary, { foreignKey: "fkQuestionDiaryId" });
 db.questions.belongsTo(db.sessions, { foreignKey: "fkSessionId" });
 db.questions.belongsTo(db.questionStatus, {
   foreignKey: "fkQuestionStatus",
@@ -1642,6 +1642,10 @@ db.financeMoneyBills.hasMany(db.billDocuments, {
     foreignKey: "fkBillDocumentId",
     as: "billDocuments",
 });
+db.questions.belongsTo(db.questionDiary, { foreignKey: 'fkQuestionDiaryId', as: 'questionDiary' });
+db.questionDiary.hasMany(db.questions, { foreignKey: 'fkQuestionDiaryId', as: 'questions' });
+
+
 
 sequelize.sync();
 module.exports = db;

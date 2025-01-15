@@ -30,6 +30,10 @@ module.exports = (sequelize, Sequelize) => {
         updatedAt: Sequelize.DATE,
     });
 
+    questionDiaries.associate = function (models) {
+        questionDiaries.hasMany(models.questions, { foreignKey: 'fkQuestionDiaryId', as: 'questions' }); // Inverse association
+    };
+
 
     return questionDiaries;
 };
