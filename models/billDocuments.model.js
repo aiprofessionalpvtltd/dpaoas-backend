@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
             }
         },
         documentType: {
-            type: Sequelize.ENUM("Ammendment", "Bill", "Committee Report", "Gazette", "Letter Sent to Senator", "Member Notice for Passage", "Member Notice for Withdrawal", "Notice", "Proforma"),
+            type: Sequelize.ENUM("Ammendment", "Bill", "Committee Report", "Gazette", "Letter Sent to Senator", "Member Notice for Passage", "Member Notice for Withdrawal", "Notice", "Proforma", "Notes", "Correspondence", "Bill (English)", "Bill (Urdu)"),
             allowNull: true,
         },
         documentDate: {

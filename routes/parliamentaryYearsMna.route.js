@@ -142,7 +142,7 @@ router.put("/update/:id", parliamentaryYearsMna.updateParliamentaryYear)
 router.delete("/delete/:id", parliamentaryYearsMna.deleteParliamentaryYear)
 
 // Retrieve Records by Tenure ID
-router.get("/:id/tenure", parliamentaryYearsMna.getRecordsByTenureId)
+router.get("/:id/tenureMinister", parliamentaryYearsMna.getRecordsByTenureId)
 
 router.get("/:id/term", parliamentaryYearsMna.getRecordsByTermId)
 

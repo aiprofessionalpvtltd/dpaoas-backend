@@ -67,6 +67,15 @@ const mnaService = {
                         as: 'parliamentaryYears',
                         attributes: ['id','parliamentaryTenure'],
                     },
+                    {
+                        model: db.tenuresMinister, as: 'tenuresMinisters',
+                        attributes: ['id','tenureName']
+                    },
+                    {
+                        model: db.parliamentaryYearsMna,
+                        as: 'mnaParliamentaryYears',
+                        attributes: ['id','parliamentaryTenure'],
+                    },
                 ],
                 order: [
                     ['id', 'DESC'],
@@ -295,7 +304,7 @@ const mnaService = {
             const result = await MNAs.findAll({
                 raw: false,
                 where: {
-                    fkParliamentaryYearId: id
+                    fkMnaParliamentaryYearId: id
                 },
                 include: [
                     {
@@ -304,8 +313,8 @@ const mnaService = {
                         attributes: ['id','tenureName']
                     },
                     {
-                        model: db.parliamentaryYears,
-                        as: 'parliamentaryYears',
+                        model: db.parliamentaryYearsMna,
+                        as: 'mnaParliamentaryYears',
                         attributes: ['id','parliamentaryTenure'],
                     },
                     {
@@ -315,6 +324,7 @@ const mnaService = {
                     }
                 ],
             });
+            
             return result
         } catch (error) {
             console.error('Error Fetching Minister request:', error.message);

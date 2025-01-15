@@ -1,5 +1,5 @@
 const db = require("../models");
-const IntroducedInSenateBills = db.introducedInSenateBills;
+const IntroducedInSenateBills = db.financeMoneyBills;
 const SenateBillMnaMovers = db.senateBillMnaMovers;
 const SenateBillMinistryMovers = db.senateBillMinistryMovers;
 const SenateBillSenatorMovers = db.senateBillSenatorMovers;

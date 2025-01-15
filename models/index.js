@@ -1386,7 +1386,7 @@ db.senateBillMinistryMovers.belongsTo(db.introducedInSenateBills, {
 });
 db.senateBillMinistryMovers.belongsTo(db.ministries, {
   foreignKey: "fkMinistryId",
-  as: "ministrie",
+  as: "ministries",
 });
 db.introducedInSenateBills.hasMany(db.senateBillMinistryMovers, {
   foreignKey: "fkIntroducedInSenateBillId",
@@ -1579,9 +1579,9 @@ db.legislationMovers.belongsTo(db.members, { foreignKey: 'fkMemberId', as: 'memb
 db.legislativeBills.hasMany(db.legislationMovers, { foreignKey: 'fklegislationBillId', as: 'legislationMovers' });
 
 // ministrie accossication 
-db.ministries.belongsTo(db.tenures, {
-  foreignKey: "fkTenureId",
-  as: "tenure",
+db.ministries.belongsTo(db.tenuresMinister, {
+  foreignKey: "fkMinisterTenureId",
+  as: "tenuresMinisters",
 });
 
 db.tenuresMinisters = require("./tenuresMinister.model.js")(sequelize, SequelizeMain);
@@ -1594,6 +1594,53 @@ db.parliamentaryYearsMna.belongsTo(db.tenures, {
 db.parliamentaryYearsMna.belongsTo(db.tenuresMinisters, {
   foreignKey: 'fkMinisterTenureId',
   as: 'tenuresMinisters'
+});
+
+db.legisOrderOfDay = require("./legisOrderOfDay.model.js")(sequelize, SequelizeMain);
+
+// Add associations
+db.legisOrderOfDay.belongsTo(db.sessions, { foreignKey: 'fkSessionId', as: 'session' });
+db.sessions.hasMany(db.legisOrderOfDay, { foreignKey: 'fkSessionId', as: 'orderOfDays' });
+
+// Finance Money Bills
+db.financeMoneyBills = require("./financeMoneyBills.model.js")(sequelize, SequelizeMain);
+
+// Finance Money Bills associations
+db.financeMoneyBills.belongsTo(db.parliamentaryYears, {
+    foreignKey: "fkParliamentaryYearId",
+    as: "parliamentaryYears",
+});
+db.financeMoneyBills.belongsTo(db.parliamentaryYearsMna, {
+    foreignKey: "fkMnaParliamentaryYearId",
+    as: "mnaParliamentaryYears",
+});
+db.financeMoneyBills.belongsTo(db.tenures, {
+    foreignKey: "fkTenureId",
+    as: "tenures",
+});
+db.financeMoneyBills.belongsTo(db.tenuresMinister, {
+    foreignKey: "fkMinisterTenureId",
+    as: "tenuresMinisters",
+});
+db.financeMoneyBills.belongsTo(db.terms, {
+    foreignKey: "fkTermId",
+    as: "terms",
+});
+db.financeMoneyBills.belongsTo(db.sessions, {
+    foreignKey: "fkSessionId",
+    as: "sessions",
+});
+db.financeMoneyBills.belongsTo(db.billStatuses, {
+    foreignKey: "fkBillStatus",
+    as: "billStatuses",
+});
+db.financeMoneyBills.belongsTo(db.users, {
+    foreignKey: "fkUserId",
+    as: "user",
+});
+db.financeMoneyBills.hasMany(db.billDocuments, {
+    foreignKey: "fkBillDocumentId",
+    as: "billDocuments",
 });
 
 sequelize.sync();

@@ -21,6 +21,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkMinisterTenureId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'tenuresMinisters',
+                key: 'id'
+            }
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });

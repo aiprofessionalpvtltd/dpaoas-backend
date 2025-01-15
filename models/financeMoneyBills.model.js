@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const IntroducedInSenateBill = sequelize.define("introducedInSenateBills", {
+    const FinanceMoneyBill = sequelize.define("financeMoneyBills", {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -158,19 +158,16 @@ module.exports = (sequelize, Sequelize) => {
         updatedAt: Sequelize.DATE,
     });
 
-    IntroducedInSenateBill.associate = function (models) {
-        IntroducedInSenateBill.belongsTo(models.parliamentaryYears, { foreignKey: 'fkParliamentaryYearId', as: 'parliamentaryYear' });
-        IntroducedInSenateBill.belongsTo(models.parliamentaryYearsMna, { foreignKey: 'fkMnaParliamentaryYearId', as: 'mnaParliamentaryYears' });
-        IntroducedInSenateBill.belongsTo(models.billStatuses, { foreignKey: 'fkBillStatus', as: 'billStatuses' });
-        IntroducedInSenateBill.belongsTo(models.sessions, { foreignKey: 'fkSessionId', as: 'sessions' });
-        IntroducedInSenateBill.hasMany(models.senateBillSenatorMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillSenatorMovers' });
-        IntroducedInSenateBill.hasMany(models.senateBillMinistryMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillMinistryMovers' });
-        IntroducedInSenateBill.hasMany(models.senateBillMnaMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillMnaMovers' });
-        IntroducedInSenateBill.hasOne(models.introducedInHouses, { foreignKey: 'fkIntroducedInHouseId', as: 'introducedInHouses' });
-        IntroducedInSenateBill.hasOne(models.memberPassages, { foreignKey: 'fkMemberPassageId', as: 'memberPassages' });
-        IntroducedInSenateBill.hasMany(models.billDocuments, { foreignKey: 'fkBillDocumentId', as: 'billDocuments' });
-        IntroducedInSenateBill.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'user' });
+    FinanceMoneyBill.associate = function (models) {
+        FinanceMoneyBill.belongsTo(models.parliamentaryYears, { foreignKey: 'fkParliamentaryYearId', as: 'parliamentaryYear' });
+        FinanceMoneyBill.belongsTo(models.parliamentaryYearsMna, { foreignKey: 'fkMnaParliamentaryYearId', as: 'mnaParliamentaryYears' });
+        FinanceMoneyBill.belongsTo(models.billStatuses, { foreignKey: 'fkBillStatus', as: 'billStatuses' });
+        FinanceMoneyBill.belongsTo(models.sessions, { foreignKey: 'fkSessionId', as: 'sessions' });
+        FinanceMoneyBill.hasOne(models.introducedInHouses, { foreignKey: 'fkIntroducedInHouseId', as: 'introducedInHouses' });
+        FinanceMoneyBill.hasOne(models.memberPassages, { foreignKey: 'fkMemberPassageId', as: 'memberPassages' });
+        FinanceMoneyBill.hasMany(models.billDocuments, { foreignKey: 'fkBillDocumentId', as: 'billDocuments' });
+        FinanceMoneyBill.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'user' });
     };
 
-    return IntroducedInSenateBill;
+    return FinanceMoneyBill;
 };

@@ -112,6 +112,8 @@ const authRoute = require('./routes/auth.router')
 const mnas = require('./routes/mnas.route')
 // Introduced In Senate Bill
 const introducedInSenateBills = require('./routes/introducedInSenateBills.route')
+const financeMoneyBillsRouter = require('./routes/financeMoneyBills.route');
+
 // bill Statuses
 const billStatuses = require('./routes/billStatuses.route')
 // Manage Committee 
@@ -128,6 +130,9 @@ const ordinances = require('./routes/ordinances.route')
 
 const correspondenceRouter = require('./routes/correspondences.route')
 const ministriesRoutes = require("./routes/ministries.route");
+
+// Order of day (Legis)
+const legisOrderOfDayRouter = require("./routes/legisOrderOfDay.route");
 
 // app.use((err, req, res, next) => {
 //   console.log("error", err);
@@ -284,6 +289,8 @@ app.use('/api/auth', authRoute)
 app.use('/api/mnas', mnas)
 // introduced In Senate Bill
 app.use('/api/senate-bill', introducedInSenateBills)
+// finance Money Bills
+app.use('/api/finance-money-bill', financeMoneyBillsRouter)
 // bill Statuses
 app.use('/api/bill-Status', billStatuses)
 // manage committees
@@ -305,6 +312,9 @@ app.use('/api/lawActs', lawActRoutes);
 app.use("/api/caseNotifications", casesNotificationRouter);
 app.use("/api/frNotifications", frNotificationRouter);
 app.use("/api/approvedCaseNotifications", approvedCaseNotificationRouter);
+
+// Order of day (Legis)
+app.use("/api/legisOrderOfDay", legisOrderOfDayRouter);
 
 app.use(
   '/assets',

@@ -13,13 +13,13 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        fkTenureId: {
+        fkMinisterTenureId: {
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {
-                model: 'tenures',
-                key: 'id',
-            },
+                model: 'tenuresMinisters',
+                key: 'id'
+            }
         },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
@@ -27,9 +27,9 @@ module.exports = (sequelize, Sequelize) => {
 
     ministries.associate = function (models) {
         ministries.belongsToMany(models.mnas, { through: 'mnaMinistries', foreignKey: 'ministryId', as: 'mnas' });
-        ministries.belongsTo(models.tenures, {
-            foreignKey: "fkTenureId",
-            as: "tenure",
+        ministries.belongsTo(models.tenuresMinisters, {
+            foreignKey: "fkMinisterTenureId",
+            as: "tenuresMinisters",
         });
     };
 

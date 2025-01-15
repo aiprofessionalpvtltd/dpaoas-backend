@@ -53,6 +53,9 @@ module.exports = (sequelize, Sequelize) => {
        
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
+    }, {
+        tableName: 'parliamentaryYearsMna',
+        freezeTableName: true
     });
     
     parliamentaryYearsMna.associate = function(models) {

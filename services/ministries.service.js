@@ -2,6 +2,7 @@ const db = require("../models");
 const Ministries = db.ministries;
 const Users = db.users;
 const Tenures = db.tenures;
+const TenuresMinister = db.tenuresMinisters;
 const Op = db.Sequelize.Op;
 const logger = require('../common/winston');
 
@@ -31,7 +32,7 @@ const MinistriesService = {
             const limit = pageSize;
 
             const { count, rows } = await Ministries.findAndCountAll({
-                include: [{ model: Tenures, as: "tenure" }],
+                include: [{ model: TenuresMinister, as: "tenuresMinister" }],
                 offset,
                 limit,
                 order: [["id", "ASC"]],
@@ -100,12 +101,12 @@ const MinistriesService = {
         }
     },
 
-    getMinistriesByTenure: async (fkTenureId) => {
+    getMinistriesByTenure: async (id) => {
         try {
             const ministries = await Ministries.findAll({
-                where: { fkTenureId },
-                attributes: ['id', 'ministryName', 'ministryStatus', 'fkTenureId'],
-                include: [{ model: Tenures, as: "tenure" }],
+                where: { fkMinisterTenureId: id },
+                attributes: ['id', 'ministryName', 'ministryStatus', 'fkMinisterTenureId'],
+                include: [{ model: TenuresMinister, as: "tenuresMinisters" }],
             });
             return ministries;
         } catch (error) {
