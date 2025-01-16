@@ -648,16 +648,39 @@ const senateBillService = {
     // Update senate Bill Data
     updateIntroducedInSenateBill: async (updatedData, senateBillId) => {
         try {
-
-
             let IntroducedInSenateBill
 
+            // First get existing data
+            const existingBill = await IntroducedInSenateBills.findByPk(senateBillId);
+            
+            // Helper function to validate and parse date
+            const parseDate = (dateString) => {
+                if (!dateString) return null;
+                const date = new Date(dateString);
+                return date instanceof Date && !isNaN(date) ? date : null;
+            };
+            
+            // Merge existing data with new updates
+            const fieldsToUpdate = {
+                ...existingBill.dataValues,  // Keep all existing fields
+                ...updatedData,  // Override with any new updates
+                // Validate and parse date fields
+                dateOfCirculationOfNotice: parseDate(updatedData.dateOfCirculationOfNotice) || existingBill.dateOfCirculationOfNotice,
+                dateofReciptofNotice: parseDate(updatedData.dateofReciptofNotice) || existingBill.dateofReciptofNotice,
+                dateofReferencetoStandingCommittee: parseDate(updatedData.dateofReferencetoStandingCommittee) || existingBill.dateofReferencetoStandingCommittee
+            };
+
+            // Remove any undefined or null values to prevent overwriting existing data
+            Object.keys(fieldsToUpdate).forEach(key => {
+                if (fieldsToUpdate[key] === undefined || fieldsToUpdate[key] === 'Invalid Date') {
+                    delete fieldsToUpdate[key];
+                }
+            });
+
             // Update Senate bill attributes if provided in updatedData
-            if (Object.keys(updatedData).length > 0) {
-                IntroducedInSenateBill = await IntroducedInSenateBills.update(updatedData, { where: { id: senateBillId } });
-
+            if (Object.keys(fieldsToUpdate).length > 0) {
+                IntroducedInSenateBill = await IntroducedInSenateBills.update(fieldsToUpdate, { where: { id: senateBillId } });
             }
-
 
             if (updatedData.senateBillSenatorMovers) {
                 // Delete existing SenateBillSenatorMovers entries

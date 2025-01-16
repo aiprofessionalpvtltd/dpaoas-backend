@@ -27,99 +27,99 @@ const questionsService = {
   createQuestion: async (req, url, file) => {
     const transaction = await db.sequelize.transaction();
     try {
-      const formattedDate = moment(req.noticeOfficeDiaryDate).format(
-        "DD-MM-YYYY"
-      );
-      const fkMemberIdValue = req.fkMemberId
-        ? req.fkMemberId
-        : req.web_id
-          ? req.web_id
-          : null;
-      const question = await Questions.create({
-        fkSessionId: req.fkSessionId ? req.fkSessionId : null,
-        questionCategory: req.questionCategory ? req.questionCategory : null,
-        fkMemberId: fkMemberIdValue,
-        memberPosition: req.memberPosition ? req.memberPosition : null,
-        englishText: req.englishText ? req.englishText : null,
-        urduText: req.urduText ? req.urduText : null,
-        fkQuestionStatus: req.fkQuestionStatus ? req.fkQuestionStatus : null,
-        initiatedByBranch: req.initiatedByBranch ? req.initiatedByBranch : null,
-        sentToBranch: req.sentToBranch ? req.sentToBranch : null,
-        device: req.device ? req.device : "web",
-        description: req.description ? req.description : null,
-        web_id: req.web_id ? req.web_id : null,
-        submittedBy: req.submittedBy ? req.submittedBy : null,
-        questionSentStatus: req.questionSentStatus
-          ? req.questionSentStatus
-          : "inNotice",
-        fkGroupId: req.fkGroupId ? req.fkGroupId : null,
-        fkDivisionId: req.fkDivisionId ? req.fkDivisionId : null,
-      }, { transaction });
+        const formattedDate = moment(req.noticeOfficeDiaryDate).format("DD-MM-YYYY");
+        const fkMemberIdValue = req.fkMemberId || req.web_id || null;
 
-      const noticeOfficeDiary = await NoticeOfficeDairy.create({
-        noticeOfficeDiaryNo: req.noticeOfficeDiaryNo,
-        noticeOfficeDiaryDate: req.noticeOfficeDiaryDate
-          ? moment(req.noticeOfficeDiaryDate).format("YYYY-MM-DD")
-          : null,
-        noticeOfficeDiaryTime: req.noticeOfficeDiaryTime,
-        businessType: "Question",
-        businessId: question.dataValues.id,
-      });
-      await QuestionStatusHistory.create({
-        fkQuestionId: question.id,
-        fkSessionId: req.fkSessionId,
-        fkQuestionStatus: req.fkQuestionStatus,
-        questionStatusDate: db.sequelize.literal("CURRENT_TIMESTAMP"),
-      });
+        console.log("Searching last diary entry for:");
+        console.log("Category:", req.questionCategory);
+        console.log("Session:", req.fkSessionId);
 
-      // const questionDiary = await QuestionDiary.create({
-      //   questionID: question.id,
-      //   questionDiaryNo: req.questionDiaryNo,
-      // });
+        // Find the last diary entry for the specified category and session
+        const lastDiaryEntry = await QuestionDiary.findOne({
+            include: [{
+                model: Questions,
+                as: "questions",
+                required: true,
+                where: {
+                    questionCategory: req.questionCategory,
+                    fkSessionId: req.fkSessionId
+                }
+            }],
+            where: {
+                questionDiaryNo: { [db.Sequelize.Op.ne]: null } // Only consider entries with non-null diary numbers
+            },
+            order: [['questionDiaryNo', 'DESC']],
+            transaction
+        });
 
-      // Find the last diary number for this category
-      const lastDiaryEntry = await QuestionDiary.findOne({
-        include: [{
-          model: Questions,
-          as: 'questions',
-          where: {
-            questionCategory: req.questionCategory
-          },
-          required: true
-        }],
-        order: [['questionDiaryNo', 'DESC']],
-        transaction
-      });
+        const nextDiaryNo = lastDiaryEntry?.questionDiaryNo ? lastDiaryEntry.questionDiaryNo + 1 : 1;
+        console.log("Next Diary No assigned:", nextDiaryNo);
 
-      console.log("lastDiaryEntry: " + JSON.stringify(lastDiaryEntry))
+        // Create the question record
+        const question = await Questions.create({
+            fkSessionId: req.fkSessionId || null,
+            questionCategory: req.questionCategory || null,
+            fkMemberId: fkMemberIdValue,
+            memberPosition: req.memberPosition || null,
+            englishText: req.englishText || null,
+            urduText: req.urduText || null,
+            fkQuestionStatus: req.fkQuestionStatus || null,
+            initiatedByBranch: req.initiatedByBranch || null,
+            sentToBranch: req.sentToBranch || null,
+            device: req.device || "web",
+            description: req.description || null,
+            web_id: req.web_id || null,
+            submittedBy: req.submittedBy || null,
+            questionSentStatus: req.questionSentStatus || "inNotice",
+            fkGroupId: req.fkGroupId || null,
+            fkDivisionId: req.fkDivisionId || null,
+        }, { transaction });
 
-      const nextDiaryNo = lastDiaryEntry ? lastDiaryEntry.questionDiaryNo + 1 : 1;
+        // Create the notice office diary entry
+        const noticeOfficeDiary = await NoticeOfficeDairy.create({
+            noticeOfficeDiaryNo: req.noticeOfficeDiaryNo,
+            noticeOfficeDiaryDate: req.noticeOfficeDiaryDate
+                ? moment(req.noticeOfficeDiaryDate).format("YYYY-MM-DD")
+                : null,
+            noticeOfficeDiaryTime: req.noticeOfficeDiaryTime,
+            businessType: "Question",
+            businessId: question.id,
+        }, { transaction });
 
-      // Now create the question diary entry
-      const questionDiary = await QuestionDiary.create({
-        questionID: question.id,
-        questionDiaryNo: nextDiaryNo, // Set the generated diary number
-      }, { transaction });
+        // Log the question status history
+        await QuestionStatusHistory.create({
+            fkQuestionId: question.id,
+            fkSessionId: req.fkSessionId,
+            fkQuestionStatus: req.fkQuestionStatus,
+            questionStatusDate: db.sequelize.literal("CURRENT_TIMESTAMP"),
+        }, { transaction });
 
+        // Create the question diary entry
+        const questionDiary = await QuestionDiary.create({
+            questionID: question.id,
+            questionDiaryNo: nextDiaryNo,
+        }, { transaction });
 
+        console.log("Created new question diary:", JSON.stringify(questionDiary.get({ plain: true })));
 
+        // Update the question with diary references
+        await Questions.update(
+            {
+                fkNoticeDiary: noticeOfficeDiary.id,
+                fkQuestionDiaryId: questionDiary.id,
+            },
+            {
+                where: { id: question.id },
+                transaction
+            }
+        );
 
-      await Questions.update(
-        {
-          fkNoticeDiary: noticeOfficeDiary.id,
-          fkQuestionDiaryId: questionDiary.id,
-        },
-        {
-          where: { id: question.id },
-          transaction
-        }
-      );
-
-      await transaction.commit();
-
-      return question;
+        await transaction.commit();
+        return question;
     } catch (error) {
-      throw { message: error.message || "Error Creating Question!" };
+        await transaction.rollback();
+        console.error("Error in createQuestion:", error);
+        throw { message: error.message || "Error Creating Question!" };
     }
   },
 

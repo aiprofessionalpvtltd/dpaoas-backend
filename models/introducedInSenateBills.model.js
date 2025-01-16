@@ -156,6 +156,20 @@ module.exports = (sequelize, Sequelize) => {
         },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
+
+                // New added
+                dateOfCirculationOfNotice: {
+                    type: Sequelize.DATE,
+                    allowNull: true
+                },
+                dateofReciptofNotice: {
+                    type: Sequelize.DATE,
+                    allowNull: true
+                },
+                dateofReferencetoStandingCommittee: {
+                    type: Sequelize.DATE,
+                    allowNull: true
+                },
     });
 
     IntroducedInSenateBill.associate = function (models) {
