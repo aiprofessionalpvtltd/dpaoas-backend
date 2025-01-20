@@ -85,7 +85,8 @@ const senateBillController = {
                 logger.info("No data found for this category on this page!");
                 return res.status(200).send({
                     success: true,
-                    message: 'No data found for this category on this page!'
+                    message: 'No data found for this category on this page!',
+                    data: { senateBills: [] }
                 });
             } else {
                 logger.info("All senate Bills Fetched Successfully!");

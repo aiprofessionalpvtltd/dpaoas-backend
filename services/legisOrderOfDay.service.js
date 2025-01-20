@@ -1,25 +1,27 @@
 const db = require("../models");
 const LegisOrderOfDay = db.legisOrderOfDay;
 
-exports.create = async (data) => {
-    return await LegisOrderOfDay.create(data);
+exports.create = async (legisOrderOfDayData) => {
+    return await LegisOrderOfDay.create({
+        sittingId: legisOrderOfDayData.sittingId,
+        sittingLabel: legisOrderOfDayData.sittingLabel,
+        content: legisOrderOfDayData.content,
+        fkSessionId: legisOrderOfDayData.fkSessionId
+    });
 };
 
 exports.findAll = async () => {
     return await LegisOrderOfDay.findAll({
-        include: [{
-            model: db.sessions,
-            as: 'session'
-        }]
+        attributes: ['id', 'sittingId', 'sittingLabel', 'content', 'fkSessionId'],
+        include: ['session']
     });
 };
 
 exports.findOne = async (id) => {
-    return await LegisOrderOfDay.findByPk(id, {
-        include: [{
-            model: db.sessions,
-            as: 'session'
-        }]
+    return await LegisOrderOfDay.findOne({
+        where: { id },
+        attributes: ['id', 'sittingId', 'sittingLabel', 'content', 'fkSessionId'],
+        include: ['session']
     });
 };
 
@@ -33,9 +35,14 @@ exports.findBySession = async (sessionId) => {
     });
 };
 
-exports.update = async (id, data) => {
-    return await LegisOrderOfDay.update(data, {
-        where: { id: id }
+exports.update = async (id, legisOrderOfDayData) => {
+    return await LegisOrderOfDay.update({
+        sittingId: legisOrderOfDayData.sittingId,
+        sittingLabel: legisOrderOfDayData.sittingLabel,
+        content: legisOrderOfDayData.content,
+        fkSessionId: legisOrderOfDayData.fkSessionId
+    }, {
+        where: { id }
     });
 };
 

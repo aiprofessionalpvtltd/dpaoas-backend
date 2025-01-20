@@ -3,14 +3,15 @@ const legisOrderOfDayService = require("../services/legisOrderOfDay.service");
 exports.create = async (req, res) => {
     try {
         const data = await legisOrderOfDayService.create(req.body);
-        res.status(201).json({
-            status: "success",
+        res.status(201).send({
+            success: true,
+            message: "Order of Day created successfully",
             data: data
         });
-    } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: error.message || "Some error occurred while creating the Order of Day."
+    } catch (err) {
+        res.status(500).send({
+            success: false,
+            message: err.message || "Error occurred while creating Order of Day"
         });
     }
 };
@@ -18,14 +19,15 @@ exports.create = async (req, res) => {
 exports.findAll = async (req, res) => {
     try {
         const data = await legisOrderOfDayService.findAll();
-        res.status(200).json({
-            status: "success",
+        res.send({
+            success: true,
+            message: "Orders of Day retrieved successfully",
             data: data
         });
-    } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: error.message || "Some error occurred while retrieving Orders of Day."
+    } catch (err) {
+        res.status(500).send({
+            success: false,
+            message: err.message || "Error occurred while retrieving Orders of Day"
         });
     }
 };
@@ -34,19 +36,20 @@ exports.findOne = async (req, res) => {
     try {
         const data = await legisOrderOfDayService.findOne(req.params.id);
         if (!data) {
-            return res.status(404).json({
-                status: "error",
-                message: "Order of Day not found"
+            return res.status(404).send({
+                success: false,
+                message: `Order of Day not found with id ${req.params.id}`
             });
         }
-        res.status(200).json({
-            status: "success",
+        res.send({
+            success: true,
+            message: "Order of Day retrieved successfully",
             data: data
         });
-    } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: error.message || "Error retrieving Order of Day"
+    } catch (err) {
+        res.status(500).send({
+            success: false,
+            message: err.message || "Error retrieving Order of Day"
         });
     }
 };
@@ -54,44 +57,57 @@ exports.findOne = async (req, res) => {
 exports.findBySession = async (req, res) => {
     try {
         const data = await legisOrderOfDayService.findBySession(req.params.sessionId);
-        res.status(200).json({
-            status: "success",
+        res.send({
+            success: true,
+            message: "Session Orders of Day retrieved successfully",
             data: data
         });
-    } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: error.message || "Error retrieving Orders of Day for session"
+    } catch (err) {
+        res.status(500).send({
+            success: false,
+            message: err.message || "Error retrieving Orders of Day for session"
         });
     }
 };
 
 exports.update = async (req, res) => {
     try {
-        const data = await legisOrderOfDayService.update(req.params.id, req.body);
-        res.status(200).json({
-            status: "success",
+        const updated = await legisOrderOfDayService.update(req.params.id, req.body);
+        if (updated[0] === 0) {
+            return res.status(404).send({
+                success: false,
+                message: `Cannot update Order of Day with id ${req.params.id}. Maybe it was not found!`
+            });
+        }
+        res.send({
+            success: true,
             message: "Order of Day updated successfully"
         });
-    } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: error.message || "Error updating Order of Day"
+    } catch (err) {
+        res.status(500).send({
+            success: false,
+            message: err.message || "Error updating Order of Day"
         });
     }
 };
 
 exports.delete = async (req, res) => {
     try {
-        await legisOrderOfDayService.delete(req.params.id);
-        res.status(200).json({
-            status: "success",
+        const deleted = await legisOrderOfDayService.delete(req.params.id);
+        if (!deleted) {
+            return res.status(404).send({
+                success: false,
+                message: `Cannot delete Order of Day with id ${req.params.id}. Maybe it was not found!`
+            });
+        }
+        res.send({
+            success: true,
             message: "Order of Day deleted successfully"
         });
-    } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: error.message || "Error deleting Order of Day"
+    } catch (err) {
+        res.status(500).send({
+            success: false,
+            message: err.message || "Error deleting Order of Day"
         });
     }
 };

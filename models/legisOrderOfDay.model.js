@@ -5,7 +5,11 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             autoIncrement: true,
         },
-        sittingDate: {
+        sittingId: {
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
+        sittingLabel: {
             type: Sequelize.STRING,
             allowNull: false
         },

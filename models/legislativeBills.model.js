@@ -166,8 +166,8 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true
         },
         billFrom: {
-            type: Sequelize.ENUM("From Senate", "From NA"),
-            allowNull: true,
+            type: Sequelize.STRING,
+            allowNull: true
         },
         dateOfJointSitting: {
             type: Sequelize.DATE,
@@ -197,7 +197,7 @@ module.exports = (sequelize, Sequelize) => {
         LegislativeBills.hasMany(models.senateBillMinistryMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillMinistryMovers' });
         LegislativeBills.hasMany(models.senateBillMnaMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillMnaMovers' });
         LegislativeBills.hasOne(models.introducedInHouses, { foreignKey: 'fkIntroducedInHouseId', as: 'introducedInHouses' });
-        LegislativeBills.hasOne(models.memberPassages, { foreignKey: 'fkMemberPassageId', as: 'memberPassages' });
+        LegislativeBills.hasOne(models.memberPassages, { foreignKey: 'fkFinanceMemberPassageId', as: 'memberPassages' });
         LegislativeBills.hasMany(models.billDocuments, { foreignKey: 'fkBillDocumentId', as: 'billDocuments' });
         LegislativeBills.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'user' });
     };

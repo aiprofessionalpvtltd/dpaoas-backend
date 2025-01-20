@@ -45,10 +45,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
-        // committeeRecomendation: {
-        //     type: Sequelize.ENUM("Ammended By Standing Committee", "May be Passed as Introduced in the House", "Passed without sending to Committee"),
-        //     allowNull: true,
-        // },
+        fkFinanceMoneyHouseId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'financeMoneyBills',
+                key: 'id'
+            }
+        },
         reportPresentationDate: {
             type: Sequelize.DATE,
             allowNull: true
@@ -62,6 +66,7 @@ module.exports = (sequelize, Sequelize) => {
         introducedInHouses.belongsTo(models.manageCommittees, { foreignKey: 'fkManageCommitteeId', as: 'manageCommittees' });
         introducedInHouses.belongsTo(models.manageCommitteeRecomendations, { foreignKey: 'fkManageCommitteeRecomendationId', as: 'manageCommitteeRecomendations' });
         introducedInHouses.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkIntroducedInHouseId', as: 'introducedInSenateBills' });
+        introducedInHouses.belongsTo(models.financeMoneyBills, { foreignKey: 'fkFinanceMoneyHouseId', as: 'financeMoneyBill' });
     };
 
     return introducedInHouses;

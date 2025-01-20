@@ -21,6 +21,22 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkFinanceMoneyBillId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'financeMoneyBills',
+                key: 'id'
+            }
+        },
+        fkFinanceMemberPassageId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'financeMoneyBills',
+                key: 'id'
+            }
+        },
         memeberStatus: {
             type: Sequelize.ENUM("Passage", "Withdrawal"),
             allowNull: true,
@@ -40,6 +56,7 @@ module.exports = (sequelize, Sequelize) => {
     memberPassages.associate = function (models) {
         memberPassages.belongsTo(models.sessions, { foreignKey: 'fkSessionMemberPassageId', as: 'sessions' });
         memberPassages.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkMemberPassageId', as: 'introducedInSenateBills' });
+        memberPassages.belongsTo(models.financeMoneyBills, { foreignKey: 'fkFinanceMemberPassageId', as: 'financeMoneyBill' });
     };
 
     return memberPassages;
