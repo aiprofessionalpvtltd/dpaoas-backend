@@ -38,7 +38,7 @@ router.get("/", legislativeBills.findAllLegislativeBillsByWebId);
 router.get("/findall", legislativeBills.findAllLegislativeBills);
 router.get("/inNotice", legislativeBills.findAllLegislativeBillsInNotice);
 router.get('/todaylegislativeBills', legislativeBills.getTodaysLegislativeBills);
-router.post("/", upload.single('billdocumentlegis'), legislativeBills.createLegislativeBill);
+router.post("/", upload.array('billdocumentlegis', 10), legislativeBills.createLegislativeBill);
 router.get("/:id", legislativeBills.findSingleLegislativeBill);
 router.put("/:id", upload.array('billdocumentlegis', 10), legislativeBills.updateLegislativeBill);
 router.put('/sendToLegislation/:id', legislativeBills.sendToLegislation);

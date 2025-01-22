@@ -157,46 +157,53 @@ const legislativeBillController = {
             const legislativeBills = await legislativeBillService.createLegislativeBill(req.body);
             console.log("legislativeBills", legislativeBills);
 
-            let imageObjects = [];
             if (req.files && req.files.length > 0) {
-                imageObjects = req.files.map((file, index) => {
-                    const path = file.destination.replace('./public/', '/assets/') + file.originalname;
-                    const id = index + 1;
-                    return JSON.stringify({ id, path });
+                const attachmentObjects = req.files.map((file, index) => {
+                    const path = file.destination.replace('./public/', '/assets/') + file.filename;
+                    return {
+                        id: index + 1,
+                        path: path
+                    };
                 });
+
+                console.log("legislativeBills.dataValues.id", legislativeBills.dataValues.id);
+                
+
+                const documentData = {
+                    fkLegisBillDocumentId: legislativeBills.dataValues.id,
+                    documentType: req.body.documentType || 'Received from Senator',
+                    documentDate: req.body.documentDate || new Date(),
+                    documentDiscription: req.body.documentDiscription || "",
+                    file: attachmentObjects.map(file => JSON.stringify(file))
+                };
+
+                await db.billDocuments.create(documentData);
             }
 
-            const existingLegislativeBill = await LegislativeBills.findOne({ where: { id: legislativeBills.id } });
-            const existingImages = existingLegislativeBill ? existingLegislativeBill.attachment || [] : [];
-            const updatedImages = [...existingImages, ...imageObjects];
+            const updatedLegislativeBill = await LegislativeBills.findOne({ 
+                where: { id: legislativeBills.id },
+                include: [{
+                    model: db.billDocuments,
+                    as: 'billDocumentsLegis'
+                }]
+            });
 
-            try {
-                // Your code to update the database
-                await LegislativeBills.update(
-                    {
-                        attachment: updatedImages,
-                    },
-                    {
-                        where: { id: legislativeBills.dataValues.id }
-                    }
-                );
-                const updatedLegislativeBill = await LegislativeBills.findOne({ where: { id: legislativeBills.id } });
-                logger.info("Legislative bill submitted!")
-                return res.status(200).send({
-                    success: true,
-                    message: "Submitted",
-                    data: updatedLegislativeBill,
-                })
-            } catch (error) {
-                console.error("Error updating attachment:", error);
-            }
+            console.log("updatedLegislativeBill", updatedLegislativeBill);
+            
+
+            logger.info("Legislative bill submitted!")
+            return res.status(200).send({
+                success: true,
+                message: "Submitted",
+                data: updatedLegislativeBill,
+            });
 
         } catch (error) {
             logger.error(error.message);
             return res.status(400).send({
                 success: false,
                 message: error.message
-            })
+            });
         }
     },
 
