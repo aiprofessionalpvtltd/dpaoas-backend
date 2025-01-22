@@ -53,6 +53,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkLegisIntroducedInHouseId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'legislativeBills',
+                key: 'id'
+            }
+        },
         reportPresentationDate: {
             type: Sequelize.DATE,
             allowNull: true
@@ -64,9 +72,14 @@ module.exports = (sequelize, Sequelize) => {
     introducedInHouses.associate = function (models) {
         introducedInHouses.belongsTo(models.sessions, { foreignKey: 'fkSessionHouseId', as: 'sessions' });
         introducedInHouses.belongsTo(models.manageCommittees, { foreignKey: 'fkManageCommitteeId', as: 'manageCommittees' });
-        introducedInHouses.belongsTo(models.manageCommitteeRecomendations, { foreignKey: 'fkManageCommitteeRecomendationId', as: 'manageCommitteeRecomendations' });
+        introducedInHouses.belongsTo(models.manageCommitteeRecomendations, { 
+            foreignKey: 'fkManageCommitteeRecomendationId', 
+            as: 'manageCommitteeRecomendations',
+            targetKey: 'id'
+        });
         introducedInHouses.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkIntroducedInHouseId', as: 'introducedInSenateBills' });
         introducedInHouses.belongsTo(models.financeMoneyBills, { foreignKey: 'fkFinanceMoneyHouseId', as: 'financeMoneyBill' });
+        introducedInHouses.belongsTo(models.legislativeBills, { foreignKey: 'fkLegisIntroducedInHouseId', as: 'legislativeBills' });
     };
 
     return introducedInHouses;

@@ -196,9 +196,9 @@ module.exports = (sequelize, Sequelize) => {
         LegislativeBills.hasMany(models.senateBillSenatorMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillSenatorMovers' });
         LegislativeBills.hasMany(models.senateBillMinistryMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillMinistryMovers' });
         LegislativeBills.hasMany(models.senateBillMnaMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillMnaMovers' });
-        LegislativeBills.hasOne(models.introducedInHouses, { foreignKey: 'fkIntroducedInHouseId', as: 'introducedInHouses' });
-        LegislativeBills.hasOne(models.memberPassages, { foreignKey: 'fkFinanceMemberPassageId', as: 'memberPassages' });
-        LegislativeBills.hasMany(models.billDocuments, { foreignKey: 'fkBillDocumentId', as: 'billDocuments' });
+        LegislativeBills.hasOne(models.introducedInHouses, { foreignKey: 'fkLegisIntroducedInHouseId', as: 'introducedInHousesLegis' });
+        LegislativeBills.hasOne(models.memberPassages, { foreignKey: 'fkLegisMemberPassageId', as: 'memberPassagesLegis' });
+        LegislativeBills.hasMany(models.billDocuments, { foreignKey: 'fkLegisBillDocumentId', as: 'billDocumentsLegis' });
         LegislativeBills.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'user' });
     };
 

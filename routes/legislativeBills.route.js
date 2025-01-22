@@ -1,36 +1,48 @@
 const express = require('express');
 const router = express.Router();
 const legislativeBills = require("../controllers/legislativeBills.controller");
-const { uploadFile } = require('../common/upload');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-// Retrieve all legislativeBills by web_id
+// Multer storage configuration
+const billDocumentStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const publicDir = `./public`;
+        if (!fs.existsSync(publicDir)) {
+            fs.mkdirSync(publicDir);
+        }
+        const dir = `./public/billdocumentlegis`;
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+
+        const currentDate = new Date();
+        const formattedDateTime = currentDate.toISOString().replace(/:/g, '-').replace(/\..+/, '') + '/'; // Format as 'YYYY-MM-DDTHH-MM-SS'
+
+        const subDir = `${dir}/${formattedDateTime}`;
+        if (!fs.existsSync(subDir)) {
+            fs.mkdirSync(subDir);
+        }
+        cb(null, subDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${file.originalname}`);
+    },
+});
+
+const upload = multer({ storage: billDocumentStorage });
+
+// Routes
 router.get("/", legislativeBills.findAllLegislativeBillsByWebId);
-
-// Retrieve all legislativeBills
 router.get("/findall", legislativeBills.findAllLegislativeBills);
-
-// Retrieve all legislativeBills
 router.get("/inNotice", legislativeBills.findAllLegislativeBillsInNotice);
-
-// Retrieve today legislativeBills
 router.get('/todaylegislativeBills', legislativeBills.getTodaysLegislativeBills);
-
-// Create legislativeBill
-router.post("/", uploadFile("legislativeBill"), legislativeBills.createLegislativeBill);
-
-// Retrieve Single legislativeBill by its ID
+router.post("/", upload.single('billdocumentlegis'), legislativeBills.createLegislativeBill);
 router.get("/:id", legislativeBills.findSingleLegislativeBill);
-
-// Update legislativeBill
-router.put("/:id", uploadFile("legislativeBill"), legislativeBills.updateLegislativeBill);
-
-router.put('/sendToLegislation/:id', legislativeBills.sendToLegislation)
-
-// Suspend/Delete legislativeBill
+router.put("/:id", upload.array('billdocumentlegis', 10), legislativeBills.updateLegislativeBill);
+router.put('/sendToLegislation/:id', legislativeBills.sendToLegislation);
 router.delete("/:id", legislativeBills.deleteLegislativeBill);
-
-
 router.get("/diaryNumber/generate", legislativeBills.generateDiaryNumber);
 
-
-module.exports = router
+module.exports = router;

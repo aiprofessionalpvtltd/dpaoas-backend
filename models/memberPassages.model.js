@@ -37,6 +37,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkLegisMemberPassageId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'legislativeBills',
+                key: 'id'
+            }
+        },
         memeberStatus: {
             type: Sequelize.ENUM("Passage", "Withdrawal"),
             allowNull: true,
@@ -49,6 +57,10 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: true
         },
+        dateofWithDrawalrule115: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });
@@ -57,6 +69,7 @@ module.exports = (sequelize, Sequelize) => {
         memberPassages.belongsTo(models.sessions, { foreignKey: 'fkSessionMemberPassageId', as: 'sessions' });
         memberPassages.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkMemberPassageId', as: 'introducedInSenateBills' });
         memberPassages.belongsTo(models.financeMoneyBills, { foreignKey: 'fkFinanceMemberPassageId', as: 'financeMoneyBill' });
+        memberPassages.belongsTo(models.legislativeBills, { foreignKey: 'fkLegisMemberPassageId', as: 'legislativeBills' });
     };
 
     return memberPassages;

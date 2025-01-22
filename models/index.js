@@ -1345,6 +1345,11 @@ db.introducedInSenateBills.hasMany(db.billDocuments, {
   as: "billDocuments",
 });
 
+db.legislativeBills.hasMany(db.billDocuments, {
+  foreignKey: "fkLegisBillDocumentId",
+  as: "billDocumentsLegis",
+});
+
 // Legislative Bills Association from Introduced in Senate Bills
 db.legislativeBills.belongsTo(db.parliamentaryYears, {
   foreignKey: "fkParliamentaryYearId",
@@ -1373,10 +1378,6 @@ db.legislativeBills.hasOne(db.introducedInHouses, {
 db.legislativeBills.hasOne(db.memberPassages, {
   foreignKey: "fkMemberPassageId",
   as: "memberPassages",
-});
-db.legislativeBills.hasMany(db.billDocuments, {
-  foreignKey: "fkBillDocumentId",
-  as: "billDocuments",
 });
 
 // senate Bill Ministry Movers
@@ -1692,13 +1693,34 @@ db.financeMoneyBills.hasOne(db.introducedInHouses, {
 
 // Member passage associations
 db.memberPassages.belongsTo(db.financeMoneyBills, {
-    foreignKey: 'fkFinanceMoneyBillId',
-    as: 'financeMoneyBill'
+  foreignKey: 'fkFinanceMoneyBillId',
+  as: 'financeMoneyBill'
 });
 
 db.financeMoneyBills.hasOne(db.memberPassages, {
-    foreignKey: 'fkFinanceMoneyBillId',
-    as: 'memberPassages'
+  foreignKey: 'fkFinanceMoneyBillId',
+  as: 'memberPassages'
+});
+
+// Add house and passage associations for legislativeBills
+db.introducedInHouses.belongsTo(db.legislativeBills, {
+  foreignKey: 'fkLegisIntroducedInHouseId',
+  as: 'legislativeBills'
+});
+
+db.legislativeBills.hasOne(db.introducedInHouses, {
+  foreignKey: 'fkLegisIntroducedInHouseId',
+  as: 'introducedInHousesLegis'
+});
+
+db.memberPassages.belongsTo(db.legislativeBills, {
+  foreignKey: 'fkLegisMemberPassageId',
+  as: 'legislativeBills'
+});
+
+db.legislativeBills.hasOne(db.memberPassages, {
+  foreignKey: 'fkLegisMemberPassageId',
+  as: 'memberPassagesLegis'
 });
 
 db.financeMoneyBills.hasOne(db.memberPassages, {
