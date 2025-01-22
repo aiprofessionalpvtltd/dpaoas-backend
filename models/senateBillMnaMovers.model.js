@@ -7,7 +7,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         fkIntroducedInSenateBillId: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'introducedInSenateBills',
                 key: 'id'
@@ -21,6 +21,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkFinanceMoneyBillId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'financeMoneyBills',
+                key: 'id'
+            }
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });
@@ -28,8 +36,8 @@ module.exports = (sequelize, Sequelize) => {
     SenateBillMnaMovers.associate = function (models) {
         SenateBillMnaMovers.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillMnaMovers' });
         SenateBillMnaMovers.belongsTo(models.mnas, { foreignKey: 'fkMnaId', as: 'mna' });
+        SenateBillMnaMovers.belongsTo(models.financeMoneyBills, { foreignKey: 'fkFinanceMoneyBillId', as: 'senateBillMnaMovers' });
     };
-
 
     return SenateBillMnaMovers;
 };

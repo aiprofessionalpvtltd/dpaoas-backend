@@ -126,7 +126,7 @@ const parliamentaryYearsMnaService = {
       // Fetch records where fkTenureId matches the provided tenureID
       const records = await ParliamentaryYearsMna.findAll({
         where: {
-          fkTenureId: tenureID,
+          fkMinisterTenureId: tenureID,
         },
       });
 

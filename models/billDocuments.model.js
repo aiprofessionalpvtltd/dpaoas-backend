@@ -13,8 +13,16 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkLegisBillDocumentId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'legislativeBills',
+                key: 'id'
+            }
+        },
         documentType: {
-            type: Sequelize.ENUM("Ammendment", "Bill", "Committee Report", "Gazette", "Letter Sent to Senator", "Member Notice for Passage", "Member Notice for Withdrawal", "Notice", "Proforma"),
+            type: Sequelize.ENUM("Ammendment", "Bill", "Committee Report", "Gazette", "Letter Sent to Senator", "Member Notice for Passage", "Member Notice for Withdrawal", "Notice", "Proforma", "Notes", "Correspondence", "Bill (English)", "Bill (Urdu)"),
             allowNull: true,
         },
         documentDate: {
@@ -35,6 +43,7 @@ module.exports = (sequelize, Sequelize) => {
 
     billDocuments.associate = function (models) {
         billDocuments.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkBillDocumentId', as: 'introducedInSenateBills' });
+        billDocuments.belongsTo(models.legislativeBills, { foreignKey: 'fkLegisBillDocumentId', as: 'legislativeBills' });
     };
 
     return billDocuments;

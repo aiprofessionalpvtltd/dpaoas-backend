@@ -47,7 +47,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
             allowNull: true,
             references: {
-                model: 'tenuresMinister',
+                model: 'tenuresMinisters',
                 key: 'id'
             }
         },
@@ -118,7 +118,7 @@ module.exports = (sequelize, Sequelize) => {
             as: 'resolutionMovers'
         });
 
-        members.belongsTo(models.tenuresMinister, { foreignKey: 'fkMinisterTenureId', as: 'tenuresMinister' });
+        members.belongsTo(models.tenuresMinister, { foreignKey: 'fkMinisterTenureId', as: 'tenuresMinisters' });
 
     };
     return members;

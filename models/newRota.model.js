@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         weekDays: {
-            type: DataTypes.ENUM("Tuesday-Friday", "Wednesday-Friday", "Alternate Days", "Regular Days"),
+            type: DataTypes.ENUM("Tuesday-Friday", "Wednesday-Friday", "Thursday-Friday", "Alternate Days", "Regular Days"),
             allowNull: false,
         },
         startGroup: {

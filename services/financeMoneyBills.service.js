@@ -1,5 +1,5 @@
 const db = require("../models");
-const IntroducedInSenateBills = db.introducedInSenateBills;
+const IntroducedInSenateBills = db.financeMoneyBills;
 const SenateBillMnaMovers = db.senateBillMnaMovers;
 const SenateBillMinistryMovers = db.senateBillMinistryMovers;
 const SenateBillSenatorMovers = db.senateBillSenatorMovers;
@@ -33,8 +33,9 @@ const senateBillService = {
             if (senateBillSenatorMovers) {
                 await Promise.all(senateBillSenatorMovers.map(async (mover) => {
                     await SenateBillSenatorMovers.create({
-                        fkIntroducedInSenateBillId: senateBillId,
-                        fkSenatorId: mover.fkSenatorId
+                        fkFinanceMoneyBillId: senateBillId,  // Changed from fkIntroducedInSenateBillId
+                        fkSenatorId: mover.fkSenatorId,
+                        fkIntroducedInSenateBillId: null
                     });
                 }));
             }
@@ -42,8 +43,9 @@ const senateBillService = {
             if (senateBillMinistryMovers) {
                 await Promise.all(senateBillMinistryMovers.map(async (mover) => {
                     await SenateBillMinistryMovers.create({
-                        fkIntroducedInSenateBillId: senateBillId,
-                        fkMinistryId: mover.fkMinistryId
+                        fkFinanceMoneyBillId: senateBillId,  // Changed from fkIntroducedInSenateBillId
+                        fkMinistryId: mover.fkMinistryId,
+                        fkIntroducedInSenateBillId: null  // Explicitly set to null
                     });
                 }));
             }
@@ -51,8 +53,9 @@ const senateBillService = {
             if (senateBillMnaMovers) {
                 await Promise.all(senateBillMnaMovers.map(async (mover) => {
                     await SenateBillMnaMovers.create({
-                        fkIntroducedInSenateBillId: senateBillId,
-                        fkMnaId: mover.fkMnaId
+                        fkFinanceMoneyBillId: senateBillId,  // Changed from fkIntroducedInSenateBillId
+                        fkMnaId: mover.fkMnaId,
+                        fkIntroducedInSenateBillId: null
                     });
                 }));
             }
@@ -153,10 +156,11 @@ const senateBillService = {
                     },
                     {
                         model: MemberPassages,
-                        as: 'memberPassages',
+                        as: 'memberPassagesFinance',  // Changed from 'memberPassages'
                         include: [
                             { model: Sessions, as: 'sessions' }
-                        ]
+                        ],
+                        attributes: ['id', 'memeberStatus', 'memeberNoticeDate', 'dateOfConsiderationBill', 'fkSessionMemberPassageId', 'fkFinanceMemberPassageId'] // Explicitly include all needed fields
                     },
                     {
                         model: BillDocuments,
@@ -200,10 +204,6 @@ const senateBillService = {
             const { count, rows } = await IntroducedInSenateBills.findAndCountAll({
                 offset,
                 limit,
-                order: [
-                    // Order by the numeric part between slashes
-                    [db.sequelize.literal(`CAST(REGEXP_REPLACE("introducedInSenateBills"."fileNumber", '^\\d+/\\((\\d+)\\)/\\d+$', '\\1') AS INTEGER)`), 'ASC']
-                ],
                 where: whereClause,
                 include: [
                     {
@@ -247,23 +247,38 @@ const senateBillService = {
                     },
                     {
                         model: SenateBillSenatorMovers,
-                        as: 'senateBillSenatorMovers',
+                        as: 'senateBillSenatorMovers',  // Changed from 'financeMoneyBillSenatorMovers'
+                        required: false,
                         include: [
-                            { model: members, as: 'member' }
+                            { 
+                                model: members, 
+                                as: 'member',
+                                required: false
+                            }
                         ]
                     },
                     {
                         model: SenateBillMinistryMovers,
-                        as: 'senateBillMinistryMovers',
+                        as: 'senateBillMinistryMovers',  // Changed from 'financeMoneyBillMinistryMovers'
+                        required: false,
                         include: [
-                            { model: ministries, as: 'ministries' }
+                            { 
+                                model: ministries, 
+                                as: 'ministries',
+                                required: false
+                            }
                         ]
                     },
                     {
                         model: SenateBillMnaMovers,
-                        as: 'senateBillMnaMovers',
+                        as: 'senateBillMnaMovers',  // Changed from 'financeMoneyBillMnaMovers'
+                        required: false,
                         include: [
-                            { model: mnas, as: 'mna' }
+                            { 
+                                model: mnas, 
+                                as: 'mna',
+                                required: false
+                            }
                         ]
                     },
                     {
@@ -277,10 +292,11 @@ const senateBillService = {
                     },
                     {
                         model: MemberPassages,
-                        as: 'memberPassages',
+                        as: 'memberPassagesFinance',  // Changed from 'memberPassages'
                         include: [
                             { model: Sessions, as: 'sessions' }
-                        ]
+                        ],
+                        attributes: ['id', 'memeberStatus', 'memeberNoticeDate', 'dateOfConsiderationBill', 'fkSessionMemberPassageId', 'fkFinanceMemberPassageId'] // Explicitly include all needed fields
                     },
                     {
                         model: BillDocuments,
@@ -303,7 +319,7 @@ const senateBillService = {
 
             return { count, totalPages, senateBills: rows };
         } catch (error) {
-            throw new Error(error.message || "Error Fetching All senate Bills by Category");
+            throw new Error(error.message || "Error Fetching All finance/money Bills by Category");
         }
     },
 
@@ -383,10 +399,11 @@ const senateBillService = {
                 },
                 {
                     model: MemberPassages,
-                    as: 'memberPassages',
+                    as: 'memberPassagesFinance',  // Changed from 'memberPassages'
                     include: [
                         { model: Sessions, as: 'sessions' }
-                    ]
+                    ],
+                    attributes: ['id', 'memeberStatus', 'memeberNoticeDate', 'dateOfConsiderationBill', 'fkSessionMemberPassageId', 'fkFinanceMemberPassageId'] // Explicitly include all needed fields
                 },
                 {
                     model: BillDocuments,
@@ -614,10 +631,12 @@ const senateBillService = {
                     },
                     {
                         model: MemberPassages,
-                        as: 'memberPassages',
+                        as: 'memberPassagesFinance',  // Changed from 'memberPassages'
+                        required: false,
                         include: [
                             { model: Sessions, as: 'sessions' }
-                        ]
+                        ],
+                        attributes: ['id', 'memeberStatus', 'memeberNoticeDate', 'dateOfConsiderationBill', 'fkSessionMemberPassageId', 'fkFinanceMemberPassageId'] // Explicitly include all needed fields
                     },
                     {
                         model: BillDocuments,
@@ -648,72 +667,56 @@ const senateBillService = {
     // Update senate Bill Data
     updateIntroducedInSenateBill: async (updatedData, senateBillId) => {
         try {
-            let IntroducedInSenateBill
-
-            // First get existing data
-            const existingBill = await IntroducedInSenateBills.findByPk(senateBillId);
-            
-            // Helper function to validate and parse date
-            const parseDate = (dateString) => {
-                if (!dateString) return null;
-                const date = new Date(dateString);
-                return date instanceof Date && !isNaN(date) ? date : null;
-            };
-            
-            // Merge existing data with new updates
-            const fieldsToUpdate = {
-                ...existingBill.dataValues,  // Keep all existing fields
-                ...updatedData,  // Override with any new updates
-                // Validate and parse date fields
-                dateOfCirculationOfNotice: parseDate(updatedData.dateOfCirculationOfNotice) || existingBill.dateOfCirculationOfNotice,
-                dateofReciptofNotice: parseDate(updatedData.dateofReciptofNotice) || existingBill.dateofReciptofNotice,
-                dateofReferencetoStandingCommittee: parseDate(updatedData.dateofReferencetoStandingCommittee) || existingBill.dateofReferencetoStandingCommittee
-            };
-
-            // Remove any undefined or null values to prevent overwriting existing data
-            Object.keys(fieldsToUpdate).forEach(key => {
-                if (fieldsToUpdate[key] === undefined || fieldsToUpdate[key] === 'Invalid Date') {
-                    delete fieldsToUpdate[key];
-                }
-            });
+            let IntroducedInSenateBill;
 
             // Update Senate bill attributes if provided in updatedData
-            if (Object.keys(fieldsToUpdate).length > 0) {
-                IntroducedInSenateBill = await IntroducedInSenateBills.update(fieldsToUpdate, { where: { id: senateBillId } });
+            if (Object.keys(updatedData).length > 0) {
+                IntroducedInSenateBill = await IntroducedInSenateBills.update(updatedData, { 
+                    where: { id: senateBillId } 
+                });
             }
 
             if (updatedData.senateBillSenatorMovers) {
                 // Delete existing SenateBillSenatorMovers entries
-                await SenateBillSenatorMovers.destroy({ where: { fkIntroducedInSenateBillId: senateBillId } });
+                await SenateBillSenatorMovers.destroy({ 
+                    where: { fkFinanceMoneyBillId: senateBillId } 
+                });
                 // Create new SenateBillSenatorMovers entries
                 await Promise.all(updatedData.senateBillSenatorMovers.map(async (mover) => {
                     await SenateBillSenatorMovers.create({
-                        fkIntroducedInSenateBillId: senateBillId,
-                        fkSenatorId: mover.fkSenatorId
+                        fkFinanceMoneyBillId: senateBillId,
+                        fkSenatorId: mover.fkSenatorId,
+                        fkIntroducedInSenateBillId: null
                     });
                 }));
             }
 
             if (updatedData.senateBillMinistryMovers) {
                 // Delete existing SenateBillMinistryMovers entries
-                await SenateBillMinistryMovers.destroy({ where: { fkIntroducedInSenateBillId: senateBillId } });
+                await SenateBillMinistryMovers.destroy({ 
+                    where: { fkFinanceMoneyBillId: senateBillId } 
+                });
                 // Create new SenateBillMinistryMovers entries
                 await Promise.all(updatedData.senateBillMinistryMovers.map(async (mover) => {
                     await SenateBillMinistryMovers.create({
-                        fkIntroducedInSenateBillId: senateBillId,
-                        fkMinistryId: mover.fkMinistryId
+                        fkFinanceMoneyBillId: senateBillId,
+                        fkMinistryId: mover.fkMinistryId,
+                        fkIntroducedInSenateBillId: null
                     });
                 }));
             }
 
             if (updatedData.senateBillMnaMovers) {
                 // Delete existing SenateBillMnaMovers entries
-                await SenateBillMnaMovers.destroy({ where: { fkIntroducedInSenateBillId: senateBillId } });
+                await SenateBillMnaMovers.destroy({ 
+                    where: { fkFinanceMoneyBillId: senateBillId } 
+                });
                 // Create new SenateBillMnaMovers entries
                 await Promise.all(updatedData.senateBillMnaMovers.map(async (mover) => {
                     await SenateBillMnaMovers.create({
-                        fkIntroducedInSenateBillId: senateBillId,
-                        fkMnaId: mover.fkMnaId
+                        fkFinanceMoneyBillId: senateBillId,
+                        fkMnaId: mover.fkMnaId,
+                        fkIntroducedInSenateBillId: null
                     });
                 }));
             }
@@ -721,24 +724,24 @@ const senateBillService = {
             // Update or create associated data if provided
             if (IntroducedInSenateBill) {
                 // Check if data already exists for the given senateBillId
-                const existingIntroducedInHouse = await IntroducedInHouses.findOne({ where: { fkIntroducedInHouseId: senateBillId } });
+                const existingIntroducedInHouse = await IntroducedInHouses.findOne({ 
+                    where: { fkFinanceMoneyHouseId: senateBillId } 
+                });
                 if (existingIntroducedInHouse) {
                     // Update existing record
                     await IntroducedInHouses.update({
-                        fkIntroducedInSenateBillId: updatedData.introducedInHouses,
+                        fkFinanceMoneyHouseId: senateBillId,
                         fkSessionHouseId: updatedData.fkSessionHouseId,
                         fkManageCommitteeId: updatedData.fkManageCommitteeId,
                         introducedInHouseDate: updatedData.introducedInHouseDate,
                         referedOnDate: updatedData.referedOnDate,
                         fkManageCommitteeRecomendationId: updatedData.fkManageCommitteeRecomendationId,
                         reportPresentationDate: updatedData.reportPresentationDate
-                    }, { where: { fkIntroducedInHouseId: senateBillId } });
+                    }, { where: { fkFinanceMoneyHouseId: senateBillId } });
                 } else {
-
                     // Create new record
                     await IntroducedInHouses.create({
-                        fkIntroducedInHouseId: senateBillId,
-                        fkIntroducedInSenateBillId: updatedData.introducedInHouses,
+                        fkFinanceMoneyHouseId: senateBillId,
                         fkSessionHouseId: updatedData.fkSessionHouseId,
                         fkManageCommitteeId: updatedData.fkManageCommitteeId,
                         introducedInHouseDate: updatedData.introducedInHouseDate,
@@ -750,17 +753,19 @@ const senateBillService = {
             }
 
             if (IntroducedInSenateBill) {
-                const existingMemberPassage = await MemberPassages.findOne({ where: { fkMemberPassageId: senateBillId } });
+                const existingMemberPassage = await MemberPassages.findOne({ 
+                    where: { fkFinanceMemberPassageId: senateBillId } 
+                });
                 if (existingMemberPassage) {
                     await MemberPassages.update({
                         fkSessionMemberPassageId: updatedData.fkSessionMemberPassageId,
                         memeberStatus: updatedData.memeberStatus,
                         memeberNoticeDate: updatedData.memeberNoticeDate,
                         dateOfConsiderationBill: updatedData.dateOfConsiderationBill
-                    }, { where: { fkMemberPassageId: senateBillId } });
+                    }, { where: { fkFinanceMemberPassageId: senateBillId } });
                 } else {
                     await MemberPassages.create({
-                        fkMemberPassageId: senateBillId,
+                        fkFinanceMemberPassageId: senateBillId,
                         fkSessionMemberPassageId: updatedData.fkSessionMemberPassageId,
                         memeberStatus: updatedData.memeberStatus,
                         memeberNoticeDate: updatedData.memeberNoticeDate,
@@ -768,25 +773,6 @@ const senateBillService = {
                     });
                 }
             }
-
-            // if (IntroducedInSenateBill) {
-            //     const existingBillDocument = await BillDocuments.findOne({ where: { fkBillDocumentId: senateBillId } });
-            //     if (existingBillDocument) {
-            //         await BillDocuments.update({
-            //             documentType: updatedData.documentType,
-            //             documentDate: updatedData.documentDate,
-            //             documentDiscription: updatedData.documentDiscription
-            //         }, { where: { fkBillDocumentId: senateBillId } });
-            //     } else {
-            //         await BillDocuments.create({
-            //             fkBillDocumentId: senateBillId,
-            //             documentType: updatedData.documentType,
-            //             documentDate: updatedData.documentDate,
-            //             documentDiscription: updatedData.documentDiscription
-            //         });
-            //     }
-            // }
-
 
             // Update or create bill documents
             if (IntroducedInSenateBill && updatedData.documentType) {
@@ -818,13 +804,12 @@ const senateBillService = {
                 }
             }
 
-
             // Return the updated Senate bill data
             const updatedSenateBill = await IntroducedInSenateBills.findByPk(senateBillId);
             return updatedSenateBill;
 
         } catch (error) {
-            throw { message: error.message || "Error Updating senate Bill Data" };
+            throw { message: error.message || "Error Updating Finance Money Bill Data" };
         }
     },
 

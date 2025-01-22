@@ -1,10 +1,32 @@
 const db = require("../models");
 const LegislativeBills = db.legislativeBills;
+const Users = db.users;
 const Sessions = db.sessions;
 const BillStatuses = db.billStatuses;
 const { Op } = require('sequelize');
 const logger = require('../common/winston');
 const moment = require('moment');
+
+// Helper functions to get latest records
+const getLatestRecords = async () => {
+    const latestParliamentaryYear = await db.parliamentaryYears.findOne({
+        order: [['id', 'DESC']]
+    });
+
+    const latestTenure = await db.tenures.findOne({
+        order: [['id', 'DESC']]
+    });
+
+    const latestTerm = await db.terms.findOne({
+        order: [['id', 'DESC']]
+    });
+
+    return {
+        latestParliamentaryYear,
+        latestTenure,
+        latestTerm
+    };
+};
 
 const legislativeBillService = {
 
@@ -14,6 +36,7 @@ const legislativeBillService = {
         try {
             const offset = currentPage * pageSize;
             const limit = pageSize;
+            const latestRecords = await getLatestRecords();            
 
             const { count, rows } = await LegislativeBills.findAndCountAll({
                 where: { legislativeSentStatus: 'toLegislation' },
@@ -21,6 +44,37 @@ const legislativeBillService = {
                 limit,
                 order: [['createdAt', 'DESC']],
                 include: [
+                    {
+                        model: Users,
+                        as: 'user',
+                        include: [
+                            {
+                                model: db.employees,
+                                as: 'employee',
+                                attributes: ['id', 'firstName', 'lastName', 'userName'],
+                            }
+                        ]
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears'
+                    },
+                    // {
+                    //     model: db.parliamentaryYearsMna,
+                    //     as: 'mnaParliamentaryYears'
+                    // },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    // {
+                    //     model: db.tenuresMinister,
+                    //     as: 'tenuresMinisters'
+                    // },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
                     {
                         model: Sessions,
                         as: 'session',
@@ -47,14 +101,71 @@ const legislativeBillService = {
                             }
                         ]
                     },
+                    {
+                        model: db.introducedInHouses,
+                        as: 'introducedInHousesLegis',
+                        include: [
+                            { model: Sessions, as: 'sessions' },
+                            { model: db.manageCommittees, as: 'manageCommittees' },
+                            { model: db.manageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
+                        ]
+                    },
+                    {
+                        model: db.memberPassages,
+                        as: 'memberPassagesLegis',
+                        include: [
+                            { model: Sessions, as: 'sessions' }
+                        ]
+                    },
+                    {
+                        model: db.billDocuments,
+                        as: 'billDocumentsLegis'
+                    }
                 ],
+                distinct: true,
             });
 
-            console.log("rows: " + rows)
+            // Parse the files in the billDocuments if they exist
+            if (rows.length > 0) {
+                rows.forEach(bill => {
+                    if (bill.billDocuments && bill.billDocuments.length > 0) {
+                        bill.billDocuments.forEach(doc => {
+                            if (doc.file) {
+                                doc.file = doc.file.map(file => JSON.parse(file));
+                            }
+                        });
+                    }
+                });
+            }
 
             const totalPages = Math.ceil(count / pageSize);
 
-            return { count, totalPages, legislativeBills: rows };
+            if (latestRecords) {            
+                // Force update Term and related data
+                if (latestRecords.latestTerm) {
+                    rows.fkTermId = latestRecords.latestTerm.id;
+                    rows.terms = {...latestRecords.latestTerm};
+                }
+            
+                // Force update Parliamentary Year and related data
+                if (latestRecords.latestParliamentaryYear) {
+                    rows.fkParliamentaryYearId = latestRecords.latestParliamentaryYear.id;
+                    rows.parliamentaryYears = {...latestRecords.latestParliamentaryYear};
+                }
+            
+                // Force update Tenure and related data
+                if (latestRecords.latestTenure) {
+                    rows.fkTenureId = latestRecords.latestTenure.id;
+                    rows.tenures = {...latestRecords.latestTenure};
+                }
+            
+            }
+
+            return { 
+                count, 
+                totalPages, 
+                legislativeBills: rows,
+            };
         } catch (error) {
             throw new Error(error.message || "Error Fetching All contactList");
         }
@@ -64,6 +175,7 @@ const legislativeBillService = {
         try {
             const offset = currentPage * pageSize;
             const limit = pageSize;
+            const latestRecords = await getLatestRecords();
 
             const { count, rows } = await LegislativeBills.findAndCountAll({
                 where: { legislativeSentStatus: 'inNotice' },
@@ -71,6 +183,37 @@ const legislativeBillService = {
                 limit,
                 order: [['createdAt', 'DESC']],
                 include: [
+                    {
+                        model: Users,
+                        as: 'user',
+                        include: [
+                            {
+                                model: db.employees,
+                                as: 'employee',
+                                attributes: ['id', 'firstName', 'lastName', 'userName'],
+                            }
+                        ]
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears'
+                    },
+                    // {
+                    //     model: db.parliamentaryYearsMna,
+                    //     as: 'mnaParliamentaryYears'
+                    // },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    // {
+                    //     model: db.tenuresMinister,
+                    //     as: 'tenuresMinisters'
+                    // },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
                     {
                         model: Sessions,
                         as: 'session',
@@ -97,14 +240,53 @@ const legislativeBillService = {
                             }
                         ]
                     },
+                    {
+                        model: db.introducedInHouses,
+                        as: 'introducedInHouses',
+                        include: [
+                            { model: Sessions, as: 'sessions' },
+                            { model: db.manageCommittees, as: 'manageCommittees' },
+                            { model: db.manageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
+                        ]
+                    },
+                    {
+                        model: db.memberPassages,
+                        as: 'memberPassages',
+                        include: [
+                            { model: Sessions, as: 'sessions' }
+                        ]
+                    },
+                    {
+                        model: db.billDocuments,
+                        as: 'billDocumentsLegis'
+                    }
                 ],
+                distinct: true,
             });
-
-            // console.log("rows: " + rows)
+            
+            // Parse the files in the billDocuments if they exist
+            if (rows.length > 0) {
+                rows.forEach(bill => {
+                    if (bill.billDocuments && bill.billDocuments.length > 0) {
+                        bill.billDocuments.forEach(doc => {
+                            if (doc.file) {
+                                doc.file = doc.file.map(file => JSON.parse(file));
+                            }
+                        });
+                    }
+                });
+            }
 
             const totalPages = Math.ceil(count / pageSize);
 
-            return { count, totalPages, legislativeBills: rows };
+            return { 
+                count, 
+                totalPages, 
+                legislativeBills: rows,
+                latestParliamentaryYear: latestRecords.latestParliamentaryYear,
+                latestTenure: latestRecords.latestTenure,
+                latestTerm: latestRecords.latestTerm
+            };
         } catch (error) {
             throw new Error(error.message || "Error Fetching All contactList");
         }
@@ -126,6 +308,37 @@ const legislativeBillService = {
                 },
                 include: [
                     {
+                        model: Users,
+                        as: 'user',
+                        include: [
+                            {
+                                model: db.employees,
+                                as: 'employee',
+                                attributes: ['id', 'firstName', 'lastName', 'userName'],
+                            }
+                        ]
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears'
+                    },
+                    // {
+                    //     model: db.parliamentaryYearsMna,
+                    //     as: 'mnaParliamentaryYears'
+                    // },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    // {
+                    //     model: db.tenuresMinister,
+                    //     as: 'tenuresMinisters'
+                    // },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
+                    {
                         model: Sessions,
                         as: 'session',
                         attributes: ['sessionName']
@@ -151,11 +364,45 @@ const legislativeBillService = {
                             }
                         ]
                     },
+                    {
+                        model: db.introducedInHouses,
+                        as: 'introducedInHouses',
+                        include: [
+                            { model: Sessions, as: 'sessions' },
+                            { model: db.manageCommittees, as: 'manageCommittees' },
+                            { model: db.manageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
+                        ]
+                    },
+                    {
+                        model: db.memberPassages,
+                        as: 'memberPassages',
+                        include: [
+                            { model: Sessions, as: 'sessions' }
+                        ]
+                    },
+                    {
+                        model: db.billDocuments,
+                        as: 'billDocumentsLegis'
+                    }
                 ],
                 offset,
                 limit,
                 order: [["id", "DESC"]],
+                distinct: true,
             });
+
+            // Parse the files in the billDocuments if they exist
+            if (rows.length > 0) {
+                rows.forEach(bill => {
+                    if (bill.billDocuments && bill.billDocuments.length > 0) {
+                        bill.billDocuments.forEach(doc => {
+                            if (doc.file) {
+                                doc.file = doc.file.map(file => JSON.parse(file));
+                            }
+                        });
+                    }
+                });
+            }
 
             const totalPages = Math.ceil(count / pageSize);
 
@@ -169,10 +416,9 @@ const legislativeBillService = {
     // Create A New LegislativeBill
     createLegislativeBill: async (req) => {
 
-        try {
+        try {            
             const legislativeBill = await LegislativeBills.create(req);
-            // console.log("Resolutions", resolutions)
-            const legislativeBillId = legislativeBill.id;
+            const legislativeBillId = legislativeBill?.id;            
 
             if (Array.isArray(req.legislationMovers)) {
 
@@ -181,7 +427,6 @@ const legislativeBillService = {
 
                     // Determine the fkMemberId value
                     const fkMemberIdValue = moverData.fkMemberId ? moverData.fkMemberId : (req.web_id ? req.web_id : null);
-                    // console.log("fkMemberIdValue=------", fkMemberIdValue)
 
 
 
@@ -192,13 +437,11 @@ const legislativeBillService = {
                     };
 
                     const legislationMover = await db.legislationMovers.create(legislationMoversData);
-                    // console.log("resolutionMover------", resolutionMover)
 
                 }
             } else {
                 // Handle the case when legislationMovers does not exist
                 const fkMemberIdValue = req.web_id ? req.web_id : null;
-                // console.log("fkMemberIdValue when legislationMovers is not present=------", fkMemberIdValue);
 
                 // If fkMemberIdValue is not null, create a resolution mover entry
                 if (fkMemberIdValue !== null) {
@@ -274,7 +517,6 @@ const legislativeBillService = {
                 newDiaryNumber = `01`;
             }
 
-            console.log('newDiaryNumber', newDiaryNumber);
 
             const result = {
                 newDiaryNumber: newDiaryNumber, // Include the new newDiaryNumber
@@ -289,11 +531,45 @@ const legislativeBillService = {
 
     findSingleLegislativeBill: async (legislativeBillId) => {
         try {
+            const latestRecords = await getLatestRecords();
+    
             // Fetch the legislative bill
             const legislativeBill = await LegislativeBills.findOne({
                 where: { id: legislativeBillId },
+                attributes: {
+                    include: [
+                        'id',
+                        'diary_number',
+                        'noticeOfficeDiaryTime',
+                        'noticeDate',
+                        'fkSessionNo'
+                    ]
+                },
                 order: [['id', 'ASC']],
                 include: [
+                    {
+                        model: Users,
+                        as: 'user',
+                        include: [
+                            {
+                                model: db.employees,
+                                as: 'employee',
+                                attributes: ['id', 'firstName', 'lastName', 'userName'],
+                            }
+                        ]
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears'
+                    },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
                     {
                         model: Sessions,
                         as: 'session',
@@ -315,33 +591,130 @@ const legislativeBillService = {
                             }
                         ]
                     },
+                    {
+                        model: db.introducedInHouses,
+                        as: 'introducedInHousesLegis',
+                        include: [
+                            { model: Sessions, as: 'sessions' },
+                            { model: db.manageCommittees, as: 'manageCommittees' },
+                            { model: db.manageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
+                        ]
+                    },
+                    {
+                        model: db.memberPassages,
+                        as: 'memberPassagesLegis'
+                    },
+                    {
+                        model: db.billDocuments,
+                        as: 'billDocumentsLegis',
+                    }
                 ],
             });
 
+            // Get the recommendation ID
+            const recommendationId = legislativeBill?.introducedInHousesLegis?.fkManageCommitteeRecomendationId;
+            let recommendation;
+            // If there's a recommendation ID, fetch the full recommendation data
+            if (recommendationId) {
+                recommendation = await db.manageCommitteeRecomendations.findByPk(recommendationId, {
+                    raw: true, // Add this to get plain object
+                    attributes: ['id', 'committeeRecomendation', 'committeeStatus', 'createdAt', 'updatedAt']
+                });
+                if (recommendation && legislativeBill.introducedInHousesLegis) {
+                    legislativeBill.introducedInHousesLegis.manageCommitteeRecomendations = recommendation;
+                }
+            }
+
+            console.log("Recommendation data:", recommendation);
+
+            console.log("legislativeBill", legislativeBill?.introducedInHousesLegis);
+            
+    
             if (!legislativeBill) {
                 throw ({ message: "Legislative Bill Not Found!" });
             }
-
+            console.log("doc.file", legislativeBill?.billDocumentsLegis);
+            
+            // Parse the files in the billDocuments
+            if (legislativeBill.billDocumentsLegis && legislativeBill.billDocumentsLegis.length > 0) {
+                legislativeBill.billDocumentsLegis.forEach(doc => {
+                    
+                    if (doc.file) {
+                        doc.file = doc.file.map(file => JSON.parse(file));
+                    }
+                });
+            }
+    
             // Check if the legislative bill already has a diary number
             if (!legislativeBill.diary_number) {
-                // Generate the new diary number
                 const newDiaryNumber = await module.exports.generateDiaryNumber();
                 legislativeBill.diary_number = newDiaryNumber;
-                // await legislativeBill.save(); // Save the new diary number to the database
             }
-
-            return legislativeBill;
+    
+            if (latestRecords) {
+                if (latestRecords.latestTerm) {
+                    legislativeBill.fkTermId = latestRecords.latestTerm.id;
+                    legislativeBill.terms = { ...latestRecords.latestTerm };
+                }
+                if (latestRecords.latestParliamentaryYear) {
+                    legislativeBill.fkParliamentaryYearId = latestRecords.latestParliamentaryYear.id;
+                    legislativeBill.parliamentaryYears = { ...latestRecords.latestParliamentaryYear };
+                }
+                if (latestRecords.latestTenure) {
+                    legislativeBill.fkTenureId = latestRecords.latestTenure.id;
+                    legislativeBill.tenures = { ...latestRecords.latestTenure };
+                }
+    
+                await legislativeBill.save();
+            }
+    
+            return {
+                legislativeBill,
+                recommendation
+            };
         } catch (error) {
             throw { message: error.message || "Error Fetching Single Legislative Bill" };
         }
-    },
+    },       
 
     // Retrieve all LegislativeBill by web_id
     findAllLegislativeBillsByWebId: async (webId) => {
         try {
+            const latestRecords = await getLatestRecords();
             const legislativeBill = await LegislativeBills.findAll({
                 where: { web_id: webId },
                 include: [
+                    {
+                        model: Users,
+                        as: 'user',
+                        include: [
+                            {
+                                model: db.employees,
+                                as: 'employee',
+                                attributes: ['id', 'firstName', 'lastName', 'userName'],
+                            }
+                        ]
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears'
+                    },
+                    // {
+                    //     model: db.parliamentaryYearsMna,
+                    //     as: 'mnaParliamentaryYears'
+                    // },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    // {
+                    //     model: db.tenuresMinister,
+                    //     as: 'tenuresMinisters'
+                    // },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
                     {
                         model: Sessions,
                         as: 'session',
@@ -350,14 +723,71 @@ const legislativeBillService = {
                     {
                         model: BillStatuses,
                         as: 'billStatuses'
+                    },
+                    {
+                        model: db.members,
+                        as: 'member',
+                        attributes: ['id','memberName'] // Include only the member name
+                    },
+                    {
+                        model: db.legislationMovers,
+                        as: 'legislationMovers',
+                        attributes: ['id', 'fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'member',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: db.introducedInHouses,
+                        as: 'introducedInHousesLegis',
+                        include: [
+                            { model: Sessions, as: 'sessions' },
+                            { model: db.manageCommittees, as: 'manageCommittees' },
+                            { model: db.manageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
+                        ]
+                    },
+                    {
+                        model: db.memberPassages,
+                        as: 'memberPassagesLegis',
+                        include: [
+                            { model: Sessions, as: 'sessions' }
+                        ]
+                    },
+                    {
+                        model: db.billDocuments,
+                        as: 'billDocumentsLegis'
                     }
                 ],
-                order: [['id', 'DESC']]
+                order: [['id', 'DESC']],
+                distinct: true,
             });
+
+            // Parse the files in the billDocuments if they exist
+            if (legislativeBill.length > 0) {
+                legislativeBill.forEach(bill => {
+                    if (bill.billDocuments && bill.billDocuments.length > 0) {
+                        bill.billDocuments.forEach(doc => {
+                            if (doc.file) {
+                                doc.file = doc.file.map(file => JSON.parse(file));
+                            }
+                        });
+                    }
+                });
+            }
+
             if (!legislativeBill) {
                 throw ({ message: "legislative Bill Not Found!" })
             }
-            return legislativeBill;
+            return {
+                legislativeBills: legislativeBill,
+                latestParliamentaryYear: latestRecords.latestParliamentaryYear,
+                latestTenure: latestRecords.latestTenure,
+                latestTerm: latestRecords.latestTerm
+            };
         }
         catch (error) {
             throw { message: error.message || "Error Fetching legislative Bill by web_id" };
@@ -401,12 +831,113 @@ const legislativeBillService = {
                 }
             }
 
+            // Handle bill documents
+            if (req.files && req.files.length > 0 && req.body.documentType) {
+                const newDocumentObjects = req.files.map(file => {
+                    const path = file.destination.replace('./public/', '/assets/') + file.originalname;
+                    return JSON.stringify({ path });
+                });
+
+                // Create new bill document
+                await db.billDocuments.create({
+                    fkLegisBillDocumentId: legislativeBillId,
+                    documentType: req.body.documentType,
+                    documentDate: req.body.documentDate || new Date(),
+                    documentDiscription: req.body.documentDiscription,
+                    file: newDocumentObjects
+                });
+            }
+
+            // Handle introducedInHouses data
+            if (req.body) {
+                const introducedData = {
+                    fkLegisIntroducedInHouseId: legislativeBillId,
+                    fkManageCommitteeId: req.body.fkManageCommitteeId,
+                    introducedInHouseDate: req.body.introducedInHouseDate,
+                    referedOnDate: req.body.referedOnDate,
+                    fkManageCommitteeRecomendationId: req.body.fkManageCommitteeRecomendationId,
+                    reportPresentationDate: req.body.reportPresentationDate,
+                };
+
+                console.log("introducedData", introducedData);
+                
+
+                await db.introducedInHouses.upsert({
+                    ...introducedData,
+                    where: { fkLegisIntroducedInHouseId: legislativeBillId }
+                });
+            }
+
+            // Handle memberPassages data
+            if (req.body) {
+                const passageData = {
+                    fkLegisMemberPassageId: legislativeBillId,
+                    // fkSessionMemberPassageId: req.body.fkSessionMemberPassageId,
+                    // memeberStatus: req.body.memeberStatus,
+                    memeberNoticeDate: req.body.memeberNoticeDate,
+                    dateOfConsiderationBill: req.body.dateOfConsiderationBill,
+                    dateofWithDrawalrule115: req.body.dateofWithDrawalrule115
+                };
+
+                console.log("passageData", passageData);
+                await db.memberPassages.upsert({
+                    ...passageData,
+                    where: { fkLegisMemberPassageId: legislativeBillId }
+                });
+            }
+
             // Update the legislative bill
             await LegislativeBills.update(req.body, { where: { id: legislativeBillId } });
 
+            // Fetch updated record with associations
             const updatedLegislativeBill = await LegislativeBills.findOne({
                 where: { id: legislativeBillId },
-            }, { raw: true });
+                include: [
+                    {
+                        model: db.billDocuments,
+                        as: 'billDocumentsLegis'
+                    },
+                    {
+                        model: db.introducedInHouses,
+                        as: 'introducedInHousesLegis',
+                        include: [
+                            { model: Sessions, as: 'sessions' },
+                            { model: db.manageCommittees, as: 'manageCommittees' },
+                            { model: db.manageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
+                        ]
+                    },
+                    {
+                        model: db.memberPassages,
+                        as: 'memberPassagesLegis',
+                        include: [
+                            { model: Sessions, as: 'sessions' }
+                        ]
+                    }
+                ]
+            });
+
+            // Get the recommendation ID
+            const recommendationId = updatedLegislativeBill?.introducedInHousesLegis?.fkManageCommitteeRecomendationId;
+            
+            // If there's a recommendation ID, fetch the full recommendation data
+            if (recommendationId) {
+                const recommendation = await db.manageCommitteeRecomendations.findByPk(recommendationId, {
+                    raw: true, // Add this to get plain object
+                    attributes: ['id', 'committeeRecomendation', 'committeeStatus', 'createdAt', 'updatedAt']
+                });
+                if (recommendation && updatedLegislativeBill.introducedInHousesLegis) {
+                    updatedLegislativeBill.introducedInHousesLegis.manageCommitteeRecomendations = recommendation;
+                }
+            }
+
+            // Parse the files in billDocuments if they exist
+            if (updatedLegislativeBill.billDocumentsLegis) {
+                updatedLegislativeBill.billDocumentsLegis.forEach(doc => {
+                    if (doc.file) {
+                        doc.file = doc.file.map(file => JSON.parse(file));
+                    }
+                });
+            }
 
             return updatedLegislativeBill;
         } catch (error) {
