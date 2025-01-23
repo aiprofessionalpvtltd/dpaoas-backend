@@ -16,7 +16,7 @@ const MinistriesService = {
             const ministry = await Ministries.create({
                 ministryName: req.ministryName,
                 ministryStatus: req.ministryStatus,
-                fkTenureId: req.fkTenureId,
+                fkMinisterTenureId: req.fkMinisterTenureId,
             });
 
             return ministry;
@@ -32,7 +32,7 @@ const MinistriesService = {
             const limit = pageSize;
 
             const { count, rows } = await Ministries.findAndCountAll({
-                include: [{ model: TenuresMinister, as: "tenuresMinister" }],
+                include: [{ model: TenuresMinister, as: "tenuresMinisters" }],
                 offset,
                 limit,
                 order: [["id", "ASC"]],
