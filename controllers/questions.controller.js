@@ -679,9 +679,10 @@ const questionsController = {
       logger.info(`questionsController: searchQuestion query ${JSON.stringify(req.query)}`)
       if (Object.keys(req.query).length !== 0) {
         const searchCriteria = req.query;
+        const exactMatch = req.query?.isExact;
         const currentPage = parseInt(req.query.currentPage);
         const pageSize = parseInt(req.query.pageSize);
-        const { count, totalPages, questions } = await questionsService.searchQuestion(searchCriteria, currentPage, pageSize);
+        const { count, totalPages, questions } = await questionsService.searchQuestion(searchCriteria, exactMatch, currentPage, pageSize);
 
         if (questions.length > 0) {
           logger.info("Searched Successfully!");
@@ -958,6 +959,70 @@ const questionsController = {
       return res.status(400).send({
         success: false,
         message: error.message
+      });
+    }
+  },
+
+  // Compare Search Questions
+  compareSearch: async (req, res) => {
+    try {      
+      logger.info(`questionsController: compareSearch query ${JSON.stringify(req.query)}`);
+      
+      const { 
+        fromSession, 
+        toSession, 
+        description, 
+        percentageValue,
+        currentPage = 0,
+        pageSize = 10,
+        questionSentStatus = 'inQuestion'
+      } = req.query;
+      
+      if (!fromSession || !toSession || !description || !percentageValue) {
+        return res.status(400).send({
+          success: false,
+          message: "Missing required parameters!",
+        });
+      }
+
+      const { count, totalPages, questions } = await questionsService.compareSearch(
+        parseInt(fromSession),
+        parseInt(toSession),
+        description,
+        parseFloat(percentageValue),
+        parseInt(currentPage),
+        parseInt(pageSize),
+        questionSentStatus
+      );
+
+      if (questions.length > 0) {
+        logger.info("Questions matched successfully!");
+        return res.status(200).send({
+          success: true,
+          message: "Questions matched successfully!",
+          data: {
+            questions,
+            count,
+            totalPages
+          }
+        });
+      } else {
+        logger.info("No matching questions found!");
+        return res.status(200).send({
+          success: true,
+          message: "No matching questions found!",
+          data: {
+            questions: [],
+            count: 0,
+            totalPages: 0
+          }
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
       });
     }
   },
