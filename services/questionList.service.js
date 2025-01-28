@@ -575,27 +575,39 @@ const questionListService = {
   // Get Question List By QuestionListId
   getSingleQuestionList: async (questionListId) => {
     try {
+      const questionListData = await QuestionList.findOne({
+        where: { id: questionListId },
+        include: [
+          {
+            model: Sessions,
+            attributes: ["id", "sessionName"]
+          }
+        ],
+        attributes: [
+          "id",
+          "questionCategory",
+          "fkSessionId",
+          "fkGroupId",
+          "startListNo",
+          "listName",
+          "houseLayDate",
+          "defferedQuestions",
+          "fkUserId",
+          "questionListStatus",
+        ]
+      });
+      
       const question = await QuestionListJoin.findAll({
         where: { fkQuestionListId: questionListId },
         include: [
           {
             model: QuestionList,
             as: "questionList",
-            attributes: [
-              "id",
-              "questionCategory",
-              "fkSessionId",
-              "fkGroupId",
-              "startListNo",
-              "listName",
-              "houseLayDate",
-              "defferedQuestions",
-              "fkUserId",
-              "questionListStatus",
-            ],
-          },
-        ],
+            where: { id: questionListId }
+          }
+        ]
       });
+
       const questions = question.map(async (question) => {
         const filteredQuestions = await Questions.findAll({
           where: { id: question.fkQuestionId },
@@ -615,6 +627,7 @@ const questionListService = {
             },
             {
               model: QuestionDiary,
+              as: "questionDiary",
               attributes: ["id", "questionID", "questionDiaryNo"],
             },
             {
@@ -648,7 +661,10 @@ const questionListService = {
 
       // Aggregate question counts by member
       const memberQuestionCountMap = {};
+      const divisionQuestionCountMap = {};
+
       flattenedQuestions.forEach((question) => {
+        // Count by member
         const memberName = question.dataValues.member
           ? question.dataValues.member.memberName
           : null;
@@ -658,6 +674,17 @@ const questionListService = {
           }
           memberQuestionCountMap[memberName]++;
         }
+
+        // Count by division
+        const divisionName = question.dataValues.divisions
+          ? question.dataValues.divisions.divisionName
+          : null;
+        if (divisionName) {
+          if (!divisionQuestionCountMap[divisionName]) {
+            divisionQuestionCountMap[divisionName] = 0;
+          }
+          divisionQuestionCountMap[divisionName]++;
+        }
       });
 
       // Transform the memberQuestionCountMap into the desired format
@@ -666,8 +693,18 @@ const questionListService = {
         count: memberQuestionCountMap[name]
       }));
 
+      // Transform the divisionQuestionCountMap into the desired format
+      const divisionQuestionCount = Object.keys(divisionQuestionCountMap).map(name => ({
+        name: name,
+        count: divisionQuestionCountMap[name]
+      }));
 
-      return { questions: flattenedQuestions, memberQuestionCount };
+      return { 
+        questionListData: questionListData,
+        questions: flattenedQuestions, 
+        memberQuestionCount,
+        divisionQuestionCount 
+      };
     } catch (error) {
       throw new Error(error.message || "Error Fetching Question");
     }

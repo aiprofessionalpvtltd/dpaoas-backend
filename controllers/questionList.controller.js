@@ -121,9 +121,11 @@ const questionListController = {
       return res.status(200).send({
         success: true,
         message: "Single Question List Fetched Successfully!",
-        questionList:questionList,
+        questionList: singleQuestionList.questionListData,
+        // questionList:questionList,
         data: singleQuestionList.questions,
-        memberQuestionCount: singleQuestionList.memberQuestionCount
+        memberQuestionCount: singleQuestionList.memberQuestionCount,
+        divisionQuestionCount: singleQuestionList.divisionQuestionCount,
       })
     } catch (error) {
       logger.error(error.message)
