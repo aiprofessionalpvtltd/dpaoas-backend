@@ -69,7 +69,10 @@ const questionListService = {
       // Format the date in the required format
       const startDate = momentDate.format("YYYY-MM-DD 00:00:00+00");
 
-      // console.log("Start Date for Query", startDate);
+      console.log("Start Date for Query", startDate);
+
+      console.log("req.defferedQuestions", req.defferedQuestions);
+      
 
       // Fetching All Questions in accordance with all conditions
       const questions = await db.sequelize.query(
@@ -482,6 +485,8 @@ const questionListService = {
       console.log("quesionss----", questionIds);
       //Check if there are multiple questions
       if (Array.isArray(questionIds) && questionIds.length > 0) {
+        console.log("check 1");
+        
         // If there are multiple questions, create an entry for each question
         for (const questionId of questionIds) {
           await QuestionListJoin.create({
@@ -490,6 +495,7 @@ const questionListService = {
           });
         }
       } else if (questionIds) {
+        console.log("check 2");
         // If there is a single question, create a single entry
         await QuestionListJoin.create({
           fkQuestionListId: savedQuestionList.id,
@@ -954,6 +960,7 @@ const questionListService = {
             },
             {
               model: QuestionDiary,
+              as: "questionDiary",
               attributes: ["id", "questionID", "questionDiaryNo"],
             },
             {
