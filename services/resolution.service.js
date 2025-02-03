@@ -2135,7 +2135,8 @@ const resolutionService = {
                 resolutionMovers,
                 resolutionSentStatus,
                 resolutionSentDate,
-                memberPosition
+                memberPosition,
+                passedResolution
             } = queryParams;
 
  
@@ -2174,7 +2175,13 @@ const resolutionService = {
             }
 
             if (fkResolutionStatus) {
-                query["$resolutionStatus.id$"] = fkResolutionStatus;
+                query.fkResolutionStatus = fkResolutionStatus; 
+            }
+
+            if (passedResolution === 'true' || passedResolution === true) {
+                query['$resolutionStatus.resolutionStatus$'] = {
+                    [Op.like]: 'Passed%'
+                };
             }
 
             if (noticeOfficeDiaryNo) {
@@ -2222,6 +2229,7 @@ const resolutionService = {
                     {
                         model: db.resolutionStatus,
                         as: 'resolutionStatus',
+                        required: passedResolution === 'true' || passedResolution === true,
                         attributes: ['id', 'resolutionStatus'],
                     },
                     {
@@ -2283,8 +2291,7 @@ const resolutionService = {
 
                 ],
                 distinct: true,
-                where: query,
-                
+                where: query,         
                 offset,
                 limit,
                 order: [
