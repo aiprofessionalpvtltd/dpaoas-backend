@@ -436,6 +436,9 @@ db.resolutionMinistries = require("./resolutionMinistries.model.js")(sequelize, 
 //clubs resolution
 db.resolutionClubs = require("./resolutionClubs.model.js")(sequelize, SequelizeMain);
 
+//ballotingTemplates
+db.ballotingTemplates = require("./ballotingTemplates.model.js")(sequelize, SequelizeMain);
+
 //db.fileRemarks.belongsTo(db.users, { foreignKey: 'commentBy', as: 'users' });
 db.files.hasMany(db.fileAttachments, {
   as: "fileAttachments",

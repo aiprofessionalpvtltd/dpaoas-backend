@@ -215,6 +215,96 @@ const resolutionController = {
         }
     },
 
+    getBallotingTemplateById: async (req, res) => {
+        try {
+            const { id } = req.params;
+            
+            const template = await resolutionService.getBallotingTemplateById(id);
+    
+            if (!template) {
+                logger.info("Balloting template not found!");
+                return res.status(404).send({
+                    success: false,
+                    message: "Balloting template not found!"
+                });
+            }
+    
+            logger.info("Balloting template fetched successfully!");
+            return res.status(200).send({
+                success: true,
+                message: "Balloting template fetched successfully!",
+                data: { template }
+            });
+    
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+    getAllBallotingTemplates: async (req, res) => {
+        try {
+            const templates = await resolutionService.getAllBallotingTemplates();
+    
+            if (templates.length === 0) {
+                logger.info("No balloting templates found!");
+                return res.status(200).send({
+                    success: true,
+                    message: 'No balloting templates found!',
+                    data: { templates }
+                });
+            }
+    
+            logger.info("Balloting templates fetched successfully!");
+            return res.status(200).send({
+                success: true,
+                message: "Balloting templates fetched successfully!",
+                data: { templates }
+            });
+    
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+
+
+    updateBallotingTemplate: async (req, res) => {
+        try {
+          const id = req.params.id;
+        //   console.log("id---", id)
+          const ballotingTemplates = await db.ballotingTemplates.findByPk(id);
+        //   console.log("ballotingTemplates---", ballotingTemplates)
+          if (!ballotingTemplates) {
+            return res.status(200).send({
+              success: false,
+              message: "Balloting templates not found!",
+              data: null
+            })
+          }
+          const updatedTemplate  = await resolutionService.updateBallotingTemplate(req, id);
+          logger.info("Balloting template updated successfully!")
+          return res.status(200).send({
+            success: true,
+            message: "Balloting template updated successfully!",
+            data: updatedTemplate ,
+          })
+        } catch (error) {
+          logger.error(error.message)
+          return res.status(400).send({
+            success: false,
+            message: error.message
+          })
+        }
+      },
+
     // Retrieves Resolutions by IDs
     pdfResolutionList: async (req, res) => {
         try {

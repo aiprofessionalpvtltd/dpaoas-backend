@@ -480,6 +480,70 @@ const resolutionService = {
         }
     },
 
+    getBallotingTemplateById: async (id) => {
+        try {
+            const template = await db.ballotingTemplates.findByPk(id, {
+                attributes: [
+                    'id',
+                    'templateUserName',
+                    'templateUserRole',
+                    'templateDescription',
+                    'templateStatus',
+                    'createdAt',
+                    'updatedAt'
+                ]
+            });
+    
+            return template;
+    
+        } catch (error) {
+            throw { message: error.message || "Error fetching balloting template!" };
+        }
+    },
+
+    getAllBallotingTemplates: async () => {
+        try {
+            const templates = await db.ballotingTemplates.findAll({
+                order: [
+                    ['id', 'DESC']
+                ],
+                attributes: [
+                    'id',
+                    'templateUserName',
+                    'templateUserRole',
+                    'templateDescription',
+                    'templateStatus',
+                    'createdAt',
+                    'updatedAt'
+                ]
+            });
+    
+            return templates;
+    
+        } catch (error) {
+            throw { message: error.message || "Error fetching balloting templates!" };
+        }
+    },
+
+    updateBallotingTemplate: async (req, id) => {
+        try {
+
+            console.log("req body: " + req.body);
+
+            await db.ballotingTemplates.update(req.body, { where: { id: id } });
+
+            // Fetch the updated Bill Status after the update
+            const updatedTemplate = await db.ballotingTemplates.findOne({
+                where: { id: id }, 
+            }, { raw: true });
+
+            return updatedTemplate;
+
+        } catch (error) {
+            throw { message: error.message || "Error updating balloting template!" };
+        }
+    },
+
 
     // Retrieve Resolutions by IDs
     pdfResolutionList: async (resolutionIds) => {
