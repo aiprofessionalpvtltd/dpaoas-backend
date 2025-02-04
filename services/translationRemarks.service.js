@@ -11,120 +11,6 @@ const TranslationRemarks = db.translationRemarks;
 const Questions = db.questions;
 
 const translationServices = {
-  // createTranslationRemark: async (data, submittedBy) => {
-  //     const transaction = await db.sequelize.transaction();
-
-  //     try {
-  //         if (!data || !data.fkQuestionId || !data.comment) {
-  //             throw new Error("Missing required fields: fkQuestionId and comment.");
-  //         }
-
-  //         const translationRemark = await TranslationRemarks.create(
-  //             {
-  //                 fkQuestionId: data.fkQuestionId,
-  //                 submittedBy: submittedBy,
-  //                 assignedTo: data.assignedTo || null,
-  //                 comment: data.comment,
-  //                 CommentStatus: data.CommentStatus || null,
-  //                 priority: data.priority || "Immediate",
-  //             },
-  //             { transaction }
-  //         );
-
-  //         await transaction.commit();
-  //         return translationRemark;
-
-  //     } catch (error) {
-  //         await transaction.rollback();
-  //         console.error("Error Creating Translation Remark", error);
-  //         throw new Error(error.message || "Error Creating Translation Remark");
-  //     }
-  // },
-
-  createTranslationRemark: async (data, submittedBy) => {
-    const transaction = await db.sequelize.transaction();
-
-    try {
-      if (!data || !data.fkQuestionId || !data.comment) {
-        throw new Error("Missing required fields: fkQuestionId and comment.");
-      }
-
-      console.log("Saving Translation Remark with Submitted By:", submittedBy);
-
-      const translationRemark = await TranslationRemarks.create(
-        {
-          fkQuestionId: data.fkQuestionId,
-          submittedBy: submittedBy,
-          assignedTo: data.assignedTo || null,
-          comment: data.comment,
-          CommentStatus: data.CommentStatus || null,
-          priority: data.priority || "Immediate",
-        },
-        { transaction }
-      );
-
-      await transaction.commit();
-      return translationRemark;
-    } catch (error) {
-      await transaction.rollback();
-      console.error("Error Creating Translation Remark", error);
-      throw new Error(error.message || "Error Creating Translation Remark");
-    }
-  },
-
-  // getRemarksAssignedToUser: async (userId) => {
-  //   try {
-  //     const remarks = await TranslationRemarks.findAll({
-  //       where: { assignedTo: userId },
-  //       include: [
-  //         {
-  //           model: Questions,
-  //           as: "question",
-  //           attributes: ["id", "description"],
-  //         },
-  //       ],
-  //     });
-
-  //     return remarks;
-  //   } catch (error) {
-  //     console.error("Error fetching remarks for user:", error);
-  //     throw new Error(error.message || "Failed to fetch assigned remarks.");
-  //   }
-  // },
-
-  getRemarksAssignedToUser: async (userId) => {
-    try {
-      const remarks = await TranslationRemarks.findAll({
-        where: { assignedTo: userId },
-        include: [
-          {
-            model: Questions,
-            as: "question",
-            attributes: ["id", "description"],
-            include: [
-              {
-                model: TranslationRemarks,
-                as: "remarks",
-                attributes: [
-                  "id",
-                  "comment",
-                  "submittedBy",
-                  "CommentStatus",
-                  "priority",
-                  "createdAt",
-                ],
-              },
-            ],
-          },
-        ],
-      });
-
-      return remarks;
-    } catch (error) {
-      console.error("Error fetching remarks for user:", error);
-      throw new Error(error.message || "Failed to fetch assigned remarks.");
-    }
-  },
 
   getTranslationRemarks: async (fkQuestionId) => {
     try {
@@ -183,6 +69,9 @@ const translationServices = {
         where: { id: branchId },
         attributes: ["id", "branchName"],
       });
+
+      console.log("Branch:", branch);
+      
 
       if (!branch) {
         throw new Error("Branch not found");
@@ -257,87 +146,6 @@ const translationServices = {
       throw new Error("Error Fetching Branch Hierarchy");
     }
   },
-
-  // getBranchHierarchy: async (branchId, loggedInUserId) => {
-  //   try {
-  //     const branch = await Branches.findOne({
-  //       where: { id: branchId },
-  //       attributes: ["id", "branchName"],
-  //     });
-
-  //     if (!branch) {
-  //       throw new Error("Branch not found");
-  //     }
-
-  //     const branchHierarchyConfig = await BranchHierarchy.findOne({
-  //       where: { branchName: branch.branchName },
-  //       attributes: [
-  //         "branchHierarchy",
-  //         "higherLevelHierarchy",
-  //         "lowerLevelHierarchy",
-  //       ],
-  //     });
-
-  //     if (!branchHierarchyConfig) {
-  //       throw new Error("Branch hierarchy configuration not found");
-  //     }
-
-  //     const branchHierarchy = branchHierarchyConfig.branchHierarchy;
-  //     const highLevelDesignations =
-  //       branchHierarchyConfig.higherLevelHierarchy || [];
-  //     const lowLevelDesignations =
-  //       branchHierarchyConfig.lowerLevelHierarchy || [];
-
-  //     const employees = await Employees.findAll({
-  //       include: [
-  //         {
-  //           model: Designations,
-  //           as: "designations",
-  //           attributes: ["id", "designationName"],
-  //           where: { designationName: { [Op.in]: branchHierarchy } },
-  //         },
-  //         {
-  //           model: Users,
-  //           as: "users",
-  //           attributes: ["id", "email", "userStatus", "attendance_status"],
-  //         },
-  //       ],
-  //       where: {
-  //         fkBranchId: branchId,
-  //         fkUserId: { [Op.ne]: loggedInUserId }, // Exclude logged-in user
-  //       },
-  //     });
-
-  //     const designationColorMap = branchHierarchy.reduce((acc, designation) => {
-  //       if (highLevelDesignations.includes(designation)) {
-  //         acc[designation] = "Green";
-  //       } else if (lowLevelDesignations.includes(designation)) {
-  //         acc[designation] = "Blue";
-  //       }
-  //       return acc;
-  //     }, {});
-
-  //     const sortedEmployees = employees
-  //       .map((employee) => ({
-  //         ...employee.dataValues,
-  //         color: designationColorMap[employee.designations.designationName],
-  //       }))
-  //       .sort((a, b) => {
-  //         const positionA = branchHierarchy.indexOf(
-  //           a.designations.designationName
-  //         );
-  //         const positionB = branchHierarchy.indexOf(
-  //           b.designations.designationName
-  //         );
-  //         return positionA - positionB;
-  //       });
-
-  //     return { branchHierarchy, employees: sortedEmployees };
-  //   } catch (error) {
-  //     console.error("Error Fetching Branch Hierarchy:", error.message);
-  //     throw new Error("Error Fetching Branch Hierarchy");
-  //   }
-  // },
 
   getTranslationHierarchy: async (userId) => {
     try {
@@ -500,7 +308,6 @@ const translationServices = {
     }
   },
 
-  //Remarkssssssssss-------
   createRemarkService: async ({
     fkQuestionId,
     submittedBy,
@@ -508,8 +315,8 @@ const translationServices = {
     comment,
     priority,
     commentStatus,
+    category
   }) => {
-    const transaction = await TranslationRemarks.sequelize.transaction();
     try {
       // Create the remark
       const translationRemark = await TranslationRemarks.create(
@@ -518,10 +325,10 @@ const translationServices = {
           submittedBy,
           assignedTo,
           comment,
-          priority: priority || "Normal",
-          CommentStatus: commentStatus || "Open",
-        },
-        { transaction }
+          priority: priority || "Routine",
+          CommentStatus: commentStatus || "Please Put Up",
+          category
+        }
       );
 
       console.log("Remark created:", translationRemark);
@@ -529,14 +336,11 @@ const translationServices = {
       // Optionally reassign the question to a new user
       await Questions.update(
         { assignedTo },
-        { where: { id: fkQuestionId }, transaction }
+        { where: { id: fkQuestionId } }
       );
-
-      await transaction.commit();
 
       return translationRemark;
     } catch (error) {
-      await transaction.rollback();
       console.error("Error in createRemarkService:", error);
       throw {
         status: 400,
@@ -571,229 +375,441 @@ const translationServices = {
     }
   },
 
-  
-//  getRemarksService : async ({ fkQuestionId, userId }) => {
-//   try {
-//     // Fetch all remarks related to the given question where the user is either the submitter or assignee
-//     const remarks = await TranslationRemarks.findAll({
-//       where: {
-//         fkQuestionId,     // Filter by question ID
-//         [Sequelize.Op.or]: [
-//           { submittedBy: userId },  // Remarks by the current user
-//           { assignedTo: userId },   // Remarks assigned to the current user
-//         ],
-//       },
-//       include: [
-//         {
-//           model: Users,
-//           as: 'submittedUser',
-//           attributes: ['id', 'email'],
-//           include: [
-//             {
-//               model: Employees,
-//               as: 'employee',
-//               attributes: ['firstName', 'lastName', 'userName'],
-//             },
-//           ],
-//         },
-//         {
-//           model: Users,
-//           as: 'assignedUser',
-//           attributes: ['id', 'email'],
-//           include: [
-//             {
-//               model: Employees,
-//               as: 'employee',
-//               attributes: ['firstName', 'lastName', 'userName'],
-//             },
-//           ],
-//         },
-//         {
-//           model: Questions,
-//           as: 'question',
-//           attributes: ['id', 'englishText', 'urduText'],
-//         },
-//       ],
-//       order: [['createdAt', 'ASC']], // Order remarks by creation date (oldest first)
-//     });
-
-//     let allRemarks = [];
-//     let processedRemarks = new Set(); // To avoid duplicate remarks
-
-//     // Recursive function to traverse the chain of remarks
-//     const traverseRemarks = (remark) => {
-//       // If this remark is already processed, skip it
-//       if (processedRemarks.has(remark.id)) return;
-
-//       // Add the remark to the result set
-//       allRemarks.push(remark);
-//       processedRemarks.add(remark.id);
-
-//       // Find remarks assigned by this remark
-//       const assignedRemarks = remarks.filter(
-//         (r) => r.submittedBy === remark.assignedTo || r.assignedTo === remark.assignedTo
-//       );
-
-//       // Recursively add remarks assigned by this remark in the chain
-//       assignedRemarks.forEach(traverseRemarks);
-//     };
-
-//     // Start traversing from the remarks related to the user
-//     remarks.forEach(traverseRemarks);
-
-//     // Return the filtered remarks
-//     return allRemarks;
-//   } catch (error) {
-//     console.error("Error in getRemarksService:", error);
-//     throw error; // Propagate the error to be handled by the controller
-//   }
-// },
-
-//  getRemarksService :async ({ fkQuestionId, userId }) => {
-//   try {
-//     // Fetch all remarks for the given question
-//     const remarks = await TranslationRemarks.findAll({
-//       where: { fkQuestionId },
-//       include: [
-//         {
-//           model: Users,
-//           as: 'submittedUser',
-//           attributes: ['id', 'email'],
-//           include: [
-//             {
-//               model: Employees,
-//               as: 'employee',
-//               attributes: ['firstName', 'lastName', 'userName'],
-//             },
-//           ],
-//         },
-//         {
-//           model: Users,
-//           as: 'assignedUser',
-//           attributes: ['id', 'email'],
-//           include: [
-//             {
-//               model: Employees,
-//               as: 'employee',
-//               attributes: ['firstName', 'lastName', 'userName'],
-//             },
-//           ],
-//         },
-//         {
-//           model: Questions,
-//           as: 'question',
-//           attributes: ['id', 'englishText', 'urduText'],
-//         },
-//       ],
-//       order: [['createdAt', 'ASC']], // Order remarks by creation date
-//     });
-
-//     // Recursive chain collector
-//     const chainCollector = (currentUserId, chainRemarks = []) => {
-//       // Find remarks directly assigned to or submitted by the user
-//       const userRemarks = remarks.filter(
-//         (remark) =>
-//           remark.submittedBy === currentUserId || remark.assignedTo === currentUserId
-//       );
-
-//       userRemarks.forEach((remark) => {
-//         // Avoid duplicates
-//         if (!chainRemarks.find((r) => r.id === remark.id)) {
-//           chainRemarks.push(remark);
-
-//           // Recursively collect predecessors' remarks
-//           chainCollector(remark.submittedBy, chainRemarks);
-//         }
-//       });
-
-//       return chainRemarks;
-//     };
-
-//     // Get the full chain of remarks for the current user
-//     const visibleRemarks = chainCollector(userId);
-
-//     return visibleRemarks;
-//   } catch (error) {
-//     console.error('Error in getRemarksService:', error);
-//     throw error; // Propagate error to be handled by the controller
-//   }
-// },
-
-
-  getRemarksService : async ({ fkQuestionId, userId }) => {
+  getRemarksService: async ({ fkQuestionId, userId }) => {
     try {
-      // Fetch all remarks for the given question
       const remarks = await TranslationRemarks.findAll({
-        where: { fkQuestionId },
+        where: { fkQuestionId, category: 'Question' },
         include: [
           {
             model: Users,
             as: 'submittedUser',
             attributes: ['id', 'email'],
-            include: [
-              {
-                model: Employees,
-                as: 'employee',
-                attributes: ['firstName', 'lastName', 'userName'],
-              },
-            ],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[
+                {
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }
+              ]
+            }]
           },
           {
             model: Users,
             as: 'assignedUser',
             attributes: ['id', 'email'],
-            include: [
-              {
-                model: Employees,
-                as: 'employee',
-                attributes: ['firstName', 'lastName', 'userName'],
-              },
-            ],
-          },
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[
+                {
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }
+              ]
+            }
+          ]
+          }
+        ],
+        order: [['createdAt', 'ASC']]
+      });
+
+      return remarks;
+    } catch (error) {
+      console.error('Error in getRemarksService:', error);
+      throw error;
+    }
+  },
+
+  getAllAssignedQuestionsWithRemarks: async (userId, category, currentPage = 0, pageSize = 10) => {
+    try {
+      const offset = currentPage * pageSize;
+      const limit = pageSize;
+
+       // Build where clause conditionally
+       const whereClause = {
+        ...(userId && { assignedTo: userId }),
+        ...(category && { category })
+      };
+
+      // First get all remarks where user is assigned and matches the category
+      const { count, rows: assignedRemarks } = await TranslationRemarks.findAndCountAll({
+        where: whereClause,
+        attributes: ['id', 'fkQuestionId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'category'],
+        include: [
           {
             model: Questions,
             as: 'question',
-            attributes: ['id', 'englishText', 'urduText'],
+            include: [
+              {
+                model: Users,
+                as: "questionDeletedBy",
+                attributes: ["id"],
+                include: [{
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["id", "firstName", "lastName"],
+                }],
+              },
+              {
+                model: Users,
+                as: "questionSubmittedBy",
+                attributes: ["id"],
+                include: [{
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["id", "firstName", "lastName"],
+                }],
+              },
+              {
+                model: db.questionRevival,
+                as: "questionRevival",
+                include: [
+                  {
+                    model: db.sessions,
+                    as: "ToSession",
+                    attributes: ["id", "sessionName"],
+                  },
+                  {
+                    model: db.sessions,
+                    as: "FromSession",
+                    attributes: ["id", "sessionName"],
+                  },
+                ],
+                attributes: ["id", "fkFromSessionId", "fkToSessionId"],
+              },
+              {
+                model: db.sessions,
+                attributes: ["id", "sessionName"],
+              },
+              {
+                model: db.questionStatus,
+                as: "questionStatus",
+                attributes: ["id", "questionStatus"],
+              },
+              {
+                model: db.members,
+                attributes: ["id", "memberName"],
+              },
+              {
+                model: db.questionDiary,
+                attributes: ["id", "questionID", "questionDiaryNo"],
+              },
+              {
+                model: db.noticeOfficeDairies,
+                as: "noticeOfficeDiary",
+                attributes: ["id", "noticeOfficeDiaryNo", "noticeOfficeDiaryDate", "noticeOfficeDiaryTime"],
+              },
+              {
+                model: db.divisions,
+                as: "divisions",
+                attributes: ["id", "divisionName"],
+                include: [{
+                  model: db.ministries,
+                  attributes: ["id", "ministryName"],
+                }],
+              },
+              {
+                model: db.groups,
+                as: "groups",
+                attributes: ["id", "groupNameStarred", "groupNameUnstarred"],
+              },
+            ]
           },
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          }
         ],
-        order: [['createdAt', 'ASC']], // Order remarks by creation date
+        offset,
+        limit,
+        distinct: true,
+        order: [['createdAt', 'DESC']],
       });
 
-      // A set to store unique remarks based on remark ID
-      const visibleRemarks = new Set();
-      const processedUsers = new Set(); // Track the users we've already processed
-
-      // Function to collect all visible remarks for the user and those they are assigned to
-      const collectRemarks = (currentUserId) => {
-        if (processedUsers.has(currentUserId)) return; // Avoid cycles (prevents revisiting users)
-        processedUsers.add(currentUserId);
-
-        // Find remarks where the user is either the submitter or assigned
-        const userRemarks = remarks.filter(
-          (remark) =>
-            remark.submittedBy === currentUserId || remark.assignedTo === currentUserId
-        );
-
-        userRemarks.forEach((remark) => {
-          if (!visibleRemarks.has(remark.id)) {
-            visibleRemarks.add(remark); // Add remark to visible remarks
-
-            // If the remark is assigned to someone, recursively collect their remarks
-            if (remark.assignedTo) {
-              collectRemarks(remark.assignedTo); // Go deeper into the chain
-            }
+      // Group remarks by question
+      const questionMap = assignedRemarks.reduce((acc, remark) => {
+        if (remark.question) {
+          if (!acc[remark.question.id]) {
+            acc[remark.question.id] = {
+              ...remark.question.dataValues,
+              remarks: []
+            };
           }
-        });
+          acc[remark.question.id].remarks.push(remark);
+        }
+        return acc;
+      }, {});
+
+      const questions = Object.values(questionMap);
+      const totalPages = Math.ceil(count / pageSize);
+
+      return {
+        count,
+        totalPages,
+        currentPage,
+        pageSize,
+        data: questions
       };
 
-      // Start from the logged-in user and collect all visible remarks for the user and chain
-      collectRemarks(userId);
-
-      // Convert Set back to an array and return
-      return Array.from(visibleRemarks);
     } catch (error) {
-      console.error('Error in getRemarksService:', error);
-      throw error; // Propagate error to be handled by the controller
+      console.error('Error in getAllAssignedQuestionsWithRemarks:', error);
+      throw new Error('Failed to fetch assigned questions with remarks');
+    }
+  },
+
+  // Motion remarks
+
+  getMotionRemarksService: async ({ fkMotionId, userId }) => {
+    try {
+      const remarks = await TranslationRemarks.findAll({
+        where: { 
+          fkMotionId,
+          category: 'Motion'
+        },
+        include: [
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: db.motions,
+            as: 'motion',
+            attributes: ['id', 'englishText', 'urduText']
+          }
+        ],
+        order: [['createdAt', 'ASC']]
+      });
+
+      return remarks;
+    } catch (error) {
+      console.error('Error in getMotionRemarksService:', error);
+      throw error;
+    }
+  },
+
+  getAllMotionsWithRemarks: async (userId, currentPage = 0, pageSize = 10) => {
+    try {
+      const offset = currentPage * pageSize;
+      const limit = pageSize;
+
+      const { count, rows: assignedRemarks } = await TranslationRemarks.findAndCountAll({
+        where: { 
+          assignedTo: userId,
+          category: 'Motion'
+        },
+        attributes: ['id', 'fkMotionId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'category'],
+        include: [
+          {
+            model: db.motions,
+            as: 'motion',
+          },
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          }
+        ],
+        offset,
+        limit,
+        distinct: true,
+        order: [['createdAt', 'DESC']],
+      });
+
+      // Group remarks by motion
+      const motionMap = assignedRemarks.reduce((acc, remark) => {
+        if (remark.motion) {
+          if (!acc[remark.motion.id]) {
+            acc[remark.motion.id] = {
+              ...remark.motion.dataValues,
+              remarks: []
+            };
+          }
+          acc[remark.motion.id].remarks.push(remark);
+        }
+        return acc;
+      }, {});
+
+      const totalPages = Math.ceil(count / pageSize);
+
+      return {
+        count,
+        totalPages,
+        currentPage,
+        pageSize,
+        data: Object.values(motionMap)
+      };
+    } catch (error) {
+      console.error('Error in getAllMotionsWithRemarks:', error);
+      throw new Error('Failed to fetch assigned motions with remarks');
+    }
+  },
+
+  getResolutionRemarksService: async ({ fkResolutionId, userId }) => {
+    try {
+      const remarks = await TranslationRemarks.findAll({
+        where: { 
+          fkResolutionId,
+          category: 'Resolution'
+        },
+        include: [
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: db.resolutions,
+            as: 'resolution',
+            attributes: ['id', 'englishText', 'urduText']
+          }
+        ],
+        order: [['createdAt', 'ASC']]
+      });
+
+      return remarks;
+    } catch (error) {
+      console.error('Error in getResolutionRemarksService:', error);
+      throw error;
+    }
+  },
+
+  getAllResolutionsWithRemarks: async (userId, currentPage = 0, pageSize = 10) => {
+    try {
+      const offset = currentPage * pageSize;
+      const limit = pageSize;
+
+      const { count, rows: assignedRemarks } = await TranslationRemarks.findAndCountAll({
+        where: { 
+          assignedTo: userId,
+          category: 'Resolution'
+        },
+        attributes: ['id', 'fkResolutionId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'category'],
+        include: [
+          {
+            model: db.resolutions,
+            as: 'resolution',
+          },
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          }
+        ],
+        offset,
+        limit,
+        distinct: true,
+        order: [['createdAt', 'DESC']],
+      });
+
+      // Group remarks by resolution
+      const resolutionMap = assignedRemarks.reduce((acc, remark) => {
+        if (remark.resolution) {
+          if (!acc[remark.resolution.id]) {
+            acc[remark.resolution.id] = {
+              ...remark.resolution.dataValues,
+              remarks: []
+            };
+          }
+          acc[remark.resolution.id].remarks.push(remark);
+        }
+        return acc;
+      }, {});
+
+      const totalPages = Math.ceil(count / pageSize);
+
+      return {
+        count,
+        totalPages,
+        currentPage,
+        pageSize,
+        data: Object.values(resolutionMap)
+      };
+    } catch (error) {
+      console.error('Error in getAllResolutionsWithRemarks:', error);
+      throw new Error('Failed to fetch assigned resolutions with remarks');
     }
   },
 

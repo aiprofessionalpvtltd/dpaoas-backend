@@ -2,117 +2,6 @@ const { response } = require("express");
 const logger = require("../common/winston");
 
 const translationServices = require("../services/translationRemarks.service");
-// const Questions = db.questions;
-// const createTranslationRemark = async (req, res) => {
-//     try {
-//         const data = req.body;
-//         console.log(data)
-//         const submittedBy = req.user ? req.user.id : null;
-
-//         if (!data.fkQuestionId || !data.comment) {
-//             return res.status(400).json({
-//                 message: "Missing required fields: fkQuestionId and comment.",
-//             });
-//         }
-
-//         const translationRemark = await translationServices.createTranslationRemark(data, submittedBy);
-
-//         return res.status(201).json({
-//             message: "Translation Remark created successfully",
-//             data: translationRemark,
-//         });
-//     } catch (error) {
-//         console.error("Error in createTranslationRemark:", error);
-//         return res.status(400).json({
-//             message: error.message || "Failed to create Translation Remark",
-//         });
-//     }
-// };
-
-const createTranslationRemark = async (req, res) => {
-  try {
-    const data = req.body;
-    console.log("Request Data:", data);
-
-    const submittedBy = req.user ? req.user.id : null;
-    console.log("Submitted By ID:", submittedBy);
-
-    if (!data.fkQuestionId || !data.comment) {
-      return res.status(400).json({
-        message: "Missing required fields: fkQuestionId and comment.",
-      });
-    }
-
-    const translationRemark = await translationServices.createTranslationRemark(
-      data,
-      submittedBy
-    );
-
-    return res.status(201).json({
-      message: "Translation Remark created successfully",
-      data: translationRemark,
-    });
-  } catch (error) {
-    console.error("Error in createTranslationRemark:", error);
-    return res.status(400).json({
-      message: error.message || "Failed to create Translation Remark",
-    });
-  }
-};
-
-
-
-// const getAssignedRemarks = async (req, res) => {
-//   try {
-//     const userId = req.params.userId;
-
-//     if (!userId) {
-//       return res.status(401).json({
-//         message: "Unauthorized: User ID is required.",
-//       });
-//     }
-
-//     const assignedRemarks = await translationServices.getRemarksAssignedToUser(userId);
-
-//     return res.status(200).json({
-//       message: "Assigned remarks fetched successfully.",
-//       data: assignedRemarks,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching assigned remarks:", error);
-//     return res.status(500).json({
-//       message: error.message || "Failed to fetch assigned remarks.",
-//     });
-//   }
-// };
-
-
-const getAssignedRemarks = async (req, res) => {
-  try {
-    const userId = req.params.userId;
-
-    if (!userId) {
-      return res.status(401).json({
-        message: "Unauthorized: User ID is required.",
-      });
-    }
-
-    const assignedRemarks = await translationServices.getRemarksAssignedToUser(userId);
-
-    return res.status(200).json({
-      message: "Assigned remarks fetched successfully.",
-      data: assignedRemarks,
-    });
-  } catch (error) {
-    console.error("Error fetching assigned remarks:", error);
-    return res.status(500).json({
-      message: error.message || "Failed to fetch assigned remarks.",
-    });
-  }
-};
-
-
-
 
 const getTranslationRemarks = async (req, res) => {
   try {
@@ -149,8 +38,10 @@ const getTranslationRemarks = async (req, res) => {
 
 const getBranchHierarchy = async (req, res) => {
   try {
+    console.log("getBranchHierarchy", req.params);  
+    
       const branchId = req.params.branchId;
-      const loggedInUserId = req.user.id; 
+      const loggedInUserId = req.params.userId; 
       logger.info(
           `translationController: getBranchHierarchy branchId ${branchId}, loggedInUserId ${loggedInUserId}`
       );
@@ -170,32 +61,6 @@ const getBranchHierarchy = async (req, res) => {
       });
   }
 };
-
-  
-
-// const getBranchHierarchy = async (req, res) => {
-//   try {
-//       const branchId = req.params.branchId;
-//       const loggedInUserId = req.user.id; // Assuming you have middleware to set req.user
-//       logger.info(
-//           `translationController: getBranchHierarchy branchId ${branchId}, loggedInUserId ${loggedInUserId}`
-//       );
-
-//       const branchHierarchyData = await translationServices.getBranchHierarchy(branchId, loggedInUserId);
-//       logger.info("Branch Hierarchy Retrieved Successfully!");
-//       return res.status(200).send({
-//           success: true,
-//           message: "Branch Hierarchy Retrieved Successfully!",
-//           data: branchHierarchyData,
-//       });
-//   } catch (error) {
-//       logger.error(error.message);
-//       return res.status(400).send({
-//           success: false,
-//           message: error.message,
-//       });
-//   }
-// };
 
 const getTranslationHierarchy = async (req, res) => {
   try {
@@ -221,15 +86,16 @@ const getTranslationHierarchy = async (req, res) => {
   }
 };
 
-
-/////Remarks-------------------------------
 const createRemark = async (req, res) => {
   try {
     const data = req.body;
-    const submittedBy = req.user ? req.user.id : null;
+    const submittedBy = req.params?.userId;
+
+    console.log("Request Data:", data);
+    console.log("Submitted By ID:", submittedBy);
 
     // Validate input
-    if (!data.fkQuestionId || !data.comment || !data.assignedTo) {
+    if (!data.fkQuestionId || !data.assignedTo) {
       return res.status(400).json({
         message: "Missing required fields: fkQuestionId, comment, and assignedTo.",
       });
@@ -250,7 +116,6 @@ const createRemark = async (req, res) => {
     });
   }
 };
-
 
 const getRemarksByQuestionId = async (req, res) => {
   try {
@@ -275,79 +140,12 @@ const getRemarksByQuestionId = async (req, res) => {
   }
 };
 
-
-// const getRemarks = async (req, res) => {
-//   try {
-//     const { fkQuestionId } = req.params; // Get the question ID from the URL
-//     const userId = req.user ? req.user.id : null; // Get the user ID from the request
-    
-//     // Validate input
-//     if (!fkQuestionId || !userId) {
-//       return res.status(400).json({
-//         message: "Missing required fields: fkQuestionId and userId.",
-//       });
-//     }
-
-//     // Call the service to get the remarks
-//     const remarks = await translationServices.getRemarksService({ fkQuestionId, userId });
-
-//     if (!remarks || remarks.length === 0) {
-//       return res.status(404).json({
-//         message: "No remarks found for this user on the specified question.",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       message: "Remarks fetched successfully.",
-//       data: remarks,
-//     });
-//   } catch (error) {
-//     console.error("Error in getRemarks controller:", error);
-//     return res.status(error.status || 500).json({
-//       message: error.message || "Internal server error.",
-//     });
-//   }
-// };
-
-
-// const getRemarks = async (req, res) => {
-//   try {
-//     const { fkQuestionId } = req.params; // Get the question ID from the URL
-//     const userId = req.user ? req.user.id : null; // Get the user ID from the request
-    
-//     // Validate input
-//     if (!fkQuestionId || !userId) {
-//       return res.status(400).json({
-//         message: "Missing required fields: fkQuestionId and userId.",
-//       });
-//     }
-
-//     // Call the service to get the remarks
-//     const remarks = await translationServices.getRemarksService({ fkQuestionId, userId });
-
-//     if (!remarks || remarks.length === 0) {
-//       return res.status(404).json({
-//         message: "No remarks found for this user on the specified question.",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       message: "Remarks fetched successfully.",
-//       data: remarks,
-//     });
-//   } catch (error) {
-//     console.error("Error in getRemarks controller:", error);
-//     return res.status(error.status || 500).json({
-//       message: error.message || "Internal server error.",
-//     });
-//   }
-// };
-
-
 const getRemarks = async (req, res) => {
   try {
-    const { fkQuestionId } = req.params; 
-    const userId = req.user ? req.user.id : null; 
+    const { fkQuestionId, userId } = req.params; 
+
+    console.log("Request Params:", req.params);
+    
     
     if (!fkQuestionId || !userId) {
       return res.status(400).json({
@@ -364,31 +162,213 @@ const getRemarks = async (req, res) => {
     }
 
     return res.status(200).json({
+      success: true,
       message: "Remarks fetched successfully.",
       data: remarks,
     });
   } catch (error) {
     console.error("Error in getRemarks controller:", error);
     return res.status(error.status || 500).json({
+      success: false,
       message: error.message || "Internal server error.",
     });
   }
 };
 
+const getAllRemarks = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { category } = req.query;
+    const currentPage = parseInt(req.query.currentPage) || 0;
+    const pageSize = parseInt(req.query.pageSize) || 10;
 
+    // if (!userId) {
+    //   return res.status(400).json({
+    //     message: "User ID is required.",
+    //   });
+    // }
 
+    const result = await translationServices.getAllAssignedQuestionsWithRemarks(
+      userId, 
+      category,
+      currentPage,
+      pageSize
+    );
+
+    if (!result.data || result.data.length === 0) {
+      return res.status(404).json({
+        message: `No assigned ${category || ''} remarks found for this user.`,
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Assigned questions and remarks fetched successfully.",
+      ...result
+    });
+  } catch (error) {
+    console.error("Error in getAllRemarks controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
+const getMotionRemarks = async (req, res) => {
+  try {
+    const { fkMotionId, userId } = req.params;
+
+    if (!fkMotionId || !userId) {
+      return res.status(400).json({
+        message: "Missing required fields: fkMotionId and userId.",
+      });
+    }
+
+    const remarks = await translationServices.getMotionRemarksService({ fkMotionId, userId });
+
+    if (!remarks || remarks.length === 0) {
+      return res.status(404).json({
+        message: "No remarks found for this motion.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Motion remarks fetched successfully.",
+      data: remarks,
+    });
+  } catch (error) {
+    console.error("Error in getMotionRemarks:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
+const getAllMotionRemarks = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentPage = parseInt(req.query.currentPage) || 0;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User ID is required.",
+      });
+    }
+
+    const result = await translationServices.getAllMotionsWithRemarks(
+      userId,
+      currentPage,
+      pageSize
+    );
+
+    if (!result.data || result.data.length === 0) {
+      return res.status(404).json({
+        message: "No assigned motions found for this user.",
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,  
+      message: "Assigned motions and remarks fetched successfully.",
+      ...result
+    });
+  } catch (error) {
+    console.error("Error in getAllMotionRemarks:", error);
+    return res.status(500).json({
+      success: false,  
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
+const getResolutionRemarks = async (req, res) => {
+  try {
+    const { fkResolutionId, userId } = req.params;
+
+    if (!fkResolutionId || !userId) {
+      return res.status(400).json({
+        message: "Missing required fields: fkResolutionId and userId.",
+      });
+    }
+
+    const remarks = await translationServices.getResolutionRemarksService({ fkResolutionId, userId });
+
+    if (!remarks || remarks.length === 0) {
+      return res.status(404).json({
+        message: "No remarks found for this resolution.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,  
+      message: "Resolution remarks fetched successfully.",
+      data: remarks,
+    });
+  } catch (error) {
+    console.error("Error in getResolutionRemarks:", error);
+    return res.status(500).json({
+      success: false,  
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
+const getAllResolutionRemarks = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentPage = parseInt(req.query.currentPage) || 0;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User ID is required.",
+      });
+    }
+
+    const result = await translationServices.getAllResolutionsWithRemarks(
+      userId,
+      currentPage,
+      pageSize
+    );
+
+    if (!result.data || result.data.length === 0) {
+      return res.status(404).json({
+        message: "No assigned resolutions found for this user.",
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,  
+      message: "Assigned resolutions and remarks fetched successfully.",
+      ...result
+    });
+  } catch (error) {
+    console.error("Error in getAllResolutionRemarks:", error);
+    return res.status(500).json({
+      success: false,  
+      message: error.message || "Internal server error.",
+    });
+  }
+};
 
 module.exports = {
-  createTranslationRemark,
-  getAssignedRemarks,
   getTranslationRemarks,
-  // getTranslationRemark,
-  // getTranslationHierarchy,
   getBranchHierarchy,
   getTranslationHierarchy,
-
   createRemark,
   getRemarksByQuestionId,
-  getRemarks
+  getRemarks,
+  getAllRemarks,
+  getMotionRemarks,
+  getAllMotionRemarks,
+  getResolutionRemarks,
+  getAllResolutionRemarks,
 };
 

@@ -312,7 +312,7 @@ app.use(
 // Serve static files from the 'public' directory
 app.use('/public', express.static('public'));
 
-app.use("/api/translation", isAuthenticated, TranslationRouter);
+app.use("/api/translation", TranslationRouter);
 
 
 const flagRoutes = require('./routes/flagRoutes.route');
