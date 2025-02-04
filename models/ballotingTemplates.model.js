@@ -17,6 +17,18 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.TEXT,
             allowNull: false
         },
+        ballotingFileNo: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        ballotingDate: {
+            type: Sequelize.DATE,
+            allowNull: false
+        },
+        ballotingOrderDate: {
+            type: Sequelize.DATE,
+            allowNull: false
+        },
         templateStatus: {
             type: Sequelize.ENUM("active", "inactive"),
             defaultValue: 'active'

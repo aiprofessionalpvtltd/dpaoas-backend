@@ -489,6 +489,9 @@ const resolutionService = {
                     'templateUserRole',
                     'templateDescription',
                     'templateStatus',
+                    'ballotingFileNo',
+                    'ballotingDate',
+                    'ballotingOrderDate',
                     'createdAt',
                     'updatedAt'
                 ]
@@ -513,6 +516,9 @@ const resolutionService = {
                     'templateUserRole',
                     'templateDescription',
                     'templateStatus',
+                    'ballotingFileNo',
+                    'ballotingDate',
+                    'ballotingOrderDate',
                     'createdAt',
                     'updatedAt'
                 ]
