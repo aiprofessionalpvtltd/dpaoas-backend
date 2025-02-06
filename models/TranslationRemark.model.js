@@ -6,7 +6,7 @@ module.exports = (sequelize, Sequelize) => {
             autoIncrement: true,
         },
         category: {
-            type: Sequelize.ENUM('Question', 'Motion', 'Resolution'),
+            type: Sequelize.ENUM('Question', 'Motion', 'Resolution', 'IntroducedBills'),
             // defaultValue: 'Question',
             allowNull: false
         },
@@ -54,14 +54,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
-        // fkIntroducedInSenateId: {
-        //     type: Sequelize.INTEGER,
-        //     allowNull: true,
-        //     references: {
-        //         model: 'introducedInSenateBills',
-        //         key: 'id'
-        //     }
-        // },
+        fkIntroducedInSenateId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'introducedInSenateBills',
+                key: 'id'
+            }
+        },
         CommentStatus: {
             type: Sequelize.ENUM("Please Put Up", "Please Link", "For Perusal Please", "Submitted For Approval"),
             allowNull: true
@@ -81,7 +81,7 @@ module.exports = (sequelize, Sequelize) => {
         translationRemarks.belongsTo(models.questions, { foreignKey: 'fkQuestionId', as: 'question' });
         translationRemarks.belongsTo(models.motions, { foreignKey: 'fkMotionId', as: 'motion' });
         translationRemarks.belongsTo(models.resolutions, { foreignKey: 'fkResolutionId', as: 'resolution' });
-        // translationRemarks.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkIntroducedInSenateId', as: 'introducedInSenateBills' });
+        translationRemarks.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkIntroducedInSenateId', as: 'introducedInSenateBills' });
     };
 
     return translationRemarks;

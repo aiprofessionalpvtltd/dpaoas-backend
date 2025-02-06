@@ -310,6 +310,9 @@ const translationServices = {
 
   createRemarkService: async ({
     fkQuestionId,
+    fkMotionId,
+    fkResolutionId,
+    fkIntroducedInSenateId,
     submittedBy,
     assignedTo,
     comment,
@@ -318,33 +321,60 @@ const translationServices = {
     category
   }) => {
     try {
-      // Create the remark
-      const translationRemark = await TranslationRemarks.create(
-        {
-          fkQuestionId,
+      let translationRemark;
+      
+      // Build where clause based on category
+      const whereClause = {
+        category,
+        ...(category === 'Question' && { fkQuestionId }),
+        ...(category === 'Motion' && { fkMotionId }),
+        ...(category === 'Resolution' && { fkResolutionId }),
+        ...(category === 'IntroducedBills' && { fkIntroducedInSenateId })
+      };
+
+      // Check if remark already exists
+      const existingRemark = await TranslationRemarks.findOne({
+        where: whereClause
+      });
+
+      if (existingRemark) {
+        // Update existing remark
+        translationRemark = await existingRemark.update({
           submittedBy,
           assignedTo,
           comment,
           priority: priority || "Routine",
-          CommentStatus: commentStatus || "Please Put Up",
-          category
-        }
-      );
+          CommentStatus: commentStatus || "Please Put Up"
+        });
+      } else {
+        // Create new remark
+        translationRemark = await TranslationRemarks.create({
+          ...whereClause,
+          submittedBy,
+          assignedTo,
+          comment,
+          priority: priority || "Routine",
+          CommentStatus: commentStatus || "Please Put Up"
+        });
+      }
 
-      console.log("Remark created:", translationRemark);
-
-      // Optionally reassign the question to a new user
-      await Questions.update(
-        { assignedTo },
-        { where: { id: fkQuestionId } }
-      );
+      // Update assignedTo based on category
+      if (category === 'Question' && fkQuestionId) {
+        await Questions.update({ assignedTo }, { where: { id: fkQuestionId } });
+      } else if (category === 'Motion' && fkMotionId) {
+        await db.motions.update({ assignedTo }, { where: { id: fkMotionId } });
+      } else if (category === 'Resolution' && fkResolutionId) {
+        await db.resolutions.update({ assignedTo }, { where: { id: fkResolutionId } });
+      } else if (category === 'IntroducedBills' && fkIntroducedInSenateId) {
+        await db.introducedInSenateBills.update({ assignedTo }, { where: { id: fkIntroducedInSenateId } });
+      }
 
       return translationRemark;
     } catch (error) {
       console.error("Error in createRemarkService:", error);
       throw {
         status: 400,
-        message: "Failed to create remark and assign question.",
+        message: "Failed to create/update remark and assign.",
       };
     }
   },
@@ -379,6 +409,108 @@ const translationServices = {
     try {
       const remarks = await TranslationRemarks.findAll({
         where: { fkQuestionId, category: 'Question' },
+        include: [
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[
+                {
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }
+              ]
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[
+                {
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }
+              ]
+            }
+          ]
+          }
+        ],
+        order: [['createdAt', 'ASC']]
+      });
+
+      return remarks;
+    } catch (error) {
+      console.error('Error in getRemarksService:', error);
+      throw error;
+    }
+  },
+
+  getMotionIdRemarksService: async ({ fkMotionId, userId }) => {
+    try {
+      const remarks = await TranslationRemarks.findAll({
+        where: { fkMotionId, category: 'Motion' },
+        include: [
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[
+                {
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }
+              ]
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[
+                {
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }
+              ]
+            }
+          ]
+          }
+        ],
+        order: [['createdAt', 'ASC']]
+      });
+
+      return remarks;
+    } catch (error) {
+      console.error('Error in getRemarksService:', error);
+      throw error;
+    }
+  },
+
+  getResIdRemarksService: async ({ fkResolutionId, userId }) => {
+    try {
+      const remarks = await TranslationRemarks.findAll({
+        where: { fkResolutionId, category: 'Resolution' },
         include: [
           {
             model: Users,
@@ -612,7 +744,58 @@ const translationServices = {
           {
             model: db.motions,
             as: 'motion',
-            attributes: ['id', 'englishText', 'urduText']
+                        include: [
+                          {
+                            model: db.sessions,
+                            as: "sessions",
+                            attributes: ["sessionName", "id"],
+                          },
+                          {
+                            model: db.motionStatuses,
+                            as: "motionStatuses",
+                            attributes: ["statusName", "id"],
+                          },
+                          {
+                            model: db.noticeOfficeDairies,
+                            as: "noticeOfficeDairies",
+                            attributes: [
+                              "noticeOfficeDiaryNo",
+                              "noticeOfficeDiaryDate",
+                              "noticeOfficeDiaryTime",
+                              "businessType",
+                              "businessId",
+                            ],
+                          },
+                          {
+                            model: db.motionMovers,
+                            as: "motionMovers",
+                            attributes: ["fkMemberId", "id"],
+                            include: [
+                              {
+                                model: db.members,
+                                as: "members",
+                                attributes: ["memberName", "id"],
+                              },
+                            ],
+                          },
+                          {
+                            model: db.motionStatuses,
+                            as: "motionStatuses",
+                            attributes: ["statusName", "id"],
+                          },
+                          {
+                            model: db.motionMinistries,
+                            as: "motionMinistries",
+                            attributes: ["fkMinistryId", "id"],
+                            include: [
+                              {
+                                model: db.ministries,
+                                as: "ministries",
+                                attributes: ["ministryName", "id"],
+                              },
+                            ],
+                          },
+                        ]
           }
         ],
         order: [['createdAt', 'ASC']]
@@ -625,21 +808,76 @@ const translationServices = {
     }
   },
 
-  getAllMotionsWithRemarks: async (userId, currentPage = 0, pageSize = 10) => {
+  getAllMotionsWithRemarks: async (userId, category, currentPage = 0, pageSize = 10) => {
     try {
       const offset = currentPage * pageSize;
       const limit = pageSize;
 
+        // Build where clause conditionally
+        const whereClause = {
+        ...(userId && { assignedTo: userId }),
+        ...(category && { category })
+      };
+
       const { count, rows: assignedRemarks } = await TranslationRemarks.findAndCountAll({
-        where: { 
-          assignedTo: userId,
-          category: 'Motion'
-        },
+        where: whereClause,
         attributes: ['id', 'fkMotionId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'category'],
         include: [
           {
             model: db.motions,
             as: 'motion',
+            include: [
+              {
+                model: db.sessions,
+                as: "sessions",
+                attributes: ["sessionName", "id"],
+              },
+              {
+                model: db.motionStatuses,
+                as: "motionStatuses",
+                attributes: ["statusName", "id"],
+              },
+              {
+                model: db.noticeOfficeDairies,
+                as: "noticeOfficeDairies",
+                attributes: [
+                  "noticeOfficeDiaryNo",
+                  "noticeOfficeDiaryDate",
+                  "noticeOfficeDiaryTime",
+                  "businessType",
+                  "businessId",
+                ],
+              },
+              {
+                model: db.motionMovers,
+                as: "motionMovers",
+                attributes: ["fkMemberId", "id"],
+                include: [
+                  {
+                    model: db.members,
+                    as: "members",
+                    attributes: ["memberName", "id"],
+                  },
+                ],
+              },
+              {
+                model: db.motionStatuses,
+                as: "motionStatuses",
+                attributes: ["statusName", "id"],
+              },
+              {
+                model: db.motionMinistries,
+                as: "motionMinistries",
+                attributes: ["fkMinistryId", "id"],
+                include: [
+                  {
+                    model: db.ministries,
+                    as: "ministries",
+                    attributes: ["ministryName", "id"],
+                  },
+                ],
+              },
+            ]
           },
           {
             model: Users,
@@ -728,7 +966,92 @@ const translationServices = {
           {
             model: db.resolutions,
             as: 'resolution',
-            attributes: ['id', 'englishText', 'urduText']
+            include: [
+              {
+                model: db.sessions,
+                as: "session",
+                attributes: ["sessionName"],
+              },
+              {
+                model: db.resolutionStatus,
+                as: "resolutionStatus",
+                attributes: ["resolutionStatus"],
+              },
+              {
+                model: db.resolutionMovers,
+                as: "resolutionMoversAssociation",
+                attributes: ["fkMemberId"],
+                include: [
+                  {
+                    model: db.members,
+                    as: "memberAssociation",
+                    attributes: ["memberName"],
+                  },
+                ],
+              },
+              {
+                model: db.resolutionMinistries, // Include the resolutionMinistries model
+                as: "resolutionMinistries",
+                attributes: ["fkMinistryId"],
+                include: [
+                  {
+                    model: db.ministries, // Include the ministries model
+                    as: "ministries",
+                    attributes: ["ministryName"], // Adjust the attribute as per your ministries model
+                  },
+                ],
+              },
+              {
+                model: db.noticeOfficeDairies,
+                as: "noticeDiary",
+                attributes: [
+                  "noticeOfficeDiaryNo",
+                  "noticeOfficeDiaryDate",
+                  "noticeOfficeDiaryTime",
+                ],
+              },
+              {
+                model: db.resolutionDiaries,
+                as: "resolutionDiaries",
+                attributes: ["resolutionId", "resolutionDiaryNo"],
+              },
+              {
+                model: Users,
+                as: "createdBy",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: Employees,
+                    as: "employee",
+                    attributes: ["id", "firstName", "lastName"],
+                  },
+                ],
+              },
+              {
+                model: Users,
+                as: "deletedBy",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: Employees,
+                    as: "employee",
+                    attributes: ["id", "firstName", "lastName"],
+                  },
+                ],
+              },
+              // {
+              //     model: resolutionClubs,
+              //     as: 'resolutionClubs',
+              //     attributes: ['linkedResolutionId'],
+              //     include: [
+              //         {
+              //             model: resolution,
+              //             as: 'linkedResolution',
+              //             attributes: ['id', 'englishText', 'urduText']
+              //         }
+              //     ]
+              // }
+            ],
           }
         ],
         order: [['createdAt', 'ASC']]
@@ -746,16 +1069,234 @@ const translationServices = {
       const offset = currentPage * pageSize;
       const limit = pageSize;
 
+      // Build where clause conditionally
+      const whereClause = {
+        ...(userId && { assignedTo: userId }),
+        ...(category && { category })
+      };
+
+      const { count, rows: assignedRemarks } =
+        await TranslationRemarks.findAndCountAll({
+          where: whereClause,
+          attributes: [
+            "id",
+            "fkResolutionId",
+            "comment",
+            "CommentStatus",
+            "priority",
+            "createdAt",
+            "category",
+          ],
+          include: [
+            {
+              model: db.resolutions,
+              as: "resolution",
+              include: [
+                {
+                  model: db.sessions,
+                  as: "session",
+                  attributes: ["sessionName"],
+                },
+                {
+                  model: db.resolutionStatus,
+                  as: "resolutionStatus",
+                  attributes: ["resolutionStatus"],
+                },
+                {
+                  model: db.resolutionMovers,
+                  as: "resolutionMoversAssociation",
+                  attributes: ["fkMemberId"],
+                  include: [
+                    {
+                      model: db.members,
+                      as: "memberAssociation",
+                      attributes: ["memberName"],
+                    },
+                  ],
+                },
+                {
+                  model: db.resolutionMinistries, // Include the resolutionMinistries model
+                  as: "resolutionMinistries",
+                  attributes: ["fkMinistryId"],
+                  include: [
+                    {
+                      model: db.ministries, // Include the ministries model
+                      as: "ministries",
+                      attributes: ["ministryName"], // Adjust the attribute as per your ministries model
+                    },
+                  ],
+                },
+                {
+                  model: db.noticeOfficeDairies,
+                  as: "noticeDiary",
+                  attributes: [
+                    "noticeOfficeDiaryNo",
+                    "noticeOfficeDiaryDate",
+                    "noticeOfficeDiaryTime",
+                  ],
+                },
+                {
+                  model: db.resolutionDiaries,
+                  as: "resolutionDiaries",
+                  attributes: ["resolutionId", "resolutionDiaryNo"],
+                },
+                {
+                  model: Users,
+                  as: "createdBy",
+                  attributes: ["id"],
+                  include: [
+                    {
+                      model: Employees,
+                      as: "employee",
+                      attributes: ["id", "firstName", "lastName"],
+                    },
+                  ],
+                },
+                {
+                  model: Users,
+                  as: "deletedBy",
+                  attributes: ["id"],
+                  include: [
+                    {
+                      model: Employees,
+                      as: "employee",
+                      attributes: ["id", "firstName", "lastName"],
+                    },
+                  ],
+                },
+                // {
+                //     model: resolutionClubs,
+                //     as: 'resolutionClubs',
+                //     attributes: ['linkedResolutionId'],
+                //     include: [
+                //         {
+                //             model: resolution,
+                //             as: 'linkedResolution',
+                //             attributes: ['id', 'englishText', 'urduText']
+                //         }
+                //     ]
+                // }
+              ],
+            },
+            {
+              model: Users,
+              as: "submittedUser",
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                },
+              ],
+            },
+            {
+              model: Users,
+              as: "assignedUser",
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                },
+              ],
+            },
+          ],
+          offset,
+          limit,
+          distinct: true,
+          order: [["createdAt", "DESC"]],
+        });
+
+      // Group remarks by resolution
+      const resolutionMap = assignedRemarks.reduce((acc, remark) => {
+        if (remark.resolution) {
+          if (!acc[remark.resolution.id]) {
+            acc[remark.resolution.id] = {
+              ...remark.resolution.dataValues,
+              remarks: []
+            };
+          }
+          acc[remark.resolution.id].remarks.push(remark);
+        }
+        return acc;
+      }, {});
+
+      const totalPages = Math.ceil(count / pageSize);
+
+      return {
+        count,
+        totalPages,
+        currentPage,
+        pageSize,
+        data: Object.values(resolutionMap)
+      };
+    } catch (error) {
+      console.error('Error in getAllResolutionsWithRemarks:', error);
+      throw new Error('Failed to fetch assigned resolutions with remarks');
+    }
+  },
+
+  getIntroducedBillRemarksService: async ({ fkIntroducedInSenateId, userId }) => {
+    try {
+      const remarks = await TranslationRemarks.findAll({
+        where: { 
+          fkIntroducedInSenateId,
+          category: 'IntroducedBills'
+        },
+        include: [
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: db.introducedInSenateBills,
+            as: 'introducedInSenateBills',
+            attributes: ['id', 'billTitle', 'billText']
+          }
+        ],
+        order: [['createdAt', 'ASC']]
+      });
+
+      return remarks;
+    } catch (error) {
+      console.error('Error in getIntroducedBillRemarksService:', error);
+      throw error;
+    }
+  },
+
+  getAllIntroducedBillsWithRemarks: async (userId, currentPage = 0, pageSize = 10) => {
+    try {
+      const offset = currentPage * pageSize;
+      const limit = pageSize;
+
       const { count, rows: assignedRemarks } = await TranslationRemarks.findAndCountAll({
         where: { 
           assignedTo: userId,
-          category: 'Resolution'
+          category: 'IntroducedBills'
         },
-        attributes: ['id', 'fkResolutionId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'category'],
+        attributes: ['id', 'fkIntroducedInSenateId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'category'],
         include: [
           {
-            model: db.resolutions,
-            as: 'resolution',
+            model: db.introducedInSenateBills,
+            as: 'introducedInSenateBills',
           },
           {
             model: Users,
@@ -784,16 +1325,16 @@ const translationServices = {
         order: [['createdAt', 'DESC']],
       });
 
-      // Group remarks by resolution
-      const resolutionMap = assignedRemarks.reduce((acc, remark) => {
-        if (remark.resolution) {
-          if (!acc[remark.resolution.id]) {
-            acc[remark.resolution.id] = {
-              ...remark.resolution.dataValues,
+      // Group remarks by bill
+      const billMap = assignedRemarks.reduce((acc, remark) => {
+        if (remark.introducedInSenateBills) {
+          if (!acc[remark.introducedInSenateBills.id]) {
+            acc[remark.introducedInSenateBills.id] = {
+              ...remark.introducedInSenateBills.dataValues,
               remarks: []
             };
           }
-          acc[remark.resolution.id].remarks.push(remark);
+          acc[remark.introducedInSenateBills.id].remarks.push(remark);
         }
         return acc;
       }, {});
@@ -805,11 +1346,11 @@ const translationServices = {
         totalPages,
         currentPage,
         pageSize,
-        data: Object.values(resolutionMap)
+        data: Object.values(billMap)
       };
     } catch (error) {
-      console.error('Error in getAllResolutionsWithRemarks:', error);
-      throw new Error('Failed to fetch assigned resolutions with remarks');
+      console.error('Error in getAllIntroducedBillsWithRemarks:', error);
+      throw new Error('Failed to fetch assigned introduced bills with remarks');
     }
   },
 

@@ -1538,9 +1538,10 @@ db.translationRemarks.belongsTo(db.users, { foreignKey: 'assignedTo', as: 'assig
 db.translationRemarks.belongsTo(db.questions, { foreignKey: 'fkQuestionId', as: 'question' });
 db.translationRemarks.belongsTo(db.motions, { foreignKey: 'fkMotionId', as: 'motion' });
 db.translationRemarks.belongsTo(db.resolutions, { foreignKey: 'fkResolutionId', as: 'resolution' });
+db.translationRemarks.belongsTo(db.introducedInSenateBills, { foreignKey: 'fkIntroducedInSenateId', as: 'introducedInSenateBills' });
 db.questions.hasMany(db.translationRemarks,{ foreignKey: "fkQuestionId", as: "remarks"})
 db.motions.hasMany(db.translationRemarks,{ foreignKey: "fkMotionId", as: "remarks"})
-db.resolutions.hasMany(db.translationRemarks,{ foreignKey: "fkResolutionId", as: "remarks"})
+db.introducedInSenateBills.hasMany(db.translationRemarks,{ foreignKey: "fkIntroducedInSenateId", as: "remarks"})
 
 // User 
 

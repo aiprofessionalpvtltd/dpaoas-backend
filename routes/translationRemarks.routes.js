@@ -12,8 +12,10 @@ router.post("/remarks/:userId", translationController.createRemark);
 
 // GET route to fetch remarks by questionId
 router.get("/getremarks/:fkQuestionId/:userId", translationController.getRemarks);
+router.get("/getMotionIdRemarks/:fkMotionId/:userId", translationController.getMotionIdRemarks);
+router.get("/getResolutionIdRemarks/:fkResolutionId/:userId", translationController.getResolutionIdRemarks);
 
-// GET route to fetch remarks by questionId - now supports ?category=Question|Motion|Resolution
+// GET route to fetch remarks by questionId - now supports ?category=Question|Motion|Resolution|IntroducedBills
 router.get("/getAllRemarks/:userId?", translationController.getAllRemarks);
 
 // Motion-specific routes
@@ -23,6 +25,10 @@ router.get("/getAllMotionRemarks/:userId?", translationController.getAllMotionRe
 // Resolution-specific routes
 router.get("/getresolution-remarks/:fkResolutionId/:userId", translationController.getResolutionRemarks);
 router.get("/getAllResolutionRemarks/:userId?", translationController.getAllResolutionRemarks);
+
+// IntroducedBills-specific routes
+router.get("/getintroducedbill-remarks/:fkIntroducedInSenateId/:userId", translationController.getIntroducedBillRemarks);
+router.get("/getAllIntroducedBillRemarks/:userId?", translationController.getAllIntroducedBillRemarks);
 
 module.exports = router;
 

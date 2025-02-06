@@ -95,22 +95,30 @@ const createRemark = async (req, res) => {
     console.log("Submitted By ID:", submittedBy);
 
     // Validate input
-    if (!data.fkQuestionId || !data.assignedTo) {
+    if (!data.assignedTo || !data.category) {
       return res.status(400).json({
-        message: "Missing required fields: fkQuestionId, comment, and assignedTo.",
+        message: "Missing required fields: assignedTo and category.",
+      });
+    }
+
+    // Validate category-specific ID
+    if (data.category === 'Question' && !data.fkQuestionId ||
+        data.category === 'Motion' && !data.fkMotionId ||
+        data.category === 'Resolution' && !data.fkResolutionId ||
+        data.category === 'IntroducedBills' && !data.fkIntroducedInSenateId) {
+      return res.status(400).json({
+        message: `Missing required ID field for category ${data.category}`,
       });
     }
 
     const result = await translationServices.createRemarkService({ ...data, submittedBy });
 
     return res.status(201).json({
-      message: "Remark created and question assigned successfully.",
+      message: "Remark created/updated and assigned successfully.",
       data: result,
     });
   } catch (error) {
     console.error("Error in createRemark controller:", error);
-    console.error("Error details in createRemarkService:", error); // Log the error
-
     return res.status(error.status || 500).json({
       message: error.message || "Internal server error.",
     });
@@ -156,8 +164,78 @@ const getRemarks = async (req, res) => {
     const remarks = await translationServices.getRemarksService({ fkQuestionId, userId });
 
     if (!remarks || remarks.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
         message: "No remarks found for this user on the specified question.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Remarks fetched successfully.",
+      data: remarks,
+    });
+  } catch (error) {
+    console.error("Error in getRemarks controller:", error);
+    return res.status(error.status || 500).json({
+      success: false,
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
+const getMotionIdRemarks = async (req, res) => {
+  try {
+    const { fkMotionId, userId } = req.params; 
+
+    console.log("Request Params:", req.params);
+    
+    
+    if (!fkMotionId || !userId) {
+      return res.status(400).json({
+        message: "Missing required fields: fkMotionId and userId.",
+      });
+    }
+
+    const remarks = await translationServices.getMotionIdRemarksService({ fkMotionId, userId });
+
+    if (!remarks || remarks.length === 0) {
+      return res.status(201).json({
+        message: "No remarks found for this user on the specified motion.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Remarks fetched successfully.",
+      data: remarks,
+    });
+  } catch (error) {
+    console.error("Error in getRemarks controller:", error);
+    return res.status(error.status || 500).json({
+      success: false,
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
+const getResolutionIdRemarks = async (req, res) => {
+  try {
+    const { fkResolutionId, userId } = req.params; 
+
+    console.log("Request Params:", req.params);
+    
+    
+    if (!fkResolutionId || !userId) {
+      return res.status(400).json({
+        message: "Missing required fields: fkResolutionId and userId.",
+      });
+    }
+
+    const remarks = await translationServices.getResIdRemarksService({ fkResolutionId, userId });
+
+    if (!remarks || remarks.length === 0) {
+      return res.status(201).json({
+        message: "No remarks found for this user on the specified motion.",
       });
     }
 
@@ -196,7 +274,7 @@ const getAllRemarks = async (req, res) => {
     );
 
     if (!result.data || result.data.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
         message: `No assigned ${category || ''} remarks found for this user.`,
         data: [],
       });
@@ -229,7 +307,7 @@ const getMotionRemarks = async (req, res) => {
     const remarks = await translationServices.getMotionRemarksService({ fkMotionId, userId });
 
     if (!remarks || remarks.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
         message: "No remarks found for this motion.",
       });
     }
@@ -251,23 +329,26 @@ const getMotionRemarks = async (req, res) => {
 const getAllMotionRemarks = async (req, res) => {
   try {
     const { userId } = req.params;
+    const { category } = req.query;
     const currentPage = parseInt(req.query.currentPage) || 0;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    if (!userId) {
-      return res.status(400).json({
-        message: "User ID is required.",
-      });
-    }
+    // if (!userId) {
+    //   return res.status(400).json({
+    //     message: "User ID is required.",
+    //   });
+    // }
 
     const result = await translationServices.getAllMotionsWithRemarks(
       userId,
+      category,
       currentPage,
       pageSize
     );
 
     if (!result.data || result.data.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
+        success: true,  
         message: "No assigned motions found for this user.",
         data: [],
       });
@@ -300,7 +381,7 @@ const getResolutionRemarks = async (req, res) => {
     const remarks = await translationServices.getResolutionRemarksService({ fkResolutionId, userId });
 
     if (!remarks || remarks.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
         message: "No remarks found for this resolution.",
       });
     }
@@ -322,6 +403,7 @@ const getResolutionRemarks = async (req, res) => {
 const getAllResolutionRemarks = async (req, res) => {
   try {
     const { userId } = req.params;
+    const { category } = req.query;
     const currentPage = parseInt(req.query.currentPage) || 0;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
@@ -333,12 +415,13 @@ const getAllResolutionRemarks = async (req, res) => {
 
     const result = await translationServices.getAllResolutionsWithRemarks(
       userId,
+      category,
       currentPage,
       pageSize
     );
 
     if (!result.data || result.data.length === 0) {
-      return res.status(404).json({
+      return res.status(201).json({
         message: "No assigned resolutions found for this user.",
         data: [],
       });
@@ -358,6 +441,77 @@ const getAllResolutionRemarks = async (req, res) => {
   }
 };
 
+const getIntroducedBillRemarks = async (req, res) => {
+  try {
+    const { fkIntroducedInSenateId, userId } = req.params;
+
+    if (!fkIntroducedInSenateId || !userId) {
+      return res.status(400).json({
+        message: "Missing required fields: fkIntroducedInSenateId and userId.",
+      });
+    }
+
+    const remarks = await translationServices.getIntroducedBillRemarksService({ fkIntroducedInSenateId, userId });
+
+    if (!remarks || remarks.length === 0) {
+      return res.status(201).json({
+        message: "No remarks found for this introduced bill.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,  
+      message: "Introduced bill remarks fetched successfully.",
+      data: remarks,
+    });
+  } catch (error) {
+    console.error("Error in getIntroducedBillRemarks:", error);
+    return res.status(500).json({
+      success: false,  
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
+const getAllIntroducedBillRemarks = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentPage = parseInt(req.query.currentPage) || 0;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User ID is required.",
+      });
+    }
+
+    const result = await translationServices.getAllIntroducedBillsWithRemarks(
+      userId,
+      currentPage,
+      pageSize
+    );
+
+    if (!result.data || result.data.length === 0) {
+      return res.status(201).json({
+        message: "No assigned introduced bills found for this user.",
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,  
+      message: "Assigned introduced bills and remarks fetched successfully.",
+      ...result
+    });
+  } catch (error) {
+    console.error("Error in getAllIntroducedBillRemarks:", error);
+    return res.status(500).json({
+      success: false,  
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
 module.exports = {
   getTranslationRemarks,
   getBranchHierarchy,
@@ -365,10 +519,14 @@ module.exports = {
   createRemark,
   getRemarksByQuestionId,
   getRemarks,
+  getMotionIdRemarks,
+  getResolutionIdRemarks,
   getAllRemarks,
   getMotionRemarks,
   getAllMotionRemarks,
   getResolutionRemarks,
   getAllResolutionRemarks,
+  getIntroducedBillRemarks,
+  getAllIntroducedBillRemarks,
 };
 
