@@ -480,6 +480,7 @@ const questionListService = {
         listName: questionList.listName,
         defferedQuestions: questionList.defferedQuestions,
         fkUserId: questionList.fkUserId,
+        duplicate: questionList.duplicate || false,
       });
 
       console.log("quesionss----", questionIds);
@@ -569,6 +570,7 @@ const questionListService = {
           "houseLayDate",
           "defferedQuestions",
           "questionListStatus",
+          "duplicate"
         ],
       });
 
@@ -650,6 +652,20 @@ const questionListService = {
               model: Divisions,
               as: "divisions",
               attributes: ["id", "divisionName"],
+              include: [
+                {
+                  model: db.ministries,
+                  as: "ministry",
+                  attributes: ["id", "ministryName"],
+                  include: [
+                    {
+                      model: db.mnas,
+                      as: "mnas",
+                      attributes: ["id", "mnaName"],
+                    }
+                  ]
+                }
+              ],
             },
             {
               model: Groups,
@@ -931,6 +947,7 @@ const questionListService = {
             as: "questionSuppList",
             attributes: [
               "id",
+              "fkQuestionListId",
               "listName",
               "houseLayDate",
               "fkUserId",
@@ -939,9 +956,33 @@ const questionListService = {
           },
         ],
       });
-      //   console.log(question); return false;
+      
+      let questionListData = [];
 
       const questions = question.map(async (question) => {
+
+        questionListData = await QuestionList.findOne({
+          where: { id: question?.questionSuppList?.fkQuestionListId },
+          include: [
+            {
+              model: Sessions,
+              attributes: ["id", "sessionName"]
+            }
+          ],
+          attributes: [
+            "id",
+            "questionCategory",
+            "fkSessionId",
+            "fkGroupId",
+            "startListNo",
+            "listName",
+            "houseLayDate",
+            "defferedQuestions",
+            "fkUserId",
+            "questionListStatus",
+          ]
+        });
+
         const filteredQuestions = await Questions.findAll({
           where: { id: question.fkQuestionId },
           include: [
@@ -1005,8 +1046,12 @@ const questionListService = {
       // });
 
       // Aggregate question counts by member
+      // Aggregate question counts by member
       const memberQuestionCountMap = {};
+      const divisionQuestionCountMap = {};
+
       flattenedQuestions.forEach((question) => {
+        // Count by member
         const memberName = question.dataValues.member
           ? question.dataValues.member.memberName
           : null;
@@ -1016,6 +1061,17 @@ const questionListService = {
           }
           memberQuestionCountMap[memberName]++;
         }
+
+        // Count by division
+        const divisionName = question.dataValues.divisions
+          ? question.dataValues.divisions.divisionName
+          : null;
+        if (divisionName) {
+          if (!divisionQuestionCountMap[divisionName]) {
+            divisionQuestionCountMap[divisionName] = 0;
+          }
+          divisionQuestionCountMap[divisionName]++;
+        }
       });
 
       // Transform the memberQuestionCountMap into the desired format
@@ -1024,7 +1080,13 @@ const questionListService = {
         count: memberQuestionCountMap[name]
       }));
 
-      return { questions: flattenedQuestions, memberQuestionCount };
+      // Transform the divisionQuestionCountMap into the desired format
+      const divisionQuestionCount = Object.keys(divisionQuestionCountMap).map(name => ({
+        name: name,
+        count: divisionQuestionCountMap[name]
+      }));
+
+      return { questionListData, questions: flattenedQuestions, memberQuestionCount, divisionQuestionCount };
 
     } catch (error) {
       throw new Error(error.message || "Error Fetching Question");
@@ -1063,6 +1125,152 @@ const questionListService = {
       throw { message: error.message || "Error Deleting Supplementary List!" };
     }
   },
+
+  getQuestionListCounts: async (questionListId) => {
+    try {
+      const questions = await QuestionListJoin.findAll({
+        where: { fkQuestionListId: questionListId },
+        include: [
+          {
+            model: Questions,
+            include: [
+              {
+                model: Members,
+                attributes: ['id', 'memberName']
+              },
+              {
+                model: Divisions,
+                as: 'divisions',
+                attributes: ['id', 'divisionName']
+              },
+              {
+                model: QuestionDiary,
+                as: 'questionDiary',
+                attributes: ['questionID']
+              }
+            ]
+          }
+        ]
+      });
+
+      const questionListData = await QuestionList.findOne({
+        where: { id: questionListId },
+        include: [
+          {
+            model: Sessions,
+            attributes: ["id", "sessionName"]
+          }
+        ],
+        attributes: [
+          "id",
+          "questionCategory",
+          "fkSessionId",
+          "fkGroupId",
+          "startListNo",
+          "listName",
+          "houseLayDate",
+          "defferedQuestions",
+          "fkUserId",
+          "questionListStatus",
+        ]
+      });
+
+      // Initialize summary counts
+      const summary = {
+        totalStarred: 0,
+        totalUnstarred: 0,
+        totalShortNotice: 0,
+        divisions: []
+      };
+
+      // Group questions by division
+      const divisionMap = new Map();
+
+      questions.forEach(questionJoin => {
+        const question = questionJoin.question;
+        if (!question) return;
+
+        // Update total counts
+        if (question.questionCategory === 'Starred') {
+          summary.totalStarred++;
+        } else if (question.questionCategory === 'Un-Starred') {
+          summary.totalUnstarred++;
+        } else if (question.questionCategory === 'Short Notice') {
+          summary.totalShortNotice++;
+        }
+
+        const division = question.divisions;
+        const member = question.member;
+        
+        if (division && member) {
+          if (!divisionMap.has(division.id)) {
+            divisionMap.set(division.id, {
+              divisionName: division.divisionName,
+              starredCount: 0,
+              unstarredCount: 0,
+              shortNoticeCount: 0,
+              totalQuestions: 0,
+              members: new Map(),
+            });
+          }
+
+          const divisionData = divisionMap.get(division.id);
+          divisionData.totalQuestions++;
+
+          if (question.questionCategory === 'Starred') {
+            divisionData.starredCount++;
+          } else if (question.questionCategory === 'Un-Starred') {
+            divisionData.unstarredCount++;
+          } else if (question.questionCategory === 'Short Notice') {
+            divisionData.shortNoticeCount++;
+          }
+
+          // Track member data
+          if (!divisionData.members.has(member.id)) {
+            divisionData.members.set(member.id, {
+              name: member.memberName,
+              questionCount: 0,
+              questionNumbers: [],
+              categories: {
+                Starred: 0,
+                'Un-Starred': 0,
+                'Short Notice': 0
+              }
+            });
+          }
+
+          const memberData = divisionData.members.get(member.id);
+          memberData.questionCount++;
+          if (question.questionDiary?.questionID) {
+            memberData.questionNumbers.push(question.questionDiary.questionID);
+          }
+          memberData.categories[question.questionCategory]++;
+        }
+      });
+
+      // Transform the data into the required format
+      summary.divisions = Array.from(divisionMap.values()).map(division => ({
+        divisionName: division.divisionName,
+        categorySummary: `Starred: ${String(division.starredCount).padStart(2, '0')}, Un-Starred: ${String(division.unstarredCount).padStart(2, '0')}, Short Notice: ${String(division.shortNoticeCount).padStart(2, '0')}`,
+        totalQuestions: division.totalQuestions,
+        memberCount: division.members.size,
+        members: Array.from(division.members.values()).map(member => ({
+          name: member.name,
+          questionCount: member.questionCount,
+          questionNumbers: member.questionNumbers,
+          categories: [
+            member.categories.Starred > 0 ? `Starred: ${member.categories.Starred}` : null,
+            member.categories['Un-Starred'] > 0 ? `Un-Starred: ${member.categories['Un-Starred']}` : null,
+            member.categories['Short Notice'] > 0 ? `Short Notice: ${member.categories['Short Notice']}` : null,
+          ].filter(Boolean)
+        }))
+      }));
+
+      return {questionListData, summary};
+    } catch (error) {
+      throw new Error(error.message || "Error getting question list counts");
+    }
+  }
 };
 
 module.exports = questionListService;

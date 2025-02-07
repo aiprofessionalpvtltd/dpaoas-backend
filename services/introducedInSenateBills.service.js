@@ -202,7 +202,17 @@ const senateBillService = {
                 limit,
                 order: [
                     // Order by the numeric part between slashes
-                    [db.sequelize.literal(`CAST(REGEXP_REPLACE("introducedInSenateBills"."fileNumber", '^\\d+/\\((\\d+)\\)/\\d+$', '\\1') AS INTEGER)`), 'ASC']
+                    [
+                        db.sequelize.literal(`
+                            CASE 
+                                WHEN "introducedInSenateBills"."fileNumber" ~ '^\\d+/\\((\\d+)\\)/\\d+$'
+                                THEN CAST(REGEXP_REPLACE("introducedInSenateBills"."fileNumber", '^\\d+/\\((\\d+)\\)/\\d+$', '\\1') AS INTEGER)
+                                ELSE 0
+                            END,
+                            "introducedInSenateBills"."fileNumber"
+                        `),
+                        'ASC'
+                    ]
                 ],
                 where: whereClause,
                 include: [

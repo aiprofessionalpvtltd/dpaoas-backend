@@ -48,6 +48,7 @@ class newRotaService {
             const weekDayMap = {
                 "Tuesday-Friday": [2, 5],
                 "Wednesday-Friday": [3, 5],
+                "Thursday-Friday": [4, 5],
                 "Alternate Days": [2, 4, 6],
                 "Regular Days": [1, 2, 3, 4, 5]
             };
@@ -224,6 +225,7 @@ class newRotaService {
             const weekDayMap = {
                 "Tuesday-Friday": [2, 5],
                 "Wednesday-Friday": [3, 5],
+                "Thursday-Friday": [4, 5],
                 "Alternate Days": [2, 4, 6],
                 "Regular Days": [1, 2, 3, 4, 5]
             };
