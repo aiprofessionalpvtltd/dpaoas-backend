@@ -90,7 +90,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
         },
         billType: {
-            type: Sequelize.ENUM("Amendment Bill", "Constitutional Amendment Bill", "Finance Money Bill", "New Bill"),
+            type: Sequelize.ENUM("Finance Bill", "Money Bill"),
             allowNull: false,
         },
         PassedByNADate: {
@@ -165,6 +165,15 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true
         },
         dateofReferencetoStandingCommittee: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+
+        dateOfReturnByPresident: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        passedInJointSitting: {
             type: Sequelize.DATE,
             allowNull: true
         },

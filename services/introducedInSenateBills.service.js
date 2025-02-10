@@ -409,6 +409,7 @@ const senateBillService = {
                     filterOptions[Sequelize.Op.or] = [
                         { billTitle: { [Sequelize.Op.like]: `%${filters.keyword}%` } },
                         { billText: { [Sequelize.Op.like]: `%${filters.keyword}%` } },
+                        { billRemarks: { [Sequelize.Op.like]: `%${filters.keyword}%` } },
                     ];
                 }
 
