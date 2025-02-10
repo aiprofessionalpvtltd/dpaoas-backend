@@ -97,7 +97,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: true
         },
-        DateOfReceiptOfMessageFromNA:{
+        DateOfReceiptOfMessageFromNA: {
             type: Sequelize.DATE,
             allowNull: true
         },
@@ -152,24 +152,32 @@ module.exports = (sequelize, Sequelize) => {
         billFor: {
             type: Sequelize.ENUM("Senators", "Ministers"),
             allowNull: false,
-             defaultValue: 'Senators'
+            defaultValue: 'Senators'
         },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
 
-                // New added
-                dateOfCirculationOfNotice: {
-                    type: Sequelize.DATE,
-                    allowNull: true
-                },
-                dateofReciptofNotice: {
-                    type: Sequelize.DATE,
-                    allowNull: true
-                },
-                dateofReferencetoStandingCommittee: {
-                    type: Sequelize.DATE,
-                    allowNull: true
-                },
+        // New added
+        dateOfCirculationOfNotice: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        dateofReciptofNotice: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        dateofReferencetoStandingCommittee: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        dateOfReturnByPresident: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        passedInJointSitting: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
     });
 
     IntroducedInSenateBill.associate = function (models) {
