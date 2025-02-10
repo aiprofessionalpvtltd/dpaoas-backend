@@ -343,11 +343,25 @@ const senateBillService = {
                 },
                 {
                     model: ParliamentaryYearsMna,
-                    as: 'mnaParliamentaryYears'
+                    as: 'mnaParliamentaryYears',
+                    include: [
+                        {
+                            model: db.tenures,
+                            as: 'tenure'
+                        },
+                        {
+                            model: db.tenuresMinisters,
+                            as: 'tenuresMinisters'
+                        }
+                    ]
                 },
                 {
                     model: db.tenures,
                     as: 'tenures'
+                },
+                {
+                    model: db.tenuresMinisters,
+                    as: 'tenuresMinisters'
                 },
                 {
                     model: db.terms,
@@ -411,6 +425,18 @@ const senateBillService = {
                         { billText: { [Sequelize.Op.like]: `%${filters.keyword}%` } },
                         { billRemarks: { [Sequelize.Op.like]: `%${filters.keyword}%` } },
                     ];
+                }
+
+                if (filters.fkTenureId) {
+                    filterOptions.fkTenureId = filters.fkTenureId;
+                }
+    
+                if (filters.fkMinisterTenureId) {
+                    filterOptions.fkMinisterTenureId = filters.fkMinisterTenureId;
+                }
+    
+                if (filters.fkMnaParliamentaryYearId) {
+                    filterOptions.fkMnaParliamentaryYearId = filters.fkMnaParliamentaryYearId;
                 }
 
                 if (filters && filters.fkSenatorId) {
