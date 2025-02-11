@@ -240,16 +240,137 @@ const questionsService = {
   },
 
   // Retrieve All Questions in Question Branch
-  getAllQuestions: async (currentPage, pageSize, questionSentStatus) => {
+  // getAllQuestions: async (currentPage, pageSize, questionSentStatus) => {
+  //   try {
+  //     const offset = currentPage * pageSize;
+  //     const limit = pageSize;
+  //     let whereClause = {};
+
+  //     // Add questionSentStatus to the where clause only if it's provided
+  //     if (questionSentStatus) {
+  //       whereClause.questionSentStatus = questionSentStatus;
+  //     }
+  //     const { count, rows } = await Questions.findAndCountAll({
+  //       where: whereClause,
+  //       include: [
+  //         {
+  //           model: Users,
+  //           as: "questionDeletedBy",
+  //           attributes: ["id"],
+  //           include: [
+  //             {
+  //               model: Employees,
+  //               as: "employee",
+  //               attributes: ["id", "firstName", "lastName"],
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           model: Users,
+  //           as: "questionSubmittedBy",
+  //           attributes: ["id"],
+  //           include: [
+  //             {
+  //               model: Employees,
+  //               as: "employee",
+  //               attributes: ["id", "firstName", "lastName"],
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           model: QuestionRevival,
+  //           as: "questionRevival",
+  //           include: [
+  //             {
+  //               model: Sessions,
+  //               as: "ToSession",
+  //               attributes: ["id", "sessionName"],
+  //             },
+  //             {
+  //               model: Sessions,
+  //               as: "FromSession",
+  //               attributes: ["id", "sessionName"],
+  //             },
+  //           ],
+  //           attributes: ["id", "fkFromSessionId", "fkToSessionId"],
+  //         },
+  //         {
+  //           model: Sessions,
+  //           attributes: ["id", "sessionName"],
+  //         },
+  //         {
+  //           model: QuestionStatus,
+  //           as: "questionStatus",
+  //           attributes: ["id", "questionStatus"],
+  //         },
+  //         {
+  //           model: Members,
+  //           attributes: ["id", "memberName"],
+  //         },
+  //         {
+  //           model: QuestionDiary,
+  //           attributes: ["id", "questionID", "questionDiaryNo"],
+  //         },
+  //         {
+  //           model: NoticeOfficeDairy,
+  //           as: "noticeOfficeDiary",
+  //           attributes: [
+  //             "id",
+  //             "noticeOfficeDiaryNo",
+  //             "noticeOfficeDiaryDate",
+  //             "noticeOfficeDiaryTime",
+  //           ],
+  //         },
+  //         {
+  //           model: Divisions,
+  //           as: "divisions",
+  //           attributes: ["id", "divisionName"],
+  //           include: [
+  //             {
+  //               model: db.ministries,
+  //               attributes: ["id", "ministryName"],
+  //             },
+  //           ]
+  //         },
+  //         {
+  //           model: Groups,
+  //           as: "groups",
+  //           attributes: ["id", "groupNameStarred", "groupNameUnstarred"],
+  //         },
+  //       ],
+  //       offset,
+  //       limit,
+  //       distinct: true,
+  //       order: [["id", "DESC"]],
+  //     });
+  //     // Parse questionImage attribute if present
+  //     rows.forEach((question) => {
+  //       if (question.questionImage && question.questionImage.length) {
+  //         question.questionImage = question.questionImage.map((imageString) =>
+  //           JSON.parse(imageString)
+  //         );
+  //       } else {
+  //         question.questionImage = [];
+  //       }
+  //     });
+  //     const totalPages = Math.ceil(count / pageSize);
+  //     return { count, totalPages, questions: rows };
+  //   } catch (error) {
+  //     throw new Error(error.message || "Error Fetching All Questions");
+  //   }
+  // },
+
+  getAllQuestions: async (currentPage, pageSize, questionSentStatus ) => {
     try {
       const offset = currentPage * pageSize;
       const limit = pageSize;
       let whereClause = {};
-
-      // Add questionSentStatus to the where clause only if it's provided
+  
+      // Filter by questionSentStatus if provided
       if (questionSentStatus) {
         whereClause.questionSentStatus = questionSentStatus;
       }
+  
       const { count, rows } = await Questions.findAndCountAll({
         where: whereClause,
         include: [
@@ -331,7 +452,7 @@ const questionsService = {
                 model: db.ministries,
                 attributes: ["id", "ministryName"],
               },
-            ]
+            ],
           },
           {
             model: Groups,
@@ -344,6 +465,7 @@ const questionsService = {
         distinct: true,
         order: [["id", "DESC"]],
       });
+  
       // Parse questionImage attribute if present
       rows.forEach((question) => {
         if (question.questionImage && question.questionImage.length) {
@@ -354,6 +476,7 @@ const questionsService = {
           question.questionImage = [];
         }
       });
+  
       const totalPages = Math.ceil(count / pageSize);
       return { count, totalPages, questions: rows };
     } catch (error) {
@@ -1594,6 +1717,8 @@ const questionsService = {
     try {
       const updatedData = {
         sentForTranslation: true,
+        questionSentStatus: "toTranslation"
+
       };
       await Questions.update(updatedData, { where: { id: questionId } });
       // Fetch the updated question which is sent for tranlation

@@ -154,6 +154,10 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             defaultValue: 'Senators'
         },
+        introducedBillSentStatus: {
+            type: Sequelize.ENUM("inLegislation", "toTranslation"),
+            defaultValue: "inLegislation",
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
 
@@ -192,6 +196,11 @@ module.exports = (sequelize, Sequelize) => {
         IntroducedInSenateBill.hasOne(models.memberPassages, { foreignKey: 'fkMemberPassageId', as: 'memberPassages' });
         IntroducedInSenateBill.hasMany(models.billDocuments, { foreignKey: 'fkBillDocumentId', as: 'billDocuments' });
         IntroducedInSenateBill.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'user' });
+
+        IntroducedInSenateBill.hasMany(models.translationRemarks, { 
+            as: "translationRemarks", 
+            foreignKey: "fkIntroducedInSenateId" 
+        });
     };
 
     return IntroducedInSenateBill;

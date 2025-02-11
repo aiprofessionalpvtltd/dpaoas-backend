@@ -44,6 +44,7 @@ app.use('/', swaggerMiddleware);
 
 
 // Import routers for each module
+const TranslationRouter = require("./routes/translationRemarks.routes");
 const rolesRouter = require("./routes/roles.route");
 const leaveRouter = require("./routes/leave.route");
 const employeeRouter = require("./routes/employee.route")
@@ -326,6 +327,7 @@ app.use(
 // Serve static files from the 'public' directory
 app.use('/public', express.static('public'));
 
+app.use("/api/translation", TranslationRouter);
 
 
 const flagRoutes = require('./routes/flagRoutes.route');

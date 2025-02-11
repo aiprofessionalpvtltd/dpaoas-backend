@@ -142,7 +142,7 @@ module.exports = (sequelize, Sequelize) => {
         },
 
         resolutionSentStatus: {
-            type: Sequelize.ENUM("inResolution", "toResolution", "inNotice"),
+            type: Sequelize.ENUM("inResolution", "toResolution", "inNotice", "toTranslation"),
             defaultValue: "inNotice",
         },
 
@@ -201,6 +201,11 @@ module.exports = (sequelize, Sequelize) => {
             resolutions.hasMany(models.resolutionMovers, {
                 foreignKey: 'fkResolutionId',
                 as: 'resolutionMoversAssociation'
+            });
+
+            resolutions.hasMany(models.translationRemarks, { 
+                as: "translationRemarks", 
+                foreignKey: "fkResolutionId" 
             });
     };
 

@@ -1576,6 +1576,7 @@ const motionService = {
       const UpdateMotion = await motions.update(
         {
           sentForTranslation: true,
+          motionSentStatus: "toTranslation"
         },
         {
           where: { id: id },

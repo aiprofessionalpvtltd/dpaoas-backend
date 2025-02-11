@@ -117,7 +117,7 @@ module.exports = (sequelize, Sequelize) => {
 
 
         motionSentStatus: {
-            type: Sequelize.ENUM("inMotion", "toMotion", "inNotice"),
+            type: Sequelize.ENUM("inMotion", "toMotion", "inNotice", "toTranslation"),
             defaultValue: "inNotice",
         },
 
@@ -154,6 +154,10 @@ module.exports = (sequelize, Sequelize) => {
         motions.belongsTo(models.branches, { foreignKey: 'sentToBranch' })
         //     requestLeaves.belongsTo(models.users, {foreignKey: 'requestLeaveSubmittedTo',as: 'submittedToUser'});
         //     requestLeaves.hasMany(models.leaveComments, { foreignKey: 'fkRequestLeaveId', as: 'leaveComments' });
+        motions.hasMany(models.translationRemarks, { 
+            as: "translationRemarks", 
+            foreignKey: "fkMotionId" 
+        });
     };
     return motions;
 };
