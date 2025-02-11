@@ -188,7 +188,7 @@ const senateBillService = {
     },
 
     // Retrieve All Introduced In Senate Bills By Category
-    findAllIntroducedInSenateBillsByCategory: async (currentPage, pageSize, billCategory, billFrom) => {
+    findAllIntroducedInSenateBillsByCategory: async (currentPage, pageSize, billCategory, billFrom, financeMoneyBillSentStatus) => {
         try {
             const offset = currentPage * pageSize;
             const limit = pageSize;
@@ -199,6 +199,10 @@ const senateBillService = {
             }
             if (billFrom) {
                 whereClause.billFrom = billFrom;
+            }
+
+            if (financeMoneyBillSentStatus) {
+                whereClause.financeMoneyBillSentStatus = financeMoneyBillSentStatus;
             }
 
             const { count, rows } = await IntroducedInSenateBills.findAndCountAll({

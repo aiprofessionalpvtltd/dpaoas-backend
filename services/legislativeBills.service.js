@@ -32,14 +32,19 @@ const legislativeBillService = {
 
 
     // Retrieve All LegislativeBills
-    findAllLegislativeBills: async (currentPage, pageSize) => {
+    findAllLegislativeBills: async (currentPage, pageSize, legislativeSentStatus) => {
         try {
             const offset = currentPage * pageSize;
             const limit = pageSize;
-            const latestRecords = await getLatestRecords();            
+            const latestRecords = await getLatestRecords();    
+            
+            const whereClause = {};
+            if (legislativeSentStatus) {
+                whereClause.legislativeSentStatus = legislativeSentStatus;
+            }
 
             const { count, rows } = await LegislativeBills.findAndCountAll({
-                where: { legislativeSentStatus: 'toLegislation' },
+                where: whereClause,
                 offset,
                 limit,
                 order: [['createdAt', 'DESC']],

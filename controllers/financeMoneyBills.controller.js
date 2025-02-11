@@ -69,6 +69,7 @@ const senateBillController = {
             const pageSize = parseInt(req.query.pageSize);
             const billCategory = req.query.billCategory;
             const billFrom = req.query.billFrom;
+            const financeMoneyBillSentStatus = req.query.financeMoneyBillSentStatus;
 
             if (!billCategory) {
                 return res.status(400).send({
@@ -77,7 +78,7 @@ const senateBillController = {
                 });
             }
 
-            const { count, totalPages, senateBills } = await senateBillService.findAllIntroducedInSenateBillsByCategory(currentPage, pageSize, billCategory, billFrom);
+            const { count, totalPages, senateBills } = await senateBillService.findAllIntroducedInSenateBillsByCategory(currentPage, pageSize, billCategory, billFrom, financeMoneyBillSentStatus);
 
             logger.info("senateBills--->>", senateBills);
 

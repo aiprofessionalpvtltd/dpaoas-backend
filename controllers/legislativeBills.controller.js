@@ -10,8 +10,8 @@ const legislativeBillController = {
         try {
             const currentPage = parseInt(req.query.currentPage);
             const pageSize = parseInt(req.query.pageSize);
-            console.log("req", currentPage, pageSize);
-            const { count, totalPages, legislativeBills } = await legislativeBillService.findAllLegislativeBills(currentPage, pageSize);
+            const legislativeSentStatus = req.query.legislativeSentStatus;
+            const { count, totalPages, legislativeBills } = await legislativeBillService.findAllLegislativeBills(currentPage, pageSize, legislativeSentStatus);
 
             console.log("legislativeBills--->>", legislativeBills)
     
