@@ -317,13 +317,10 @@ const translationServices = {
     assignedTo,
     comment,
     priority,
-    commentStatus,
     category
   }) => {
     try {
-      let translationRemark;
-      
-      // Build where clause based on category
+      // Define where clause dynamically
       const whereClause = {
         category,
         ...(category === 'Question' && { fkQuestionId }),
@@ -331,53 +328,66 @@ const translationServices = {
         ...(category === 'Resolution' && { fkResolutionId }),
         ...(category === 'IntroducedBills' && { fkIntroducedInSenateId })
       };
-
-      // Check if remark already exists
-      const existingRemark = await TranslationRemarks.findOne({
+  
+      // Check if a translation remark already exists
+      let existingRemark = await TranslationRemarks.findOne({
         where: whereClause
       });
+  
+      // Define the new comment object
+      const newComment = {
+        submittedBy,
+        assignedTo,
+        comment,
+        priority: priority || "Routine",
+        createdAt: new Date()
+      };
 
+      console.log("existingRemark", existingRemark);
+      
+  
       if (existingRemark) {
-        // Update existing remark
-        translationRemark = await existingRemark.update({
-          submittedBy,
-          assignedTo,
-          comment,
-          priority: priority || "Routine",
-          CommentStatus: commentStatus || "Please Put Up"
-        });
-      } else {
-        // Create new remark
-        translationRemark = await TranslationRemarks.create({
+        // If remark exists, append new comment and update the record
+        const updatedComments = [...existingRemark?.comment, newComment];
+        console.log("updatedComments", updatedComments);
+  
+        await existingRemark.update({
           ...whereClause,
           submittedBy,
-          assignedTo,
-          comment,
-          priority: priority || "Routine",
-          CommentStatus: commentStatus || "Please Put Up"
+        assignedTo,
+        comment: updatedComments, // Store as an array
+        priority: priority || "Routine",
         });
+  
+        return {
+          status: 200,
+          message: "Remark updated successfully",
+          data: existingRemark
+        };
       }
-
-      // Update assignedTo based on category
-      if (category === 'Question' && fkQuestionId) {
-        await Questions.update({ assignedTo }, { where: { id: fkQuestionId } });
-      } else if (category === 'Motion' && fkMotionId) {
-        await db.motions.update({ assignedTo }, { where: { id: fkMotionId } });
-      } else if (category === 'Resolution' && fkResolutionId) {
-        await db.resolutions.update({ assignedTo }, { where: { id: fkResolutionId } });
-      } else if (category === 'IntroducedBills' && fkIntroducedInSenateId) {
-        await db.introducedInSenateBills.update({ assignedTo }, { where: { id: fkIntroducedInSenateId } });
-      }
-
-      return translationRemark;
+  
+      // If no existing remark, create a new one
+      const translationRemark = await TranslationRemarks.create({
+        ...whereClause,
+        submittedBy,
+        assignedTo,
+        comment: [newComment], // Store as an array
+        priority: priority || "Routine",
+      });
+  
+      return {
+        status: 201,
+        message: "Remark created successfully",
+        data: translationRemark
+      };
     } catch (error) {
-      console.error("Error in createRemarkService:", error);
+      console.error("Error in createOrUpdateRemarkService:", error);
       throw {
         status: 400,
-        message: "Failed to create/update remark and assign.",
+        message: "Failed to create or update translation remark."
       };
     }
-  },
+  },  
 
   getRemarksByQuestionIdService: async (questionId) => {
     try {
@@ -449,6 +459,56 @@ const translationServices = {
         order: [['createdAt', 'ASC']]
       });
 
+      for (const remark of remarks) {
+        if (remark?.comment) {
+          for (const commentObj of remark?.comment) {
+            // Fetch submitted user details
+            const submittedUser = await Users.findOne({
+              where: { id: commentObj.submittedBy },
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Fetch assigned user details
+            const assignedUser = await Users.findOne({
+              where: { id: commentObj.assignedTo }, // Ensure assignedTo is the correct field
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Attach user details to the comment object
+            commentObj.submittedUser = submittedUser;
+            commentObj.assignedUser = assignedUser;
+          }
+        }
+      }         
+  
       return remarks;
     } catch (error) {
       console.error('Error in getRemarksService:', error);
@@ -499,6 +559,56 @@ const translationServices = {
         ],
         order: [['createdAt', 'ASC']]
       });
+
+      for (const remark of remarks) {
+        if (remark?.comment) {
+          for (const commentObj of remark?.comment) {
+            // Fetch submitted user details
+            const submittedUser = await Users.findOne({
+              where: { id: commentObj.submittedBy },
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Fetch assigned user details
+            const assignedUser = await Users.findOne({
+              where: { id: commentObj.assignedTo }, // Ensure assignedTo is the correct field
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Attach user details to the comment object
+            commentObj.submittedUser = submittedUser;
+            commentObj.assignedUser = assignedUser;
+          }
+        }
+      }     
 
       return remarks;
     } catch (error) {
@@ -551,6 +661,56 @@ const translationServices = {
         order: [['createdAt', 'ASC']]
       });
 
+      for (const remark of remarks) {
+        if (remark?.comment) {
+          for (const commentObj of remark?.comment) {
+            // Fetch submitted user details
+            const submittedUser = await Users.findOne({
+              where: { id: commentObj.submittedBy },
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Fetch assigned user details
+            const assignedUser = await Users.findOne({
+              where: { id: commentObj.assignedTo }, // Ensure assignedTo is the correct field
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Attach user details to the comment object
+            commentObj.submittedUser = submittedUser;
+            commentObj.assignedUser = assignedUser;
+          }
+        }
+      }     
+
       return remarks;
     } catch (error) {
       console.error('Error in getRemarksService:', error);
@@ -572,7 +732,7 @@ const translationServices = {
       // First get all remarks where user is assigned and matches the category
       const { count, rows: assignedRemarks } = await TranslationRemarks.findAndCountAll({
         where: whereClause,
-        attributes: ['id', 'fkQuestionId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'category'],
+        attributes: ['id', 'fkQuestionId', 'comment', 'priority', 'createdAt', 'category'],
         include: [
           {
             model: Questions,
@@ -728,7 +888,14 @@ const translationServices = {
             include: [{
               model: Employees,
               as: 'employee',
-              attributes: ['firstName', 'lastName', 'userName']
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[
+                {
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }
+              ]
             }]
           },
           {
@@ -738,7 +905,14 @@ const translationServices = {
             include: [{
               model: Employees,
               as: 'employee',
-              attributes: ['firstName', 'lastName', 'userName']
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[
+                {
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }
+              ]
             }]
           },
           {
@@ -801,6 +975,56 @@ const translationServices = {
         order: [['createdAt', 'ASC']]
       });
 
+      for (const remark of remarks) {
+        if (remark?.comment) {
+          for (const commentObj of remark?.comment) {
+            // Fetch submitted user details
+            const submittedUser = await Users.findOne({
+              where: { id: commentObj.submittedBy },
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Fetch assigned user details
+            const assignedUser = await Users.findOne({
+              where: { id: commentObj.assignedTo }, // Ensure assignedTo is the correct field
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Attach user details to the comment object
+            commentObj.submittedUser = submittedUser;
+            commentObj.assignedUser = assignedUser;
+          }
+        }
+      }     
+
       return remarks;
     } catch (error) {
       console.error('Error in getMotionRemarksService:', error);
@@ -821,7 +1045,7 @@ const translationServices = {
 
       const { count, rows: assignedRemarks } = await TranslationRemarks.findAndCountAll({
         where: whereClause,
-        attributes: ['id', 'fkMotionId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'category'],
+        attributes: ['id', 'fkMotionId', 'comment', 'priority', 'createdAt', 'category'],
         include: [
           {
             model: db.motions,
@@ -950,17 +1174,14 @@ const translationServices = {
             include: [{
               model: Employees,
               as: 'employee',
-              attributes: ['firstName', 'lastName', 'userName']
-            }]
-          },
-          {
-            model: Users,
-            as: 'assignedUser',
-            attributes: ['id', 'email'],
-            include: [{
-              model: Employees,
-              as: 'employee',
-              attributes: ['firstName', 'lastName', 'userName']
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[
+                {
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }
+              ]
             }]
           },
           {
@@ -980,24 +1201,23 @@ const translationServices = {
               {
                 model: db.resolutionMovers,
                 as: "resolutionMoversAssociation",
-                attributes: ["fkMemberId"],
+                attributes: ["fkMemberId", "id"],
                 include: [
                   {
                     model: db.members,
                     as: "memberAssociation",
-                    attributes: ["memberName"],
                   },
                 ],
               },
               {
-                model: db.resolutionMinistries, // Include the resolutionMinistries model
+                model: db.resolutionMinistries,
                 as: "resolutionMinistries",
                 attributes: ["fkMinistryId"],
                 include: [
                   {
-                    model: db.ministries, // Include the ministries model
+                    model: db.ministries,
                     as: "ministries",
-                    attributes: ["ministryName"], // Adjust the attribute as per your ministries model
+                    attributes: ["ministryName"],
                   },
                 ],
               },
@@ -1039,32 +1259,71 @@ const translationServices = {
                   },
                 ],
               },
-              // {
-              //     model: resolutionClubs,
-              //     as: 'resolutionClubs',
-              //     attributes: ['linkedResolutionId'],
-              //     include: [
-              //         {
-              //             model: resolution,
-              //             as: 'linkedResolution',
-              //             attributes: ['id', 'englishText', 'urduText']
-              //         }
-              //     ]
-              // }
             ],
           }
         ],
         order: [['createdAt', 'ASC']]
       });
-
+  
+      // 🔹 Attach submitted user details inside comments
+      for (const remark of remarks) {
+        if (remark?.comment) {
+          for (const commentObj of remark?.comment) {
+            // Fetch submitted user details
+            const submittedUser = await Users.findOne({
+              where: { id: commentObj.submittedBy },
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Fetch assigned user details
+            const assignedUser = await Users.findOne({
+              where: { id: commentObj.assignedTo }, // Ensure assignedTo is the correct field
+              attributes: ["id", "email"],
+              include: [
+                {
+                  model: Employees,
+                  as: "employee",
+                  attributes: ["firstName", "lastName", "userName"],
+                  include: [
+                    {
+                      model: db.designations,
+                      as: "designations",
+                      attributes: ["id", "designationName", "designationStatus"],
+                    },
+                  ],
+                },
+              ],
+            });
+      
+            // Attach user details to the comment object
+            commentObj.submittedUser = submittedUser;
+            commentObj.assignedUser = assignedUser;
+          }
+        }
+      }      
+  
       return remarks;
     } catch (error) {
-      console.error('Error in getResolutionRemarksService:', error);
+      console.error("Error in getResolutionRemarksService:", error);
       throw error;
     }
-  },
+  },  
 
-  getAllResolutionsWithRemarks: async (userId, currentPage = 0, pageSize = 10) => {
+  getAllResolutionsWithRemarks: async (userId, category, currentPage = 0, pageSize = 10) => {
     try {
       const offset = currentPage * pageSize;
       const limit = pageSize;
@@ -1082,7 +1341,6 @@ const translationServices = {
             "id",
             "fkResolutionId",
             "comment",
-            "CommentStatus",
             "priority",
             "createdAt",
             "category",
@@ -1091,92 +1349,85 @@ const translationServices = {
             {
               model: db.resolutions,
               as: "resolution",
-              include: [
-                {
-                  model: db.sessions,
-                  as: "session",
-                  attributes: ["sessionName"],
-                },
-                {
-                  model: db.resolutionStatus,
-                  as: "resolutionStatus",
-                  attributes: ["resolutionStatus"],
-                },
-                {
-                  model: db.resolutionMovers,
-                  as: "resolutionMoversAssociation",
-                  attributes: ["fkMemberId"],
-                  include: [
+                include: [
                     {
-                      model: db.members,
-                      as: "memberAssociation",
-                      attributes: ["memberName"],
+                        model: db.sessions,
+                        as: 'session',
+                        attributes: ['sessionName']
                     },
-                  ],
-                },
-                {
-                  model: db.resolutionMinistries, // Include the resolutionMinistries model
-                  as: "resolutionMinistries",
-                  attributes: ["fkMinistryId"],
-                  include: [
                     {
-                      model: db.ministries, // Include the ministries model
-                      as: "ministries",
-                      attributes: ["ministryName"], // Adjust the attribute as per your ministries model
+                        model: db.resolutionStatus,
+                        as: 'resolutionStatus',
+                        attributes: ['resolutionStatus']
                     },
-                  ],
-                },
-                {
-                  model: db.noticeOfficeDairies,
-                  as: "noticeDiary",
-                  attributes: [
-                    "noticeOfficeDiaryNo",
-                    "noticeOfficeDiaryDate",
-                    "noticeOfficeDiaryTime",
-                  ],
-                },
-                {
-                  model: db.resolutionDiaries,
-                  as: "resolutionDiaries",
-                  attributes: ["resolutionId", "resolutionDiaryNo"],
-                },
-                {
-                  model: Users,
-                  as: "createdBy",
-                  attributes: ["id"],
-                  include: [
                     {
-                      model: Employees,
-                      as: "employee",
-                      attributes: ["id", "firstName", "lastName"],
+                      model: db.resolutionMovers,
+                      as: "resolutionMoversAssociation",
+                      attributes: ["fkMemberId", "id"],
+                      include: [
+                        {
+                          model: db.members,
+                          as: "memberAssociation",
+                          // attributes: ["memberName", "id"],
+                        },
+                      ],
                     },
-                  ],
-                },
-                {
-                  model: Users,
-                  as: "deletedBy",
-                  attributes: ["id"],
-                  include: [
                     {
-                      model: Employees,
-                      as: "employee",
-                      attributes: ["id", "firstName", "lastName"],
+                        model: db.resolutionMinistries, // Include the resolutionMinistries model
+                        as: 'resolutionMinistries',
+                        attributes: ['fkMinistryId'],
+                        include: [
+                            {
+                                model: db.ministries, // Include the ministries model
+                                as: 'ministries',
+                                attributes: ['ministryName'] // Adjust the attribute as per your ministries model
+                            }
+                        ]
                     },
-                  ],
-                },
-                // {
-                //     model: resolutionClubs,
-                //     as: 'resolutionClubs',
-                //     attributes: ['linkedResolutionId'],
-                //     include: [
-                //         {
-                //             model: resolution,
-                //             as: 'linkedResolution',
-                //             attributes: ['id', 'englishText', 'urduText']
-                //         }
-                //     ]
-                // }
-              ],
+                    {
+                        model: db.noticeOfficeDairies,
+                        as: 'noticeDiary',
+                        attributes: ['noticeOfficeDiaryNo', 'noticeOfficeDiaryDate', 'noticeOfficeDiaryTime']
+                    },
+                    {
+                        model: db.resolutionDiaries,
+                        as: 'resolutionDiaries',
+                        attributes: ['resolutionId', 'resolutionDiaryNo']
+                    },
+                    {
+                        model: Users,
+                        as: 'createdBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    },
+                    {
+                        model: Users,
+                        as: 'deletedBy',
+                        attributes: ['id'],
+                        include: [{
+                            model: Employees,
+                            as: 'employee',
+                            attributes: ['id', 'firstName', 'lastName']
+                        }]
+                    },
+                    // {
+                    //     model: resolutionClubs,
+                    //     as: 'resolutionClubs',
+                    //     attributes: ['linkedResolutionId'],
+                    //     include: [
+                    //         {
+                    //             model: resolution,
+                    //             as: 'linkedResolution',
+                    //             attributes: ['id', 'englishText', 'urduText']
+                    //         }
+                    //     ]
+                    // }
+
+                ],
             },
             {
               model: Users,
@@ -1292,7 +1543,7 @@ const translationServices = {
           assignedTo: userId,
           category: 'IntroducedBills'
         },
-        attributes: ['id', 'fkIntroducedInSenateId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'category'],
+        attributes: ['id', 'fkIntroducedInSenateId', 'comment', 'priority', 'createdAt', 'category'],
         include: [
           {
             model: db.introducedInSenateBills,

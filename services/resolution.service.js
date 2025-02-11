@@ -2043,7 +2043,8 @@ const resolutionService = {
     sendTranslation: async (resolutionId) => {
         try {
             const updatedData = {
-                sentForTranslation: 1
+                sentForTranslation: 1,
+                resolutionSentStatus: "toTranslation"
             }
             await resolution.update(updatedData, { where: { id: resolutionId } });
 

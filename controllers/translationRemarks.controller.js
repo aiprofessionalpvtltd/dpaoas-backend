@@ -186,9 +186,6 @@ const getRemarks = async (req, res) => {
 const getMotionIdRemarks = async (req, res) => {
   try {
     const { fkMotionId, userId } = req.params; 
-
-    console.log("Request Params:", req.params);
-    
     
     if (!fkMotionId || !userId) {
       return res.status(400).json({
@@ -221,9 +218,6 @@ const getMotionIdRemarks = async (req, res) => {
 const getResolutionIdRemarks = async (req, res) => {
   try {
     const { fkResolutionId, userId } = req.params; 
-
-    console.log("Request Params:", req.params);
-    
     
     if (!fkResolutionId || !userId) {
       return res.status(400).json({
@@ -407,11 +401,11 @@ const getAllResolutionRemarks = async (req, res) => {
     const currentPage = parseInt(req.query.currentPage) || 0;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    if (!userId) {
-      return res.status(400).json({
-        message: "User ID is required.",
-      });
-    }
+    // if (!userId) {
+    //   return res.status(400).json({
+    //     message: "User ID is required.",
+    //   });
+    // }
 
     const result = await translationServices.getAllResolutionsWithRemarks(
       userId,
