@@ -154,6 +154,10 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
              defaultValue: 'Senators'
         },
+        financeMoneyBillSentStatus: {
+            type: Sequelize.ENUM("inLegislation", "toTranslation"),
+            defaultValue: "inLegislation",
+        },
 
         // New added
         dateOfCirculationOfNotice: {
@@ -194,6 +198,11 @@ module.exports = (sequelize, Sequelize) => {
         FinanceMoneyBill.hasMany(models.senateBillSenatorMovers, { foreignKey: 'fkFinanceMoneyBillId', as: 'financeMoneyBillSenatorMovers' });
         FinanceMoneyBill.hasMany(models.senateBillMinistryMovers, { foreignKey: 'fkFinanceMoneyBillId', as: 'financeMoneyBillMinistryMovers' });
         FinanceMoneyBill.hasMany(models.senateBillMnaMovers, { foreignKey: 'fkFinanceMoneyBillId', as: 'financeMoneyBillMnaMovers' });
+
+        FinanceMoneyBill.hasMany(models.translationRemarks, { 
+            as: "translationRemarks", 
+            foreignKey: "fkFinanceMoneyBillId" 
+        });
     };
 
     return FinanceMoneyBill;

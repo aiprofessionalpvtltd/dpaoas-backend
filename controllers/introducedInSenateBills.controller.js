@@ -74,6 +74,7 @@ const senateBillController = {
             if (!billCategory) {
                 return res.status(400).send({
                     success: false,
+                    data: { senateBills: [] },
                     message: 'billCategory is required!'
                 });
             }
@@ -86,6 +87,7 @@ const senateBillController = {
                 logger.info("No data found for this category on this page!");
                 return res.status(200).send({
                     success: true,
+                    data: { senateBills: [] },
                     message: 'No data found for this category on this page!'
                 });
             } else {
@@ -381,7 +383,37 @@ const senateBillController = {
                 message: error.message
             })
         }
+    },
+
+      // Send For Translation
+  sendForTranslation: async (req, res) => {
+    try {
+      const { body, params } = req;
+      const { id } = params;
+      logger.info(`MotionController: sendForTranslation id ${id}`);
+      const result = await senateBillService.sendForTranslationService(id);
+      if (result) {
+        logger.info("Send For Translation Successful!");
+        return res.status(201).send({
+          success: true,
+          message: `Send for translation successful!`,
+          data: { result },
+        });
+      } else {
+        return res.status(400).send({
+          success: false,
+          message:
+            "No rows were updated. Check if the record with the provided ID exists",
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
     }
+  },
 }
 
 module.exports = senateBillController;

@@ -42,6 +42,7 @@ router.post("/", upload.array('billdocumentlegis', 10), legislativeBills.createL
 router.get("/:id", legislativeBills.findSingleLegislativeBill);
 router.put("/:id", upload.array('billdocumentlegis', 10), legislativeBills.updateLegislativeBill);
 router.put('/sendToLegislation/:id', legislativeBills.sendToLegislation);
+router.put('/sendToTranslation/:id', legislativeBills.sendToTranslation);
 router.delete("/:id", legislativeBills.deleteLegislativeBill);
 router.get("/diaryNumber/generate", legislativeBills.generateDiaryNumber);
 

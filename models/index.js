@@ -288,6 +288,7 @@ db.mainHeadingFiles = require("./mainHeadingFile.model")(
   SequelizeMain
 );
 db.fileRegisters = require("./fileRegisters.model")(sequelize, SequelizeMain);
+db.financeMoneyBills = require("./financeMoneyBills.model")(sequelize, SequelizeMain);
 db.freshReceiptsAttachments = require("./freshReceiptAttachements.model")(
   sequelize,
   SequelizeMain
@@ -1596,9 +1597,12 @@ db.translationRemarks.belongsTo(db.questions, { foreignKey: 'fkQuestionId', as: 
 db.translationRemarks.belongsTo(db.motions, { foreignKey: 'fkMotionId', as: 'motion' });
 db.translationRemarks.belongsTo(db.resolutions, { foreignKey: 'fkResolutionId', as: 'resolution' });
 db.translationRemarks.belongsTo(db.introducedInSenateBills, { foreignKey: 'fkIntroducedInSenateId', as: 'introducedInSenateBills' });
+db.translationRemarks.belongsTo(db.financeMoneyBills, { foreignKey: 'fkFinanceMoneyBillId', as: 'financeMoneyBills' });
+
 db.questions.hasMany(db.translationRemarks,{ foreignKey: "fkQuestionId", as: "remarks"})
 db.motions.hasMany(db.translationRemarks,{ foreignKey: "fkMotionId", as: "remarks"})
 db.introducedInSenateBills.hasMany(db.translationRemarks,{ foreignKey: "fkIntroducedInSenateId", as: "remarks"})
+db.financeMoneyBills.hasMany(db.translationRemarks,{ foreignKey: "fkFinanceMoneyBillId", as: "remarks"})
 
 // User 
 

@@ -29,6 +29,8 @@ module.exports = (sequelize, Sequelize) => {
                 'Correspondence',
                 'Bill (English)',
                 'Bill (Urdu)',
+                'Urdu Translation',
+                'English Translation',
                 'Original Act',
                 'Letter Sent to Senator for Rectification',
                 'Letter Sent to Concerned Ministry / Division',

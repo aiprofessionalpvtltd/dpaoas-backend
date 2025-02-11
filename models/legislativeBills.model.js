@@ -44,7 +44,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true,
         },
         legislativeSentStatus: {
-            type: Sequelize.ENUM("inNotice", "toLegislation"),
+            type: Sequelize.ENUM("inNotice", "toLegislation", "toTranslation"),
             defaultValue: 'inNotice'
         },
         legislativeSentDate: {

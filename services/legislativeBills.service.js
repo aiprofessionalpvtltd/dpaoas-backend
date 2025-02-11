@@ -485,6 +485,22 @@ const legislativeBillService = {
         }
     },
 
+    sendToTranslation: async (req, billId) => {
+        try {
+            const updatedData = {
+                legislativeSentStatus: "toTranslation",
+                legislativeSentDate: req.legislativeSentDate
+            }
+            await LegislativeBills.update(updatedData, { where: { id: billId } });
+
+            // Fetch the updated private member bill which is sent to legislation
+            const billData = await LegislativeBills.findOne({ where: { id: billId } });
+            return billData;
+        } catch (error) {
+            throw { message: error.message || "Error Sending Legislative Bill To Legislation!" };
+        }
+    },
+
     generateDiaryNumber: async () => {
         try {
             // Determine the current session year

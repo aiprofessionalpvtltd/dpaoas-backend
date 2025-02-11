@@ -166,14 +166,20 @@ const senateBillService = {
                 distinct: true,
             });
 
-            // Parse the files in the billDocuments
-            if (rows.billDocuments && rows.billDocuments.length > 0) {
-                rows.billDocuments.forEach(doc => {
-                    if (doc.file) {
-                        doc.file = doc.file.map(file => JSON.parse(file));
-                    }
-                });
-            }
+            // Parse and sort the files in billDocuments
+if (rows.billDocuments && rows.billDocuments.length > 0) {
+    rows.billDocuments.forEach(doc => {
+        if (doc.file) {
+            doc.file = doc.file.map(file => JSON.parse(file));
+        }
+    });
+    
+    // Sort billDocuments in descending order
+    // Assuming there's a createdAt field, adjust the field name if different
+    rows.billDocuments.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+}
 
             const totalPages = Math.ceil(count / pageSize);
 
@@ -304,14 +310,20 @@ const senateBillService = {
                 distinct: true,
             });
 
-             // Parse the files in the billDocuments
-             if (rows.billDocuments && rows.billDocuments.length > 0) {
-                rows.billDocuments.forEach(doc => {
-                    if (doc.file) {
-                        doc.file = doc.file.map(file => JSON.parse(file));
-                    }
-                });
-            }
+// Parse and sort the files in billDocuments
+if (rows.billDocuments && rows.billDocuments.length > 0) {
+    rows.billDocuments.forEach(doc => {
+        if (doc.file) {
+            doc.file = doc.file.map(file => JSON.parse(file));
+        }
+    });
+    
+    // Sort billDocuments in descending order
+    // Assuming there's a createdAt field, adjust the field name if different
+    rows.billDocuments.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+}
 
             const totalPages = Math.ceil(count / pageSize);
 
@@ -888,7 +900,24 @@ const senateBillService = {
         } catch (error) {
             throw { message: error.message || "Error deleting Senate Bill" };
         }
+    },
+
+      // Send For Translation
+      sendForTranslationService: async (id) => {
+    try {
+      const UpdateIntroducedBill = await IntroducedInSenateBills.update(
+        {
+          introducedBillSentStatus: "toTranslation"
+        },
+        {
+          where: { id: id },
+        }
+      );
+      return UpdateIntroducedBill;
+    } catch (error) {
+      console.error("Error Fetching Ministries:", error.message);
     }
+  },
 
 
 }

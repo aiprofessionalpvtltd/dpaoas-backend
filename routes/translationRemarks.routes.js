@@ -12,23 +12,29 @@ router.post("/remarks/:userId", translationController.createRemark);
 
 // GET route to fetch remarks by questionId
 router.get("/getremarks/:fkQuestionId/:userId", translationController.getRemarks);
-router.get("/getMotionIdRemarks/:fkMotionId/:userId", translationController.getMotionIdRemarks);
-router.get("/getResolutionIdRemarks/:fkResolutionId/:userId", translationController.getResolutionIdRemarks);
 
 // GET route to fetch remarks by questionId - now supports ?category=Question|Motion|Resolution|IntroducedBills
+router.get("/getMotionIdRemarks/:fkMotionId/:userId", translationController.getMotionIdRemarks);
 router.get("/getAllRemarks/:userId?", translationController.getAllRemarks);
 
 // Motion-specific routes
-router.get("/getmotion-remarks/:fkMotionId/:userId", translationController.getMotionRemarks);
 router.get("/getAllMotionRemarks/:userId?", translationController.getAllMotionRemarks);
+router.get("/getResolutionIdRemarks/:fkResolutionId/:userId", translationController.getResolutionIdRemarks);
 
 // Resolution-specific routes
-router.get("/getresolution-remarks/:fkResolutionId/:userId", translationController.getResolutionRemarks);
 router.get("/getAllResolutionRemarks/:userId?", translationController.getAllResolutionRemarks);
 
-// IntroducedBills-specific routes
-router.get("/getintroducedbill-remarks/:fkIntroducedInSenateId/:userId", translationController.getIntroducedBillRemarks);
-router.get("/getAllIntroducedBillRemarks/:userId?", translationController.getAllIntroducedBillRemarks);
+// Government Bills routes
+// single
+router.get("/getgovernmentbill-remarks/:fkIntroducedInSenateId/:userId", translationController.getGovernmentBillRemarks);
+// get all
+router.get("/getAllGovernmentBillRemarks/:userId?", translationController.getAllGovernmentBillRemarks);
+
+// Finance Money Bills routes
+// single bill remarks
+router.get("/getfinancebill-remarks/:fkFinanceMoneyBillId/:userId", translationController.getFinanceMoneyBillRemarks);
+// get all finance bills with remarks
+router.get("/getAllFinanceMoneyBillRemarks/:userId?", translationController.getAllFinanceMoneyBillRemarks);
 
 module.exports = router;
 

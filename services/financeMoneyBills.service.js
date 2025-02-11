@@ -836,8 +836,24 @@ const senateBillService = {
         } catch (error) {
             throw { message: error.message || "Error deleting Senate Bill" };
         }
-    }
+    },
 
+          // Send For Translation
+          sendForTranslationService: async (id) => {
+    try {
+      const UpdateIntroducedBill = await IntroducedInSenateBills.update(
+        {
+          financeMoneyBillSentStatus: "toTranslation"
+        },
+        {
+          where: { id: id },
+        }
+      );
+      return UpdateIntroducedBill;
+    } catch (error) {
+      console.error("Error Fetching Ministries:", error.message);
+    }
+  },
 
 }
 

@@ -234,6 +234,34 @@ const legislativeBillController = {
             })
         }
     },
+
+    sendToTranslation: async (req, res) => {
+        try {
+            const billId = req.params.id;
+            const bill = await LegislativeBills.findByPk(billId);
+            if (!bill) {
+                return res.status(200).send({
+                    success: true,
+                    message: "LegislativeBill Not Found!",
+                    data: null
+                })
+            }
+            const updatedBill = await legislativeBillService.sendToTranslation(req.body, billId);
+            logger.info("Legislative bill sent to concerned branch successfully!")
+            return res.status(200).send({
+                success: true,
+                message: "Legislative bill sent to concerned branch successfully!",
+                data: updatedBill,
+            })
+        } catch (error) {
+            logger.error(error.message)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+
     // Retrieve Single legislativeBill
     findSingleLegislativeBill: async (req, res) => {
         try {
