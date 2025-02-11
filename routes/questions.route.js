@@ -475,6 +475,59 @@ router.delete('/removeQuestion/:id', questions.removeQuestionsFromList)
 //  */
 // router.get("/allRevivedQuestions", questions.getAllReviveQuestions)
 
+// Compare and Search Questions
+/**
+ * @swagger
+ * /api/questions/compareSearch:
+ *   get:
+ *     summary: Compare and Search Questions based on text similarity
+ *     tags: [Questions]
+ *     parameters:
+ *       - in: query
+ *         name: fromSession
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Starting session ID
+ *       - in: query
+ *         name: toSession
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Ending session ID
+ *       - in: query
+ *         name: description
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Text to compare against
+ *       - in: query
+ *         name: percentageValue
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Minimum percentage match required (0-100)
+ *       - in: query
+ *         name: currentPage
+ *         schema:
+ *           type: integer
+ *         description: Current page number (default 0)
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page (default 10)
+ *       - in: query
+ *         name: questionSentStatus
+ *         schema:
+ *           type: string
+ *         description: Status of questions to search (default 'inQuestion')
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
+router.get("/compareSearch", questions.compareSearch);
+
 // Get Single Question
 /**
  * @swagger
@@ -788,10 +841,5 @@ router.get('/getQuestionHistories/:id', questions.getQuestionHistories);
 *         description: A successful response
 */
 router.put("/delete/:id", questions.deleteQuestion)
-
-
-
-
-
 
 module.exports = router;

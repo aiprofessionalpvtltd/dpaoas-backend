@@ -358,4 +358,23 @@ router.put('/updateSupplementaryList/:id', questionList.updateSupplementaryList)
  */
 router.delete('/deleteSupplementaryList/:id', questionList.deleteSupplementaryList)
 
+/**
+ * @swagger
+ * /api/questionList/getCounts/{id}:
+ *   get:
+ *     summary: Get Question List Counts and Details
+ *     tags: [Question Lists]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: QuestionList Id
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Returns counts and details of questions, members, and divisions
+ */
+router.get('/getQuestionListCounts/:id', questionList.getQuestionListCounts);
+
 module.exports = router;

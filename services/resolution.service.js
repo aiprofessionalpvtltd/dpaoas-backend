@@ -480,6 +480,76 @@ const resolutionService = {
         }
     },
 
+    getBallotingTemplateById: async (id) => {
+        try {
+            const template = await db.ballotingTemplates.findByPk(id, {
+                attributes: [
+                    'id',
+                    'templateUserName',
+                    'templateUserRole',
+                    'templateDescription',
+                    'templateStatus',
+                    'ballotingFileNo',
+                    'ballotingDate',
+                    'ballotingOrderDate',
+                    'createdAt',
+                    'updatedAt'
+                ]
+            });
+    
+            return template;
+    
+        } catch (error) {
+            throw { message: error.message || "Error fetching balloting template!" };
+        }
+    },
+
+    getAllBallotingTemplates: async () => {
+        try {
+            const templates = await db.ballotingTemplates.findAll({
+                order: [
+                    ['id', 'DESC']
+                ],
+                attributes: [
+                    'id',
+                    'templateUserName',
+                    'templateUserRole',
+                    'templateDescription',
+                    'templateStatus',
+                    'ballotingFileNo',
+                    'ballotingDate',
+                    'ballotingOrderDate',
+                    'createdAt',
+                    'updatedAt'
+                ]
+            });
+    
+            return templates;
+    
+        } catch (error) {
+            throw { message: error.message || "Error fetching balloting templates!" };
+        }
+    },
+
+    updateBallotingTemplate: async (req, id) => {
+        try {
+
+            console.log("req body: " + req.body);
+
+            await db.ballotingTemplates.update(req.body, { where: { id: id } });
+
+            // Fetch the updated Bill Status after the update
+            const updatedTemplate = await db.ballotingTemplates.findOne({
+                where: { id: id }, 
+            }, { raw: true });
+
+            return updatedTemplate;
+
+        } catch (error) {
+            throw { message: error.message || "Error updating balloting template!" };
+        }
+    },
+
 
     // Retrieve Resolutions by IDs
     pdfResolutionList: async (resolutionIds) => {
@@ -2136,7 +2206,8 @@ const resolutionService = {
                 resolutionMovers,
                 resolutionSentStatus,
                 resolutionSentDate,
-                memberPosition
+                memberPosition,
+                passedResolution
             } = queryParams;
 
  
@@ -2175,7 +2246,13 @@ const resolutionService = {
             }
 
             if (fkResolutionStatus) {
-                query["$resolutionStatus.id$"] = fkResolutionStatus;
+                query.fkResolutionStatus = fkResolutionStatus; 
+            }
+
+            if (passedResolution === 'true' || passedResolution === true) {
+                query['$resolutionStatus.resolutionStatus$'] = {
+                    [Op.like]: 'Passed%'
+                };
             }
 
             if (noticeOfficeDiaryNo) {
@@ -2223,6 +2300,7 @@ const resolutionService = {
                     {
                         model: db.resolutionStatus,
                         as: 'resolutionStatus',
+                        required: passedResolution === 'true' || passedResolution === true,
                         attributes: ['id', 'resolutionStatus'],
                     },
                     {
@@ -2284,8 +2362,7 @@ const resolutionService = {
 
                 ],
                 distinct: true,
-                where: query,
-                
+                where: query,         
                 offset,
                 limit,
                 order: [

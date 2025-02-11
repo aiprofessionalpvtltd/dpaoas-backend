@@ -63,6 +63,12 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: "active"
         },
 
+        duplicate: {
+            type: Sequelize.STRING,
+            defaultValue: "false",
+            allowNull: true
+        },
+
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
 

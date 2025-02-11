@@ -431,6 +431,8 @@ const casesController = {
       const fileId = req.params.fileId;
       const caseId = req.params.caseId;
       const orderBy = req.params.orderBy;
+      
+      // console.log(`fileId: ${fileId}, caseId: ${caseId}, orderBy: ${orderBy}`);
 
       const cases = await casesService.getSingleCaseDetails(fileId, caseId , orderBy);
       logger.info("Single Case Details Retrieved Successfully!");
@@ -538,7 +540,9 @@ const casesController = {
       );
       const userId = req.params.id;
       const branchName = req.query.branchName;
-      const cases = await casesService.getHigherLevelDesignations(userId, branchName);
+      const selectedBranchID = req.query.selectedBranchID;
+      console.log("selectedBranchID", selectedBranchID)
+      const cases = await casesService.getHigherLevelDesignations(userId, branchName, selectedBranchID);
       logger.info("Employees Retrieved Successfully!");
       return res.status(200).send({
         success: true,

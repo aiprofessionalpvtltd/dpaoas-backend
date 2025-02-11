@@ -223,7 +223,8 @@ module.exports = (sequelize, Sequelize) => {
     questions.associate = function (models) {
         questions.belongsTo(models.sessions, { foreignKey: 'fkSessionId' });
         questions.belongsTo(models.questionStatuses, { foreignKey: 'fkQuestionStatus' })
-        questions.belongsTo(models.questionDiaries, { foreignKey: 'fkQuestionDiaryId' })
+        // questions.belongsTo(models.questionDiaries, { foreignKey: 'fkQuestionDiaryId' })
+        questions.belongsTo(models.questionDiaries, { foreignKey: 'fkQuestionDiaryId', as: 'questionDiary' });
         questions.belongsTo(models.members, { foreignKey: 'fkMemberId' });
         questions.belongsTo(models.noticeOfficeDairies, { foreignKey: 'fkNoticeDiary'});
         questions.belongsTo(models.divisions , { foreignKey: 'fkDivisionId'})

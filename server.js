@@ -86,8 +86,10 @@ const tonerModelRouter = require('./routes/tonerModel.route')
 
 const divisionsRouter = require("./routes/divisions.route")
 const tenuresRouter = require("./routes/tenures.route")
+const tenuresMinisterRouter = require("./routes/tenuresMinister.route")
 const politicalPartiesRouter = require("./routes/politicalParties.route")
 const parliamentaryYearsRouter = require("./routes/parliamentaryYears.route")
+const parliamentaryYearsMnaRouter = require("./routes/parliamentaryYearsMna.route")
 const termsRouter = require("./routes/terms.route")
 const groupsRouter = require("./routes/groups.route")
 const privateMemberBillRouter = require("./routes/privateMemberBills.route")
@@ -111,6 +113,8 @@ const authRoute = require('./routes/auth.router')
 const mnas = require('./routes/mnas.route')
 // Introduced In Senate Bill
 const introducedInSenateBills = require('./routes/introducedInSenateBills.route')
+const financeMoneyBillsRouter = require('./routes/financeMoneyBills.route');
+
 // bill Statuses
 const billStatuses = require('./routes/billStatuses.route')
 // Manage Committee 
@@ -126,6 +130,10 @@ const ordinances = require('./routes/ordinances.route')
 
 
 const correspondenceRouter = require('./routes/correspondences.route')
+const ministriesRoutes = require("./routes/ministries.route");
+
+// Order of day (Legis)
+const legisOrderOfDayRouter = require("./routes/legisOrderOfDay.route");
 
 // app.use((err, req, res, next) => {
 //   console.log("error", err);
@@ -257,8 +265,10 @@ app.use("/api/sms", smsSentRouter);
 // Question Sub Modules
 app.use("/api/divisions", divisionsRouter)
 app.use("/api/tenures", tenuresRouter)
+app.use("/api/tenuresMinister", tenuresMinisterRouter)
 app.use("/api/politicalParties", politicalPartiesRouter)
 app.use("/api/parliamentaryYears", parliamentaryYearsRouter)
+app.use("/api/parliamentaryYearsMna", parliamentaryYearsMnaRouter)
 app.use("/api/terms", termsRouter)
 app.use("/api/groups", groupsRouter)
 //private member bill
@@ -280,6 +290,8 @@ app.use('/api/auth', authRoute)
 app.use('/api/mnas', mnas)
 // introduced In Senate Bill
 app.use('/api/senate-bill', introducedInSenateBills)
+// finance Money Bills
+app.use('/api/finance-money-bill', financeMoneyBillsRouter)
 // bill Statuses
 app.use('/api/bill-Status', billStatuses)
 // manage committees
@@ -302,6 +314,9 @@ app.use("/api/caseNotifications", casesNotificationRouter);
 app.use("/api/frNotifications", frNotificationRouter);
 app.use("/api/approvedCaseNotifications", approvedCaseNotificationRouter);
 
+// Order of day (Legis)
+app.use("/api/legisOrderOfDay", legisOrderOfDayRouter);
+
 app.use(
   '/assets',
   express.static('pdfDownload'),
@@ -320,6 +335,9 @@ const flagRoutes = require('./routes/flagRoutes.route');
 
 // Flag Module Routes
 app.use('/api/flags', flagRoutes);
+
+// ministries route
+app.use("/api", ministriesRoutes);
 
 const yearsRouter = require("./routes/years.route")
 app.use('/api/years', yearsRouter);

@@ -41,6 +41,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkMinisterTenureId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'tenuresMinisters',
+                key: 'id'
+            }
+        },
         fkParliamentaryYearId: {
             type: Sequelize.INTEGER,
             allowNull: false,
@@ -48,7 +56,16 @@ module.exports = (sequelize, Sequelize) => {
                 model: 'parliamentaryYears',
                 key: 'id'
             }
-        }, status: {
+        }, 
+        fkMnaParliamentaryYearId: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'parliamentaryYearsMna',
+                key: 'id'
+            }
+        }, 
+        status: {
             type: Sequelize.BOOLEAN,
             allowNull: true,
             defaultValue: 'true'

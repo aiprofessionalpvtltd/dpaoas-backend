@@ -261,6 +261,7 @@ db.tonerInstallations = require("./tonerInstallation.model")(
 
 // Question Management
 db.tenures = require("./tenures.model")(sequelize, SequelizeMain);
+db.tenuresMinister = require("./tenuresMinister.model.js")(sequelize, SequelizeMain);
 db.years = require("./years.model")(sequelize, SequelizeMain);
 
 db.terms = require("./terms.model")(sequelize, SequelizeMain);
@@ -269,6 +270,10 @@ db.politicalParties = require("./politicalParties.model")(
   SequelizeMain
 );
 db.parliamentaryYears = require("./parliamentaryYears.model")(
+  sequelize,
+  SequelizeMain
+);
+db.parliamentaryYearsMna = require("./parliamentaryYearsMna.model")(
   sequelize,
   SequelizeMain
 );
@@ -434,6 +439,9 @@ db.resolutionMinistries = require("./resolutionMinistries.model.js")(sequelize, 
 
 //clubs resolution
 db.resolutionClubs = require("./resolutionClubs.model.js")(sequelize, SequelizeMain);
+
+//ballotingTemplates
+db.ballotingTemplates = require("./ballotingTemplates.model.js")(sequelize, SequelizeMain);
 
 //db.fileRemarks.belongsTo(db.users, { foreignKey: 'commentBy', as: 'users' });
 db.files.hasMany(db.fileAttachments, {
@@ -764,6 +772,7 @@ db.noteParagraphs.belongsTo(db.users, {
 // db.filesNotifications.belongsTo(db.cases, { foreignKey: 'fkCaseId', as: 'case' });
 
 db.members.belongsTo(db.tenures, { foreignKey: "fkTenureId", as: "tenures" });
+
 db.members.belongsTo(db.terms, { foreignKey: "fkTermId", as: "terms" });
 db.members.belongsTo(db.politicalParties, {
   foreignKey: "politicalParty",
@@ -826,7 +835,7 @@ db.motionMinistries.belongsTo(db.ministries, {
   foreignKey: "fkMinistryId",
   as: "ministries",
 });
-db.questions.belongsTo(db.questionDiary, { foreignKey: "fkQuestionDiaryId" });
+// db.questions.belongsTo(db.questionDiary, { foreignKey: "fkQuestionDiaryId" });
 db.questions.belongsTo(db.sessions, { foreignKey: "fkSessionId" });
 db.questions.belongsTo(db.questionStatus, {
   foreignKey: "fkQuestionStatus",
@@ -1120,7 +1129,9 @@ db.sessions.belongsTo(db.parliamentaryYears, {
 });
 db.divisions.belongsTo(db.ministries, { foreignKey: "fkMinistryId" });
 db.tenures.hasMany(db.members, { foreignKey: "fkTenureId", as: "members" });
+db.tenuresMinister.hasMany(db.members, { foreignKey: "fkMinisterTenureId", as: "members" });
 db.parliamentaryYears.belongsTo(db.tenures, { foreignKey: "fkTenureId" });
+db.parliamentaryYearsMna.belongsTo(db.tenuresMinister, { foreignKey: "fkMinisterTenureId" });
 db.parliamentaryYears.belongsTo(db.terms, { foreignKey: "fkTermId" });
 db.terms.belongsTo(db.tenures, { foreignKey: "fkTenureId" });
 db.groupsDivisions.belongsTo(db.divisions, { foreignKey: "fkDivisionId" });
@@ -1280,10 +1291,17 @@ db.mnas.belongsTo(db.politicalParties, {
 db.mnas.belongsTo(db.tenures, {
   foreignKey: "fkTenureId", as: "tenures"
 });
+db.mnas.belongsTo(db.tenuresMinister, {
+  foreignKey: "fkMinisterTenureId", as: "tenuresMinisters"
+});
 
 db.mnas.belongsTo(db.parliamentaryYears, {
   foreignKey: "fkParliamentaryYearId",
   as: "parliamentaryYears",
+});
+db.mnas.belongsTo(db.parliamentaryYearsMna, {
+  foreignKey: "fkMnaParliamentaryYearId",
+  as: "mnaParliamentaryYears",
 });
 
 
@@ -1293,9 +1311,17 @@ db.introducedInSenateBills.belongsTo(db.parliamentaryYears, {
   foreignKey: "fkParliamentaryYearId",
   as: "parliamentaryYears",
 });
+db.introducedInSenateBills.belongsTo(db.parliamentaryYearsMna, {
+  foreignKey: "fkMnaParliamentaryYearId",
+  as: "mnaParliamentaryYears",
+});
 db.introducedInSenateBills.belongsTo(db.tenures, {
   foreignKey: "fkTenureId",
   as: "tenures",
+});
+db.introducedInSenateBills.belongsTo(db.tenuresMinister, {
+  foreignKey: "fkMinisterTenureId",
+  as: "tenuresMinisters",
 });
 db.introducedInSenateBills.belongsTo(db.terms, {
   foreignKey: "fkTermId",
@@ -1325,6 +1351,42 @@ db.introducedInSenateBills.hasMany(db.billDocuments, {
   foreignKey: "fkBillDocumentId",
   as: "billDocuments",
 });
+
+db.legislativeBills.hasMany(db.billDocuments, {
+  foreignKey: "fkLegisBillDocumentId",
+  as: "billDocumentsLegis",
+});
+
+// Legislative Bills Association from Introduced in Senate Bills
+db.legislativeBills.belongsTo(db.parliamentaryYears, {
+  foreignKey: "fkParliamentaryYearId",
+  as: "parliamentaryYears",
+});
+db.legislativeBills.belongsTo(db.tenures, {
+  foreignKey: "fkTenureId",
+  as: "tenures",
+});
+db.legislativeBills.belongsTo(db.terms, {
+  foreignKey: "fkTermId",
+  as: "terms",
+});
+db.legislativeBills.belongsTo(db.billStatuses, {
+  foreignKey: "fkBillStatus",
+  as: "billStatuses",
+});
+db.legislativeBills.belongsTo(db.users, {
+  foreignKey: "fkUserId",
+  as: "user",
+});
+db.legislativeBills.hasOne(db.introducedInHouses, {
+  foreignKey: "fkIntroducedInHouseId",
+  as: "introducedInHouses",
+});
+db.legislativeBills.hasOne(db.memberPassages, {
+  foreignKey: "fkMemberPassageId",
+  as: "memberPassages",
+});
+
 // senate Bill Ministry Movers
 db.senateBillMinistryMovers.belongsTo(db.introducedInSenateBills, {
   foreignKey: "fkIntroducedInSenateBillId",
@@ -1332,7 +1394,7 @@ db.senateBillMinistryMovers.belongsTo(db.introducedInSenateBills, {
 });
 db.senateBillMinistryMovers.belongsTo(db.ministries, {
   foreignKey: "fkMinistryId",
-  as: "ministrie",
+  as: "ministries",
 });
 db.introducedInSenateBills.hasMany(db.senateBillMinistryMovers, {
   foreignKey: "fkIntroducedInSenateBillId",
@@ -1347,7 +1409,7 @@ db.senateBillMnaMovers.belongsTo(db.mnas, { foreignKey: "fkMnaId", as: "mna" });
 db.introducedInSenateBills.hasMany(db.senateBillMnaMovers, {
   foreignKey: "fkIntroducedInSenateBillId",
   as: "senateBillMnaMovers",
-});
+})
 // senate Bill Member Movers
 db.senateBillSenatorMovers.belongsTo(db.introducedInSenateBills, {
   foreignKey: "fkIntroducedInSenateBillId",
@@ -1410,11 +1472,6 @@ db.ordinances.belongsTo(db.sessions, {
 db.ordinances.belongsTo(db.users, { foreignKey: "fkUserId", as: "user" });
 // private membner bill status
 db.privateMemberBills.belongsTo(db.billStatuses, {
-  foreignKey: "fkBillStatus",
-  as: "billStatuses",
-});
-// legislative Bill status
-db.legislativeBills.belongsTo(db.billStatuses, {
   foreignKey: "fkBillStatus",
   as: "billStatuses",
 });
@@ -1550,6 +1607,155 @@ db.introducedInSenateBills.hasMany(db.translationRemarks,{ foreignKey: "fkIntrod
 db.legislationMovers.belongsTo(db.legislativeBills, { foreignKey: 'fklegislationBillId', as: 'legislativeBills' });
 db.legislationMovers.belongsTo(db.members, { foreignKey: 'fkMemberId', as: 'member' });
 db.legislativeBills.hasMany(db.legislationMovers, { foreignKey: 'fklegislationBillId', as: 'legislationMovers' });
+
+// ministrie accossication 
+db.ministries.belongsTo(db.tenuresMinister, {
+  foreignKey: "fkMinisterTenureId",
+  as: "tenuresMinisters",
+});
+
+db.tenuresMinisters = require("./tenuresMinister.model.js")(sequelize, SequelizeMain);
+
+// Define associations for parliamentaryYearsMna
+db.parliamentaryYearsMna.belongsTo(db.tenures, {
+  foreignKey: 'fkTenureId',
+  as: 'tenure'
+});
+db.parliamentaryYearsMna.belongsTo(db.tenuresMinisters, {
+  foreignKey: 'fkMinisterTenureId',
+  as: 'tenuresMinisters'
+});
+
+db.legisOrderOfDay = require("./legisOrderOfDay.model.js")(sequelize, SequelizeMain);
+
+// Add associations
+db.legisOrderOfDay.belongsTo(db.sessions, { foreignKey: 'fkSessionId', as: 'session' });
+db.sessions.hasMany(db.legisOrderOfDay, { foreignKey: 'fkSessionId', as: 'orderOfDays' });
+
+// Finance Money Bills
+db.financeMoneyBills = require("./financeMoneyBills.model.js")(sequelize, SequelizeMain);
+
+// Finance Money Bills associations
+db.financeMoneyBills.belongsTo(db.parliamentaryYears, {
+    foreignKey: "fkParliamentaryYearId",
+    as: "parliamentaryYears",
+});
+db.financeMoneyBills.belongsTo(db.parliamentaryYearsMna, {
+    foreignKey: "fkMnaParliamentaryYearId",
+    as: "mnaParliamentaryYears",
+});
+db.financeMoneyBills.belongsTo(db.tenures, {
+    foreignKey: "fkTenureId",
+    as: "tenures",
+});
+db.financeMoneyBills.belongsTo(db.tenuresMinister, {
+    foreignKey: "fkMinisterTenureId",
+    as: "tenuresMinisters",
+});
+db.financeMoneyBills.belongsTo(db.terms, {
+    foreignKey: "fkTermId",
+    as: "terms",
+});
+db.financeMoneyBills.belongsTo(db.sessions, {
+    foreignKey: "fkSessionId",
+    as: "sessions",
+});
+db.financeMoneyBills.belongsTo(db.billStatuses, {
+    foreignKey: "fkBillStatus",
+    as: "billStatuses",
+});
+db.financeMoneyBills.belongsTo(db.users, {
+    foreignKey: "fkUserId",
+    as: "user",
+});
+db.financeMoneyBills.hasMany(db.billDocuments, {
+    foreignKey: "fkBillDocumentId",
+    as: "billDocuments",
+});
+db.questions.belongsTo(db.questionDiary, { foreignKey: 'fkQuestionDiaryId', as: 'questionDiary' });
+db.questionDiary.hasMany(db.questions, { foreignKey: 'fkQuestionDiaryId', as: 'questions' });
+
+// Add these new associations for senateBillSenatorMovers
+
+// Finance Money Bills mover associations
+db.senateBillSenatorMovers.belongsTo(db.financeMoneyBills, {
+    foreignKey: 'fkFinanceMoneyBillId',
+    as: 'financeMoneyBill'
+});
+
+db.senateBillMinistryMovers.belongsTo(db.financeMoneyBills, {
+    foreignKey: 'fkFinanceMoneyBillId',
+    as: 'financeMoneyBill'
+});
+
+db.senateBillMnaMovers.belongsTo(db.financeMoneyBills, {
+    foreignKey: 'fkFinanceMoneyBillId',
+    as: 'financeMoneyBill'
+});
+
+// Finance Money Bills mover bidirectional associations
+db.financeMoneyBills.hasMany(db.senateBillSenatorMovers, {
+    foreignKey: 'fkFinanceMoneyBillId',
+    as: 'senateBillSenatorMovers'
+});
+
+db.financeMoneyBills.hasMany(db.senateBillMinistryMovers, {
+    foreignKey: 'fkFinanceMoneyBillId',
+    as: 'senateBillMinistryMovers'
+});
+
+db.financeMoneyBills.hasMany(db.senateBillMnaMovers, {
+    foreignKey: 'fkFinanceMoneyBillId',
+    as: 'senateBillMnaMovers'
+});
+
+// Add house and passage associations
+db.introducedInHouses.belongsTo(db.financeMoneyBills, {
+    foreignKey: 'fkFinanceMoneyHouseId',
+    as: 'financeMoneyBill'
+});
+
+db.financeMoneyBills.hasOne(db.introducedInHouses, {
+    foreignKey: 'fkFinanceMoneyHouseId',
+    as: 'introducedInHouses'
+});
+
+// Member passage associations
+db.memberPassages.belongsTo(db.financeMoneyBills, {
+  foreignKey: 'fkFinanceMoneyBillId',
+  as: 'financeMoneyBill'
+});
+
+db.financeMoneyBills.hasOne(db.memberPassages, {
+  foreignKey: 'fkFinanceMoneyBillId',
+  as: 'memberPassages'
+});
+
+// Add house and passage associations for legislativeBills
+db.introducedInHouses.belongsTo(db.legislativeBills, {
+  foreignKey: 'fkLegisIntroducedInHouseId',
+  as: 'legislativeBills'
+});
+
+db.legislativeBills.hasOne(db.introducedInHouses, {
+  foreignKey: 'fkLegisIntroducedInHouseId',
+  as: 'introducedInHousesLegis'
+});
+
+db.memberPassages.belongsTo(db.legislativeBills, {
+  foreignKey: 'fkLegisMemberPassageId',
+  as: 'legislativeBills'
+});
+
+db.legislativeBills.hasOne(db.memberPassages, {
+  foreignKey: 'fkLegisMemberPassageId',
+  as: 'memberPassagesLegis'
+});
+
+db.financeMoneyBills.hasOne(db.memberPassages, {
+  foreignKey: 'fkFinanceMemberPassageId',
+  as: 'memberPassagesFinance'
+});
 
 sequelize.sync();
 module.exports = db;

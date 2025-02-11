@@ -43,6 +43,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkMinisterTenureId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'tenuresMinisters',
+                key: 'id'
+            }
+        },
         memberStatus: {
             type: Sequelize.ENUM("Active", "Active/Oath Not Administered", "Deceased", "Disqualified", "Resigned", "Retired", "Tenure Completed"),
             defaultValue: 'Active'
@@ -109,6 +117,8 @@ module.exports = (sequelize, Sequelize) => {
             foreignKey: 'fkMemberId',
             as: 'resolutionMovers'
         });
+
+        members.belongsTo(models.tenuresMinister, { foreignKey: 'fkMinisterTenureId', as: 'tenuresMinisters' });
 
     };
     return members;

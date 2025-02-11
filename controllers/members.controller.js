@@ -50,7 +50,7 @@ getAllMembers: async (req, res) => {
     });
 
 
-    console.log(latestParliamentaryYear);
+    console.log(latestParliamentaryYear, 0, 2, "latestParliamentaryYear"); 
     
 
     // Check if a latest parliamentary year exists

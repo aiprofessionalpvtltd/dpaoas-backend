@@ -25,68 +25,101 @@ const Op = db.Sequelize.Op;
 const questionsService = {
   // Create A New Question
   createQuestion: async (req, url, file) => {
+    const transaction = await db.sequelize.transaction();
     try {
-      const formattedDate = moment(req.noticeOfficeDiaryDate).format(
-        "DD-MM-YYYY"
-      );
-      const fkMemberIdValue = req.fkMemberId
-        ? req.fkMemberId
-        : req.web_id
-          ? req.web_id
-          : null;
-      const question = await Questions.create({
-        fkSessionId: req.fkSessionId ? req.fkSessionId : null,
-        questionCategory: req.questionCategory ? req.questionCategory : null,
-        fkMemberId: fkMemberIdValue,
-        memberPosition: req.memberPosition ? req.memberPosition : null,
-        englishText: req.englishText ? req.englishText : null,
-        urduText: req.urduText ? req.urduText : null,
-        fkQuestionStatus: req.fkQuestionStatus ? req.fkQuestionStatus : null,
-        initiatedByBranch: req.initiatedByBranch ? req.initiatedByBranch : null,
-        sentToBranch: req.sentToBranch ? req.sentToBranch : null,
-        device: req.device ? req.device : "web",
-        description: req.description ? req.description : null,
-        web_id: req.web_id ? req.web_id : null,
-        submittedBy: req.submittedBy ? req.submittedBy : null,
-        questionSentStatus: req.questionSentStatus
-          ? req.questionSentStatus
-          : "inNotice",
-        fkGroupId: req.fkGroupId ? req.fkGroupId : null,
-        fkDivisionId: req.fkDivisionId ? req.fkDivisionId : null,
-      });
+        const formattedDate = moment(req.noticeOfficeDiaryDate).format("DD-MM-YYYY");
+        const fkMemberIdValue = req.fkMemberId || req.web_id || null;
 
-      const noticeOfficeDiary = await NoticeOfficeDairy.create({
-        noticeOfficeDiaryNo: req.noticeOfficeDiaryNo,
-        noticeOfficeDiaryDate: req.noticeOfficeDiaryDate
-          ? moment(req.noticeOfficeDiaryDate).format("YYYY-MM-DD")
-          : null,
-        noticeOfficeDiaryTime: req.noticeOfficeDiaryTime,
-        businessType: "Question",
-        businessId: question.dataValues.id,
-      });
-      await QuestionStatusHistory.create({
-        fkQuestionId: question.id,
-        fkSessionId: req.fkSessionId,
-        fkQuestionStatus: req.fkQuestionStatus,
-        questionStatusDate: db.sequelize.literal("CURRENT_TIMESTAMP"),
-      });
+        console.log("Searching last diary entry for:");
+        console.log("Category:", req.questionCategory);
+        console.log("Session:", req.fkSessionId);
 
-      const questionDiary = await QuestionDiary.create({
-        questionID: question.id,
-        questionDiaryNo: req.questionDiaryNo,
-      });
+        // Find the last diary entry for the specified category and session
+        const lastDiaryEntry = await QuestionDiary.findOne({
+            include: [{
+                model: Questions,
+                as: "questions",
+                required: true,
+                where: {
+                    questionCategory: req.questionCategory,
+                    fkSessionId: req.fkSessionId
+                }
+            }],
+            where: {
+                questionDiaryNo: { [db.Sequelize.Op.ne]: null } // Only consider entries with non-null diary numbers
+            },
+            order: [['questionDiaryNo', 'DESC']],
+            transaction
+        });
 
-      await Questions.update(
-        {
-          fkNoticeDiary: noticeOfficeDiary.id,
-          fkQuestionDiaryId: questionDiary.id,
-        },
-        { where: { id: question.id } }
-      );
+        const nextDiaryNo = lastDiaryEntry?.questionDiaryNo ? lastDiaryEntry.questionDiaryNo + 1 : 1;
+        console.log("Next Diary No assigned:", nextDiaryNo);
 
-      return question;
+        // Create the question record
+        const question = await Questions.create({
+            fkSessionId: req.fkSessionId || null,
+            questionCategory: req.questionCategory || null,
+            fkMemberId: fkMemberIdValue,
+            memberPosition: req.memberPosition || null,
+            englishText: req.englishText || null,
+            urduText: req.urduText || null,
+            fkQuestionStatus: req.fkQuestionStatus || null,
+            initiatedByBranch: req.initiatedByBranch || null,
+            sentToBranch: req.sentToBranch || null,
+            device: req.device || "web",
+            description: req.description || null,
+            web_id: req.web_id || null,
+            submittedBy: req.submittedBy || null,
+            questionSentStatus: req.questionSentStatus || "inNotice",
+            fkGroupId: req.fkGroupId || null,
+            fkDivisionId: req.fkDivisionId || null,
+        }, { transaction });
+
+        // Create the notice office diary entry
+        const noticeOfficeDiary = await NoticeOfficeDairy.create({
+            noticeOfficeDiaryNo: req.noticeOfficeDiaryNo,
+            noticeOfficeDiaryDate: req.noticeOfficeDiaryDate
+                ? moment(req.noticeOfficeDiaryDate).format("YYYY-MM-DD")
+                : null,
+            noticeOfficeDiaryTime: req.noticeOfficeDiaryTime,
+            businessType: "Question",
+            businessId: question.id,
+        }, { transaction });
+
+        // Log the question status history
+        await QuestionStatusHistory.create({
+            fkQuestionId: question.id,
+            fkSessionId: req.fkSessionId,
+            fkQuestionStatus: req.fkQuestionStatus,
+            questionStatusDate: db.sequelize.literal("CURRENT_TIMESTAMP"),
+        }, { transaction });
+
+        // Create the question diary entry
+        const questionDiary = await QuestionDiary.create({
+            questionID: question.id,
+            questionDiaryNo: nextDiaryNo,
+        }, { transaction });
+
+        console.log("Created new question diary:", JSON.stringify(questionDiary.get({ plain: true })));
+
+        // Update the question with diary references
+        await Questions.update(
+            {
+                fkNoticeDiary: noticeOfficeDiary.id,
+                fkQuestionDiaryId: questionDiary.id,
+            },
+            {
+                where: { id: question.id },
+                transaction
+            }
+        );
+
+        await transaction.commit();
+        return question;
     } catch (error) {
-      throw { message: error.message || "Error Creating Question!" };
+        await transaction.rollback();
+        console.error("Error in createQuestion:", error);
+        throw { message: error.message || "Error Creating Question!" };
     }
   },
 
@@ -154,6 +187,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -396,6 +430,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -520,6 +555,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -573,10 +609,6 @@ const questionsService = {
       throw new Error(error.message || "Error Fetching Today's Questions");
     }
   },
-
-
-
-
 
   getMemberWiseStatement: async (fromSession, toSession) => {
     try {
@@ -840,8 +872,6 @@ const questionsService = {
     }
   },
 
-
-
   getQuestionsByStatus: async (statuses) => {
     try {
       const fetchQuestions = async (status) => {
@@ -906,6 +936,7 @@ const questionsService = {
             },
             {
               model: QuestionDiary,
+              as: "questionDiary",
               attributes: ["id", "questionID", "questionDiaryNo"],
             },
             {
@@ -1002,6 +1033,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -1067,7 +1099,11 @@ const questionsService = {
         ],
       });
 
-      if (question.questionImage && question.questionImage.length) {
+      if (!question) {
+        throw new Error(`Question with ID ${questionId} not found.`);
+      }
+
+      if (question?.questionImage && question?.questionImage?.length) {
         question.questionImage = question.questionImage.map((imageString) =>
           JSON.parse(imageString)
         );
@@ -1117,6 +1153,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -1177,7 +1214,7 @@ const questionsService = {
   },
 
   // Search Question
-  searchQuestion: async (searchCriteria, currentPage, pageSize) => {
+  searchQuestion: async (searchCriteria, exactMatch, currentPage, pageSize) => {
     try {
       const offset = currentPage * pageSize;
       const limit = pageSize;
@@ -1275,15 +1312,15 @@ const questionsService = {
       //   }
       // Build the query options based on search criteria
       for (const key in searchCriteria) {
-        if (key === "fromSessionNo") {
+        if (key === "fromSessionNo" && searchCriteria[key]) {
           queryOptions.where["$session.id$"] = {
             [Op.gte]: searchCriteria[key],
           };
         }
-        if (key === "toSessionNo") {
-          queryOptions.where["$session.id$"] = {
-            [Op.lte]: searchCriteria[key],
-          };
+        if (key === "toSessionNo" && searchCriteria[key]) {
+          // Check if fromSessionNo exists, and combine the conditions
+          queryOptions.where["$session.id$"] = queryOptions.where["$session.id$"] || {};
+          queryOptions.where["$session.id$"][Op.lte] = searchCriteria[key];
         }
         if (key === "questionID") {
           queryOptions.where["$questionDiary.questionID$"] = {
@@ -1296,10 +1333,24 @@ const questionsService = {
           };
         }
         if (key === "keyword") {
-          queryOptions.where[Op.or] = [
-            { englishText: { [Op.iLike]: `%${searchCriteria.keyword}%` } },
-            { urduText: { [Op.iLike]: `%${searchCriteria.keyword}%` } },
-          ];
+          console.log("Exact Match", exactMatch);
+
+          if(exactMatch === "true") {  
+            // Sanitize and trim the keyword
+            const sanitizedKeyword = searchCriteria.keyword.trim();
+
+            queryOptions.where[Op.or] = [
+              { englishText: { [Op.iLike]: `% ${sanitizedKeyword} %` } }, // Ensure space around keyword
+              { urduText: { [Op.iLike]: `% ${sanitizedKeyword} %` } },
+            ];
+
+            console.log("Exact Match searchCriteria.keyword", sanitizedKeyword);
+          } else {
+            queryOptions.where[Op.or] = [
+              { englishText: { [Op.iLike]: `%${searchCriteria.keyword}%` } },
+              { urduText: { [Op.iLike]: `%${searchCriteria.keyword}%` } },
+            ];
+          }
         }
         if (key === "gender") {
           queryOptions.where["$member.gender$"] = {
@@ -1415,6 +1466,26 @@ const questionsService = {
             questionStatusDate: currentDate.toISOString(),
           });
         }
+
+        // If the new status is 3, update the session to the current session
+        if (newQuestionStatus === "3") {
+          try {
+            const currentSession = await Sessions.findOne({
+              where: {
+                sessionStatus: "active",
+              },
+              order: [["createdAt", "DESC"]], // Order by creation date to get the most recent session
+            });
+
+            if (!currentSession) {
+              throw new Error("No active session found.");
+            }
+
+            req.fkSessionId = currentSession.id;
+          } catch (error) {
+            throw new Error(`Error fetching current session: ${error.message}`);
+          }
+        }
       }
 
       if (question) {
@@ -1465,7 +1536,7 @@ const questionsService = {
         memberPosition: req.memberPosition,
         englishText: req.englishText,
         urduText: req.urduText,
-        fkSessionId: req.fkSessionId,
+        fkSessionId: req.fkSessionId, // Updated session ID
         fkQuestionStatus: req.fkQuestionStatus,
         questionSentStatus: req.questionSentStatus,
         initiatedByBranch: req.initiatedByBranch,
@@ -1709,6 +1780,7 @@ const questionsService = {
             },
             {
               model: QuestionDiary,
+              as: "questionDiary",
               attributes: ["id", "questionID", "questionDiaryNo"],
             },
             {
@@ -1839,6 +1911,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -1950,6 +2023,7 @@ const questionsService = {
           },
           {
             model: QuestionDiary,
+            as: "questionDiary",
             attributes: ["id", "questionID", "questionDiaryNo"],
           },
           {
@@ -2126,6 +2200,7 @@ const questionsService = {
               },
               {
                 model: QuestionDiary,
+                as: "questionDiary",
                 attributes: ["id", "questionID", "questionDiaryNo"],
               },
               {
@@ -2434,6 +2509,190 @@ const questionsService = {
     }
   },
 
+  // Compare Search Function
+  compareSearch: async (fromSession, toSession, description, percentageValue, currentPage, pageSize, questionSentStatus) => {
+    try {
+      const offset = currentPage * pageSize;
+
+      const whereClause = {
+        fkSessionId: {
+          [Op.in]: [fromSession, toSession],
+        },
+        englishText: {
+          [Op.not]: null,
+        },
+        questionSentStatus: questionSentStatus
+      };
+
+      const questions = await Questions.findAll({
+        where: whereClause,
+        include: [
+          {
+            model: Sessions,
+            as: "session",
+            attributes: ["id", "sessionName"],
+          },
+          {
+            model: QuestionStatus,
+            as: "questionStatus",
+            attributes: ["id", "questionStatus"],
+          },
+          {
+            model: Divisions,
+            as: "divisions",
+            attributes: ["id", "divisionName"],
+            include: [
+              {
+                model: db.ministries,
+                attributes: ["id", "ministryName"],
+              },
+            ]
+          },
+          {
+            model: Groups,
+            as: "groups",
+            attributes: ["id", "groupNameStarred", "groupNameUnstarred"],
+          },
+          {
+            model: NoticeOfficeDairy,
+            as: "noticeOfficeDiary",
+            attributes: [
+              "id",
+              "noticeOfficeDiaryNo",
+              "noticeOfficeDiaryDate",
+              "noticeOfficeDiaryTime",
+            ],
+          },
+          {
+            model: QuestionDiary,
+            as: "questionDiary",
+            attributes: ["id", "questionID", "questionDiaryNo"],
+          },
+          {
+            model: Members,
+            as: "member",
+            attributes: [
+              "id",
+              "memberName",
+              "gender",
+              "governmentType",
+              "religion",
+            ],
+          },
+          {
+            model: Users,
+            as: "questionDeletedBy",
+            attributes: ["id"],
+            include: [
+              {
+                model: Employees,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+              },
+            ],
+          },
+          {
+            model: Users,
+            as: "questionSubmittedBy",
+            attributes: ["id"],
+            include: [
+              {
+                model: Employees,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+              },
+            ],
+          },
+        ],
+      });
+
+      // Function to calculate similarity percentage between two strings
+      const calculateSimilarity = (str1, str2) => {
+        // Helper function to create word frequency map
+        const getWordFrequency = (str) => {
+          const words = str.toLowerCase().split(/\s+/);
+          const freq = {};
+          words.forEach(word => {
+            freq[word] = (freq[word] || 0) + 1;
+          });
+          return freq;
+        };
+      
+        // Get word frequencies
+        const freq1 = getWordFrequency(str1);
+        const freq2 = getWordFrequency(str2);
+      
+        // Get unique words from both strings
+        const uniqueWords = new Set([...Object.keys(freq1), ...Object.keys(freq2)]);
+      
+        // Calculate cosine similarity
+        let dotProduct = 0;
+        let norm1 = 0;
+        let norm2 = 0;
+      
+        uniqueWords.forEach(word => {
+          const f1 = freq1[word] || 0;
+          const f2 = freq2[word] || 0;
+          dotProduct += f1 * f2;
+          norm1 += f1 * f1;
+          norm2 += f2 * f2;
+        });
+      
+        // Avoid division by zero
+        if (norm1 === 0 || norm2 === 0) return 0;
+      
+        // Return percentage
+        return (dotProduct / (Math.sqrt(norm1) * Math.sqrt(norm2))) * 100;
+      };
+
+      const matchedQuestions = questions.filter(question => {
+        const cleanString = (str) => {
+          if (!str) return '';
+          return str
+            .replace(/<\/?[^>]+(>|$)/g, '') // Remove HTML tags
+            .replace(/&nbsp;/g, ' ') // Replace HTML entities
+            .replace(/\s+/g, ' ') // Normalize whitespace
+            .trim(); // Trim leading/trailing spaces
+        };
+      
+        // Clean strings
+        const cleanEnglishText = cleanString(question.englishText);
+        const cleanDescription = cleanString(description);
+      
+        if (question.id === 265) {
+          console.log('cleanEnglishText:', cleanEnglishText);
+          console.log('cleanDescription:', cleanDescription);
+        }
+      
+        // Calculate similarity
+        const similarity = calculateSimilarity(cleanEnglishText, cleanDescription);
+      
+        if (question.id === 265) {
+          console.log('Similarity:', similarity);
+        }
+      
+        // Attach match percentage and filter
+        question.dataValues.matchPercentage = similarity.toFixed(2);
+        return similarity >= percentageValue;
+      }).sort((a, b) => 
+        parseFloat(b.dataValues.matchPercentage) - parseFloat(a.dataValues.matchPercentage)
+      );      
+
+      // Apply pagination
+      const totalCount = matchedQuestions.length;
+      const totalPages = Math.ceil(totalCount / pageSize);
+      const paginatedQuestions = matchedQuestions.slice(offset, offset + pageSize);
+
+      return {
+        count: totalCount,
+        totalPages,
+        questions: paginatedQuestions
+      };
+
+    } catch (error) {
+      throw new Error(error.message || "Error comparing questions");
+    }
+  },
 
 };
 

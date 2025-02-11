@@ -261,6 +261,7 @@ const casesService = {
                 createdBy: createdBy,
                 flags: para.references.map((ref) => ref.flag).join(","),
                 assignedTo: para?.assignedTo || null,
+                paraCreatedAt: para?.paraCreatedAt, // Add current datetime here
               },
               { transaction }
             );
@@ -1596,6 +1597,7 @@ const casesService = {
                 createdBy: para.createdBy,
                 flags: para.references.map((ref) => ref.flag).join(","),
                 assignedTo: para.assignedTo || null,
+                paraCreatedAt: para?.paraCreatedAt, // Add current datetime here
               },
               { transaction }
             );
@@ -2891,7 +2893,7 @@ const casesService = {
 
       const noteParas = await NoteParagraphs.findAll({
         where: { fkCaseNoteId: caseNotes.id },
-        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt", "assignedTo"],
+        attributes: ["id", "paragraphTitle", "paragraph", "flags", "createdBy", "createdAt", "updatedAt", "assignedTo" , "paraCreatedAt"],
         order: [["paragraphTitle", orderBy]],
         include: [
           {
@@ -3119,6 +3121,7 @@ const casesService = {
           references: references,
           createdBy: para.createdBy,
           createdAt: para.createdAt,
+          updatedAt: para.updatedAt,
           createdByUserDesignation: `${para?.createdByUser?.employee?.designations?.designationName}`,
           createdByUserBranch: para?.createdByUser?.employee?.branches?.branchName,
           createdByUser:
@@ -3126,12 +3129,14 @@ const casesService = {
             " " +
             para?.createdByUser?.employee?.lastName,
           assignedTo: para?.assignedTo || null,  
-          assignedToUser: para?.assignedUser?.employee?.firstName +
-          " " +
-          para?.assignedUser?.employee?.lastName,
+          assignedToUser: para?.assignedUser?.employee?.firstName &&
+                para?.assignedUser?.employee?.lastName
+                ? para.assignedUser.employee.firstName + " " + para.assignedUser.employee.lastName
+                : "",
           assignedToUserDesignation: para?.assignedUser?.employee?.designations?.designationName,
           assignedToUserBranch: para?.assignedUser?.employee?.branches?.branchName,
           isSave: true,
+          paraCreatedAt:para?.paraCreatedAt,
         };
       });
 
@@ -3276,7 +3281,7 @@ const casesService = {
   },
 
   // Get Employees on Higher Level By User's Login
-  getHigherLevelDesignations: async (userId, branchName) => {
+  getHigherLevelDesignations: async (userId, branchName, selectedBranchID) => {
     try {
       // Find the user and their branch
       const userWithBranch = await Users.findOne({
@@ -3359,7 +3364,11 @@ const casesService = {
               attributes: ["id", "email", "userStatus", "attendance_status"],
             },
           ],
-          where: { fkBranchId: userBranchId },
+          where: {
+            fkMultiBranchId: {
+              [Op.contains]: [parseInt(selectedBranchID)], 
+            },
+          },
         });
 
         employees = [...userBranchSuperintendent];
@@ -3389,7 +3398,11 @@ const casesService = {
               attributes: ["id", "email", "userStatus", "attendance_status"],
             },
           ],
-          where: { fkBranchId: userBranchId },
+          where: {
+            fkMultiBranchId: {
+              [Op.contains]: [parseInt(selectedBranchID)], 
+            },
+          },
         });
       }
       // Sort employees based on the branch hierarchy

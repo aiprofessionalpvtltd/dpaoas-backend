@@ -14,12 +14,12 @@ const ManageCommittees = db.manageCommittees;
 const ManageCommitteeRecomendations = db.manageCommitteeRecomendations;
 const Users = db.users;
 const ParliamentaryYears = db.parliamentaryYears;
+const ParliamentaryYearsMna = db.parliamentaryYearsMna;
 const Employees = db.employees;
 const BillStatuses = db.billStatuses;
 const { Sequelize } = require('sequelize');
 const Op = db.Sequelize.Op;
 const logger = require('../common/winston');
-
 
 const senateBillService = {
     // Create A New Senate Bill
@@ -60,7 +60,6 @@ const senateBillService = {
             return createdSenateBill;
         } catch (error) {
             throw { message: error.message || "Error Creating Senate Bill" };
-
         }
     },
 
@@ -99,8 +98,16 @@ const senateBillService = {
                         as: 'parliamentaryYears'
                     },
                     {
+                        model: ParliamentaryYearsMna,
+                        as: 'mnaParliamentaryYears'
+                    },
+                    {
                         model: db.tenures,
                         as: 'tenures'
+                    },
+                    {
+                        model: db.tenuresMinister,
+                        as: 'tenuresMinisters'
                     },
                     {
                         model: db.terms,
@@ -125,7 +132,7 @@ const senateBillService = {
                         model: SenateBillMinistryMovers,
                         as: 'senateBillMinistryMovers',
                         include: [
-                            { model: ministries, as: 'ministrie' }
+                            { model: ministries, as: 'ministries' }
                         ]
                     },
                     {
@@ -195,7 +202,17 @@ const senateBillService = {
                 limit,
                 order: [
                     // Order by the numeric part between slashes
-                    [db.sequelize.literal(`CAST(REGEXP_REPLACE("introducedInSenateBills"."fileNumber", '^\\d+/\\((\\d+)\\)/\\d+$', '\\1') AS INTEGER)`), 'ASC']
+                    [
+                        db.sequelize.literal(`
+                            CASE 
+                                WHEN "introducedInSenateBills"."fileNumber" ~ '^\\d+/\\((\\d+)\\)/\\d+$'
+                                THEN CAST(REGEXP_REPLACE("introducedInSenateBills"."fileNumber", '^\\d+/\\((\\d+)\\)/\\d+$', '\\1') AS INTEGER)
+                                ELSE 0
+                            END,
+                            "introducedInSenateBills"."fileNumber"
+                        `),
+                        'ASC'
+                    ]
                 ],
                 where: whereClause,
                 include: [
@@ -215,8 +232,16 @@ const senateBillService = {
                         as: 'parliamentaryYears'
                     },
                     {
+                        model: ParliamentaryYearsMna,
+                        as: 'mnaParliamentaryYears'
+                    },
+                    {
                         model: db.tenures,
                         as: 'tenures'
+                    },
+                    {
+                        model: db.tenuresMinister,
+                        as: 'tenuresMinisters'
                     },
                     {
                         model: db.terms,
@@ -241,7 +266,7 @@ const senateBillService = {
                         model: SenateBillMinistryMovers,
                         as: 'senateBillMinistryMovers',
                         include: [
-                            { model: ministries, as: 'ministrie' }
+                            { model: ministries, as: 'ministries' }
                         ]
                     },
                     {
@@ -292,7 +317,6 @@ const senateBillService = {
         }
     },
 
-
     // Search All Introduced In Senate Bills
     searchAllIntroducedInSenateBills: async (filters, currentPage, pageSize) => {
         try {
@@ -318,8 +342,26 @@ const senateBillService = {
                     as: 'parliamentaryYears'
                 },
                 {
+                    model: ParliamentaryYearsMna,
+                    as: 'mnaParliamentaryYears',
+                    include: [
+                        {
+                            model: db.tenures,
+                            as: 'tenure'
+                        },
+                        {
+                            model: db.tenuresMinisters,
+                            as: 'tenuresMinisters'
+                        }
+                    ]
+                },
+                {
                     model: db.tenures,
                     as: 'tenures'
+                },
+                {
+                    model: db.tenuresMinisters,
+                    as: 'tenuresMinisters'
                 },
                 {
                     model: db.terms,
@@ -344,7 +386,7 @@ const senateBillService = {
                     model: SenateBillMinistryMovers,
                     as: 'senateBillMinistryMovers',
                     include: [
-                        { model: ministries, as: 'ministrie' }
+                        { model: ministries, as: 'ministries' }
                     ]
                 },
                 {
@@ -381,7 +423,20 @@ const senateBillService = {
                     filterOptions[Sequelize.Op.or] = [
                         { billTitle: { [Sequelize.Op.like]: `%${filters.keyword}%` } },
                         { billText: { [Sequelize.Op.like]: `%${filters.keyword}%` } },
+                        { billRemarks: { [Sequelize.Op.like]: `%${filters.keyword}%` } },
                     ];
+                }
+
+                if (filters.fkTenureId) {
+                    filterOptions.fkTenureId = filters.fkTenureId;
+                }
+    
+                if (filters.fkMinisterTenureId) {
+                    filterOptions.fkMinisterTenureId = filters.fkMinisterTenureId;
+                }
+    
+                if (filters.fkMnaParliamentaryYearId) {
+                    filterOptions.fkMnaParliamentaryYearId = filters.fkMnaParliamentaryYearId;
                 }
 
                 if (filters && filters.fkSenatorId) {
@@ -412,7 +467,7 @@ const senateBillService = {
                         as: 'senateBillMinistryMovers',
                         where: { fkMinistryId: filters.fkMinistryId },
                         include: [
-                            { model: ministries, as: 'ministrie' }
+                            { model: ministries, as: 'ministries' }
                         ]
                     });
                 }
@@ -541,8 +596,16 @@ const senateBillService = {
                         as: 'parliamentaryYears'
                     },
                     {
+                        model: db.parliamentaryYearsMna,
+                        as: 'mnaParliamentaryYears'
+                    },
+                    {
                         model: db.tenures,
                         as: 'tenures'
+                    },
+                    {
+                        model: db.tenuresMinister,
+                        as: 'tenuresMinisters'
                     },
                     {
                         model: db.terms,
@@ -567,7 +630,7 @@ const senateBillService = {
                         model: SenateBillMinistryMovers,
                         as: 'senateBillMinistryMovers',
                         include: [
-                            { model: ministries, as: 'ministrie' }
+                            { model: ministries, as: 'ministries' }
                         ]
                     },
                     {
@@ -622,16 +685,39 @@ const senateBillService = {
     // Update senate Bill Data
     updateIntroducedInSenateBill: async (updatedData, senateBillId) => {
         try {
-
-
             let IntroducedInSenateBill
 
+            // First get existing data
+            const existingBill = await IntroducedInSenateBills.findByPk(senateBillId);
+            
+            // Helper function to validate and parse date
+            const parseDate = (dateString) => {
+                if (!dateString) return null;
+                const date = new Date(dateString);
+                return date instanceof Date && !isNaN(date) ? date : null;
+            };
+            
+            // Merge existing data with new updates
+            const fieldsToUpdate = {
+                ...existingBill.dataValues,  // Keep all existing fields
+                ...updatedData,  // Override with any new updates
+                // Validate and parse date fields
+                dateOfCirculationOfNotice: parseDate(updatedData.dateOfCirculationOfNotice) || existingBill.dateOfCirculationOfNotice,
+                dateofReciptofNotice: parseDate(updatedData.dateofReciptofNotice) || existingBill.dateofReciptofNotice,
+                dateofReferencetoStandingCommittee: parseDate(updatedData.dateofReferencetoStandingCommittee) || existingBill.dateofReferencetoStandingCommittee
+            };
+
+            // Remove any undefined or null values to prevent overwriting existing data
+            Object.keys(fieldsToUpdate).forEach(key => {
+                if (fieldsToUpdate[key] === undefined || fieldsToUpdate[key] === 'Invalid Date') {
+                    delete fieldsToUpdate[key];
+                }
+            });
+
             // Update Senate bill attributes if provided in updatedData
-            if (Object.keys(updatedData).length > 0) {
-                IntroducedInSenateBill = await IntroducedInSenateBills.update(updatedData, { where: { id: senateBillId } });
-
+            if (Object.keys(fieldsToUpdate).length > 0) {
+                IntroducedInSenateBill = await IntroducedInSenateBills.update(fieldsToUpdate, { where: { id: senateBillId } });
             }
-
 
             if (updatedData.senateBillSenatorMovers) {
                 // Delete existing SenateBillSenatorMovers entries

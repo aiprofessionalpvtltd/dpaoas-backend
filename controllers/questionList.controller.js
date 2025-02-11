@@ -121,9 +121,12 @@ const questionListController = {
       return res.status(200).send({
         success: true,
         message: "Single Question List Fetched Successfully!",
-        questionList:questionList,
+        questionList: singleQuestionList.questionListData,
+        // questionList:questionList,
         data: singleQuestionList.questions,
-        memberQuestionCount: singleQuestionList.memberQuestionCount
+        memberQuestionCount: singleQuestionList.memberQuestionCount,
+        divisionQuestionCount: singleQuestionList.divisionQuestionCount,
+        divisionMemberDetails: singleQuestionList.divisionMemberDetails // New field
       })
     } catch (error) {
       logger.error(error.message)
@@ -362,6 +365,29 @@ const questionListController = {
     }
   },
 
-}
+  getQuestionListCounts: async (req, res) => {
+    try {
+      logger.info(`questionListController: getQuestionListCounts id ${JSON.stringify(req.params.id)}`);
+      const questionListId = req.params.id;
+      const questionList = await QuestionList.findByPk(questionListId);
+      if (!questionList) {
+        throw ({ message: "Question List Not Found!" });
+      }
+      const counts = await questionListService.getQuestionListCounts(questionListId);
+      logger.info("Question List Counts Fetched Successfully!");
+      return res.status(200).send({
+        success: true,
+        message: "Question List Counts Fetched Successfully!",
+        data: counts
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+};
 
-module.exports = questionListController
+module.exports = questionListController;

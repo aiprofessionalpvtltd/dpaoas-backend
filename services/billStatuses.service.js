@@ -28,8 +28,8 @@ const BillStatusService = {
             const { count, rows } = await BillStatuses.findAndCountAll({
               offset,
               limit,
-              order: [["id", "DESC"]],
-            });
+              order: [["id", "ASC"]],
+            }); 
 
             console.log("rows: " + rows)
 

@@ -13,7 +13,14 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
-
+        fkMinisterTenureId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'tenuresMinisters',
+                key: 'id'
+            }
+        },
         fkTermId: {
             type: Sequelize.INTEGER,
             allowNull: true,
@@ -24,9 +31,17 @@ module.exports = (sequelize, Sequelize) => {
         },
         fkParliamentaryYearId: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'parliamentaryYears',
+                key: 'id'
+            }
+        },
+        fkMnaParliamentaryYearId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'parliamentaryYearsMna',
                 key: 'id'
             }
         },
@@ -82,7 +97,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: true
         },
-        DateOfReceiptOfMessageFromNA:{
+        DateOfReceiptOfMessageFromNA: {
             type: Sequelize.DATE,
             allowNull: true
         },
@@ -137,7 +152,7 @@ module.exports = (sequelize, Sequelize) => {
         billFor: {
             type: Sequelize.ENUM("Senators", "Ministers"),
             allowNull: false,
-             defaultValue: 'Senators'
+            defaultValue: 'Senators'
         },
         introducedBillSentStatus: {
             type: Sequelize.ENUM("inLegislation", "toTranslation"),
@@ -145,10 +160,33 @@ module.exports = (sequelize, Sequelize) => {
         },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
+
+        // New added
+        dateOfCirculationOfNotice: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        dateofReciptofNotice: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        dateofReferencetoStandingCommittee: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        dateOfReturnByPresident: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
+        passedInJointSitting: {
+            type: Sequelize.DATE,
+            allowNull: true
+        },
     });
 
     IntroducedInSenateBill.associate = function (models) {
-        IntroducedInSenateBill.belongsTo(models.parliamentaryYears, { foreignKey: 'fkParliamentaryYearId', as: 'parliamentaryYears' });
+        IntroducedInSenateBill.belongsTo(models.parliamentaryYears, { foreignKey: 'fkParliamentaryYearId', as: 'parliamentaryYear' });
+        IntroducedInSenateBill.belongsTo(models.parliamentaryYearsMna, { foreignKey: 'fkMnaParliamentaryYearId', as: 'mnaParliamentaryYears' });
         IntroducedInSenateBill.belongsTo(models.billStatuses, { foreignKey: 'fkBillStatus', as: 'billStatuses' });
         IntroducedInSenateBill.belongsTo(models.sessions, { foreignKey: 'fkSessionId', as: 'sessions' });
         IntroducedInSenateBill.hasMany(models.senateBillSenatorMovers, { foreignKey: 'fkIntroducedInSenateBillId', as: 'senateBillSenatorMovers' });

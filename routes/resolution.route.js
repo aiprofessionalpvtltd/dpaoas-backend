@@ -226,6 +226,12 @@ router.put("/resolutionsBalloting/status", resolution.updateResolutionsStatus);
 
 router.post("/pdfResolutionList", resolution.pdfResolutionList);
 
+router.get("/getBallotingTemplate/:id", resolution.getBallotingTemplateById);
+
+router.get("/getAllBallotingTemplates", resolution.getAllBallotingTemplates);
+
+router.put("/updateBallotingTemplate/:id", resolution.updateBallotingTemplate);
+
 router.get("/resolutionsByStatus", resolution.getResolutionsByStatus);
 
 // Retrieve all Resolutions

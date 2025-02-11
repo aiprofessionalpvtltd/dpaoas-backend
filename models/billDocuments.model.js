@@ -13,8 +13,49 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
+        fkLegisBillDocumentId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'legislativeBills',
+                key: 'id'
+            }
+        },
         documentType: {
-            type: Sequelize.ENUM("Ammendment", "Bill", "Committee Report", "Gazette", "Letter Sent to Senator", "Member Notice for Passage", "Member Notice for Withdrawal", "Notice", "Proforma"),
+            type: Sequelize.ENUM(
+                'Notice Under Rule 94',
+                'Notice Under Rule 96',
+                'Notes',
+                'Correspondence',
+                'Bill (English)',
+                'Bill (Urdu)',
+                'Original Act',
+                'Letter Sent to Senator for Rectification',
+                'Letter Sent to Concerned Ministry / Division',
+                'Bill Introduced in the House',
+                'Committee Report',
+                'Notice for Consideration and Passage Under Rules 100 /113',
+                'Notice for Withdrawal Under Rule 115',
+                'Bill Passed by the House',
+                'Message sent to NA',
+                'Note For Gazette',
+                'Gazette Publication',
+                'Message From NA',
+                'Letter circulated to Members/Ministries under rule 118',
+                'Notice under rule 119',
+                'Referred to Standing Committee',
+                'Bill as introduced',
+                'Report',
+                'Bill as Reported',
+                'Bill passed',
+                'Message Transmitted to NA under rule 125',
+                'Bill not Passed by senate with in 90 days',
+                'Bill sent for assent',
+                'Bill Returend by President',
+                'Sent for Gazette',
+                'Published in the Gazette',
+                'Received from Senator'
+            ),
             allowNull: true,
         },
         documentDate: {
@@ -35,6 +76,7 @@ module.exports = (sequelize, Sequelize) => {
 
     billDocuments.associate = function (models) {
         billDocuments.belongsTo(models.introducedInSenateBills, { foreignKey: 'fkBillDocumentId', as: 'introducedInSenateBills' });
+        billDocuments.belongsTo(models.legislativeBills, { foreignKey: 'fkLegisBillDocumentId', as: 'legislativeBills' });
     };
 
     return billDocuments;

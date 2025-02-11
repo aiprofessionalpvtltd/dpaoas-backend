@@ -47,6 +47,12 @@ module.exports = (sequelize, Sequelize) => {
         key: "id",
       },
     },
+    paraCreatedAt: {
+      type: Sequelize.STRING,
+      allowNull: true, // Make it mandatory if required
+      defaultValue: null, // Automatically set current date and time
+    },
+
     // assignedTo: {
     //   type: Sequelize.INTEGER,
     //   allowNull: true,

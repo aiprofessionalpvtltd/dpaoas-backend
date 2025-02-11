@@ -14,7 +14,7 @@ const legislativeBillController = {
             const { count, totalPages, legislativeBills } = await legislativeBillService.findAllLegislativeBills(currentPage, pageSize);
 
             console.log("legislativeBills--->>", legislativeBills)
-
+    
             if (legislativeBills.length === 0) {
                 logger.info("No data found on this page!")
                 return res.status(200).send({
@@ -40,7 +40,7 @@ const legislativeBillController = {
 
             })
         }
-    },
+    },    
 
     // Retrieves All legislativeBills in Notice
     findAllLegislativeBillsInNotice: async (req, res) => {
@@ -49,8 +49,6 @@ const legislativeBillController = {
             const pageSize = parseInt(req.query.pageSize);
             console.log("req", currentPage, pageSize);
             const { count, totalPages, legislativeBills } = await legislativeBillService.findAllLegislativeBillsInNotice(currentPage, pageSize);
-
-            console.log("legislativeBills--->>", legislativeBills)
 
             if (legislativeBills.length === 0) {
                 logger.info("No data found on this page!")
@@ -159,46 +157,53 @@ const legislativeBillController = {
             const legislativeBills = await legislativeBillService.createLegislativeBill(req.body);
             console.log("legislativeBills", legislativeBills);
 
-            let imageObjects = [];
             if (req.files && req.files.length > 0) {
-                imageObjects = req.files.map((file, index) => {
-                    const path = file.destination.replace('./public/', '/assets/') + file.originalname;
-                    const id = index + 1;
-                    return JSON.stringify({ id, path });
+                const attachmentObjects = req.files.map((file, index) => {
+                    const path = file.destination.replace('./public/', '/assets/') + file.filename;
+                    return {
+                        id: index + 1,
+                        path: path
+                    };
                 });
+
+                console.log("legislativeBills.dataValues.id", legislativeBills.dataValues.id);
+                
+
+                const documentData = {
+                    fkLegisBillDocumentId: legislativeBills.dataValues.id,
+                    documentType: req.body.documentType || 'Received from Senator',
+                    documentDate: req.body.documentDate || new Date(),
+                    documentDiscription: req.body.documentDiscription || "",
+                    file: attachmentObjects.map(file => JSON.stringify(file))
+                };
+
+                await db.billDocuments.create(documentData);
             }
 
-            const existingLegislativeBill = await LegislativeBills.findOne({ where: { id: legislativeBills.id } });
-            const existingImages = existingLegislativeBill ? existingLegislativeBill.attachment || [] : [];
-            const updatedImages = [...existingImages, ...imageObjects];
+            const updatedLegislativeBill = await LegislativeBills.findOne({ 
+                where: { id: legislativeBills.id },
+                include: [{
+                    model: db.billDocuments,
+                    as: 'billDocumentsLegis'
+                }]
+            });
 
-            try {
-                // Your code to update the database
-                await LegislativeBills.update(
-                    {
-                        attachment: updatedImages,
-                    },
-                    {
-                        where: { id: legislativeBills.dataValues.id }
-                    }
-                );
-                const updatedLegislativeBill = await LegislativeBills.findOne({ where: { id: legislativeBills.id } });
-                logger.info("Legislative bill submitted!")
-                return res.status(200).send({
-                    success: true,
-                    message: "Submitted",
-                    data: updatedLegislativeBill,
-                })
-            } catch (error) {
-                console.error("Error updating attachment:", error);
-            }
+            console.log("updatedLegislativeBill", updatedLegislativeBill);
+            
+
+            logger.info("Legislative bill submitted!")
+            return res.status(200).send({
+                success: true,
+                message: "Submitted",
+                data: updatedLegislativeBill,
+            });
 
         } catch (error) {
             logger.error(error.message);
             return res.status(400).send({
                 success: false,
                 message: error.message
-            })
+            });
         }
     },
 
@@ -250,62 +255,109 @@ const legislativeBillController = {
         }
     },
 
-    // Update the LegislativeBill
     updateLegislativeBill: async (req, res) => {
         try {
             const legislativeBillId = req.params.id;
+            const updatedData = req.body;
 
-            const legislativeBills = await LegislativeBills.findByPk(legislativeBillId);
-            if (!legislativeBills) {
-                return res.status(200).send({
+            const legislativeBill = await db.legislativeBills.findByPk(legislativeBillId);
+            if (!legislativeBill) {
+                return res.status(404).send({
                     success: false,
-                    message: "legislative bill not found!",
-                })
+                    message: "Legislative bill not found!",
+                });
             }
-            // Assuming the request body contains the updated data
+
             const updatedLegislativeBill = await legislativeBillService.updateLegislativeBill(legislativeBillId, req);
+
             if (updatedLegislativeBill) {
                 if (req.files && req.files.length > 0) {
-
-                    const newAttachmentObjects = req.files.map((file, index) => {
-                        const path = file.destination.replace('./public/', '/assets/') + file.originalname;
-                        const id = index + 1;
-                        return JSON.stringify({ id, path });
+                    const newAttachmentObjects = req.files.map((file) => {
+                        const path = file.destination.replace('./public/', '/assets/') + file.filename;
+                        console.log("path", path);
+                        
+                        return { id: null, path };
                     });
 
-                    // Merge existing image objects with the new ones
-                    const updatedImages = [...newAttachmentObjects];
-
-                    await LegislativeBills.update(
-                        {
-                            attachment: updatedImages,
+                    const existingDocument = await db.billDocuments.findOne({
+                        where: {
+                            fkLegisBillDocumentId: legislativeBillId,
+                            documentType: updatedData.documentType,
                         },
-                        {
-                            where: { id: legislativeBillId }
-                        }
-                    );
-                }
-                const updatedLegislativeBillData = await LegislativeBills.findOne({ where: { id: legislativeBillId } });
-                if (updatedLegislativeBillData && updatedLegislativeBillData.attachment) {
-                    updatedLegislativeBillData.attachment = updatedLegislativeBillData.attachment.map(imageString => JSON.parse(imageString));
+                    });
+
+                    let updatedImages = [];
+                    let nextId = 1;
+
+                    if (existingDocument && existingDocument.file) {
+                        const existingFiles = existingDocument.file.map((fileString) => {
+                            try {
+                                return JSON.parse(fileString);
+                            } catch (e) {
+                                console.error("Error parsing JSON:", e);
+                                return null;
+                            }
+                        }).filter(file => file !== null);
+
+                        const existingFileIds = existingFiles.map(file => file.id).filter(id => id !== undefined);
+                        nextId = existingFileIds.length > 0 ? Math.max(...existingFileIds) + 1 : 1;
+
+                        const existingPaths = existingFiles.map(file => file.path);
+                        const filteredNewAttachments = newAttachmentObjects.filter(file => !existingPaths.includes(file.path));
+
+                        updatedImages = existingFiles.concat(
+                            filteredNewAttachments.map((file, index) => ({
+                                id: nextId + index,
+                                path: file.path,
+                            }))
+                        );
+                    } else {
+                        updatedImages = newAttachmentObjects.map((file, index) => ({
+                            id: nextId + index,
+                            path: file.path,
+                        }));
+                    }
+
+                    updatedImages = updatedImages.map((file, index) => ({
+                        id: file.id !== null && file.id !== undefined ? file.id : nextId + index,
+                        path: file.path,
+                    }));
+
+                    const documentData = {
+                        documentType: updatedData.documentType,
+                        documentDate: updatedData.documentDate,
+                        documentDiscription: updatedData.documentDiscription,
+                        file: updatedImages.map(file => JSON.stringify(file)),
+                    };
+
+                    if (existingDocument) {
+                        await db.billDocuments.update(documentData, {
+                            where: {
+                                fkLegisBillDocumentId: legislativeBillId,
+                                documentType: updatedData.documentType,
+                            },
+                        });
+                    } else {
+                        documentData.fkLegisBillDocumentId = legislativeBillId;
+                        await db.billDocuments.create(documentData);
+                    }
                 }
 
-
-                logger.info("legislative Bill Updated Successfully!")
+                logger.info("Senate Bill Data Updated Successfully!", updatedLegislativeBill);
                 return res.status(200).send({
                     success: true,
-                    message: "legislative bill updated successfully!",
-                    data: updatedLegislativeBillData,
-                })
+                    message: "Senate Bill Data Updated Successfully!",
+                    data: updatedLegislativeBill,
+                });
             }
         } catch (error) {
-            logger.error(error.message)
-            return res.status(400).send({
+            logger.error(error.message);
+            return res.status(500).send({
                 success: false,
-                message: error.message
-            })
+                message: error.message,
+            });
         }
-    },
+    },       
 
     // Delets/Suspend the LegislativeBill
     deleteLegislativeBill: async (req, res) => {
@@ -342,7 +394,7 @@ const legislativeBillController = {
 
             return res.status(200).send({
                 success: true,
-                message: "Resolution new noticeOfficeDiaryNo fetched successfully!",
+                message: "Legislative Bill new diary number generated successfully!",
                 data: result
             });
         } catch (error) {
