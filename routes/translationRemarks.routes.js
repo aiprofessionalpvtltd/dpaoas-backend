@@ -36,5 +36,17 @@ router.get("/getfinancebill-remarks/:fkFinanceMoneyBillId/:userId", translationC
 // get all finance bills with remarks
 router.get("/getAllFinanceMoneyBillRemarks/:userId?", translationController.getAllFinanceMoneyBillRemarks);
 
+// Legislative Bills routes
+// single bill remarks
+router.get("/getlegislativebill-remarks/:fkLegislativeBillId/:userId", translationController.getLegislativeBillRemarks);
+// get all finance bills with remarks
+router.get("/getAllLegislativeBillRemarks/:userId?", translationController.getAllLegislativeBillRemarks);
+
+// get dashboard stats
+router.get("/getDashboardStats/:userId?", translationController.getDashboardStats);
+
+// sendToSpecificBranchFromTranslation
+router.put('/sendToSpecificBranchFromTranslation/:type/:id', translationController.sendToSpecificBranchFromTranslation);
+
 module.exports = router;
 

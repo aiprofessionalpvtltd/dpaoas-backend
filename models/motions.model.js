@@ -77,6 +77,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         isTranslated: {
             type: Sequelize.BOOLEAN,
+            defaultValue: false,
             allowNull: true
         },
         file: {

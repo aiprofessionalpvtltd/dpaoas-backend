@@ -314,6 +314,7 @@ const translationServices = {
     fkResolutionId,
     fkIntroducedInSenateId,
     fkFinanceMoneyBillId,
+    fkLegislativeBillId,
     submittedBy,
     assignedTo,
     comment,
@@ -332,6 +333,7 @@ const translationServices = {
         ...(category === 'PrivateBill_FromNA' && { fkIntroducedInSenateId }),
         ...(category === 'PrivateBill_FromSenate' && { fkIntroducedInSenateId }),
         ...(category === 'FinanceGovernmentBill_FromNA' && { fkFinanceMoneyBillId }),
+        ...(category === 'LegislativeBill_FromNotice' && { fkLegislativeBillId }),
       };
   
       // Check if a translation remark already exists
@@ -1445,13 +1447,12 @@ if (assignedRemarks?.billDocuments && assignedRemarks?.billDocuments.length > 0)
     }
   },
 
-  // Needed to be updated
-  getFinanceMoneyBillRemarksService: async ({ fkIntroducedInSenateId, userId, category }) => {
+  getFinanceMoneyBillRemarksService: async ({ fkFinanceMoneyBillId, userId, category }) => {
     try {
       const remarks = await TranslationRemarks.findAll({
         where: { 
-          fkIntroducedInSenateId, 
-          category: category || 'GovernmentBill_FromSenate'
+          fkFinanceMoneyBillId, 
+          category: category || 'FinanceGovernmentBill_FromNA'
         },
         include: [
           {
@@ -1485,8 +1486,8 @@ if (assignedRemarks?.billDocuments && assignedRemarks?.billDocuments.length > 0)
             }]
           },
           {
-            model: db.introducedInSenateBills,
-            as: 'introducedInSenateBills'
+            model: db.financeMoneyBills,
+            as: 'financeMoneyBills'
           }
         ],
         order: [['createdAt', 'ASC']]
@@ -1548,7 +1549,6 @@ if (assignedRemarks?.billDocuments && assignedRemarks?.billDocuments.length > 0)
     }
   },
 
-  // Needed to be updated
   getAllFinanceMoneyBillsWithRemarks: async (userId, category, currentPage = 0, pageSize = 10) => {
     try {
       const offset = currentPage * pageSize;
@@ -1562,93 +1562,94 @@ if (assignedRemarks?.billDocuments && assignedRemarks?.billDocuments.length > 0)
   
       const { count, rows: assignedRemarks } = await TranslationRemarks.findAndCountAll({
         where: whereClause,
-        attributes: ['id', 'fkIntroducedInSenateId', 'comment', 'priority', 'createdAt', 'category'],
+        attributes: ['id', 'fkFinanceMoneyBillId', 'comment', 'priority', 'createdAt', 'category'],
         include: [
           {
-            model: db.introducedInSenateBills,
-            as: 'introducedInSenateBills',
-                            include: [
-                                {
-                                    model: Users,
-                                    as: 'user',
-                                    include: [
-                                        {
-                                            model: Employees,
-                                            as: 'employee',
-                                            attributes: ['id', 'firstName', 'lastName', 'userName'],
-                                        }
-                                    ]
-                                },
-                                {
-                                    model: db.parliamentaryYears,
-                                    as: 'parliamentaryYears'
-                                },
-                                {
-                                    model: db.parliamentaryYearsMna,
-                                    as: 'mnaParliamentaryYears'
-                                },
-                                {
-                                    model: db.tenures,
-                                    as: 'tenures'
-                                },
-                                {
-                                    model: db.tenuresMinister,
-                                    as: 'tenuresMinisters'
-                                },
-                                {
-                                    model: db.terms,
-                                    as: 'terms'
-                                },
-                                {
-                                    model: db.sessions,
-                                    as: 'sessions'
-                                },
-                                {
-                                    model: db.billStatuses,
-                                    as: 'billStatuses'
-                                },
-                                {
-                                    model: db.senateBillSenatorMovers,
-                                    as: 'senateBillSenatorMovers',
-                                    include: [
-                                        { model: db.members, as: 'member' }
-                                    ]
-                                },
-                                {
-                                    model: db.senateBillMinistryMovers,
-                                    as: 'senateBillMinistryMovers',
-                                    include: [
-                                        { model: db.ministries, as: 'ministries' }
-                                    ]
-                                },
-                                {
-                                    model: db.senateBillMnaMovers,
-                                    as: 'senateBillMnaMovers',
-                                    include: [
-                                        { model: db.mnas, as: 'mna' }
-                                    ]
-                                },
-                                {
-                                    model: db.introducedInHouses,
-                                    as: 'introducedInHouses',
-                                    include: [
-                                        { model: db.sessions, as: 'sessions' },
-                                        { model: db.manageCommittees, as: 'manageCommittees' },
-                                        { model: db.manageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
-                                    ]
-                                },
-                                {
-                                    model: db.memberPassages,
-                                    as: 'memberPassages',
-                                    include: [
-                                        { model: db.sessions, as: 'sessions' }
-                                    ]
-                                },
-                                {
-                                    model: db.billDocuments,
-                                    as: 'billDocuments'
-                                }
-                            ],
+            model: db.financeMoneyBills,
+            as: 'financeMoneyBills',
+                include: [
+                    {
+                        model: Users,
+                        as: 'user',
+                        include: [
+                            {
+                                model: Employees,
+                                as: 'employee',
+                                attributes: ['id', 'firstName', 'lastName', 'userName'],
+                            }
+                        ]
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears'
+                    },
+                    {
+                        model: db.parliamentaryYearsMna,
+                        as: 'mnaParliamentaryYears'
+                    },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    {
+                        model: db.tenuresMinister,
+                        as: 'tenuresMinisters'
+                    },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
+                    {
+                        model: db.sessions,
+                        as: 'sessions'
+                    },
+                    {
+                        model: db.billStatuses,
+                        as: 'billStatuses'
+                    },
+                    {
+                        model: db.senateBillSenatorMovers,
+                        as: 'senateBillSenatorMovers',
+                        include: [
+                            { model: db.members, as: 'member' }
+                        ]
+                    },
+                    {
+                        model: db.senateBillMinistryMovers,
+                        as: 'senateBillMinistryMovers',
+                        include: [
+                            { model: db.ministries, as: 'ministries' }
+                        ]
+                    },
+                    {
+                        model: db.senateBillMnaMovers,
+                        as: 'senateBillMnaMovers',
+                        include: [
+                            { model: db.mnas, as: 'mna' }
+                        ]
+                    },
+                    {
+                        model: db.introducedInHouses,
+                        as: 'introducedInHouses',
+                        include: [
+                            { model: db.sessions, as: 'sessions' },
+                            { model: db.manageCommittees, as: 'manageCommittees' },
+                            { model: db.manageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
+                        ]
+                    },
+                    {
+                        model: db.memberPassages,
+                        as: 'memberPassagesFinance',  // Changed from 'memberPassages'
+                        include: [
+                            { model: db.sessions, as: 'sessions' }
+                        ],
+                        attributes: ['id', 'memeberStatus', 'memeberNoticeDate', 'dateOfConsiderationBill', 'fkSessionMemberPassageId', 'fkFinanceMemberPassageId'] // Explicitly include all needed fields
+                    },
+                    {
+                        model: db.billDocuments,
+                        as: 'billDocuments'
+                    }
+                ],
           },
           {
             model: Users,
@@ -1693,14 +1694,14 @@ if (assignedRemarks?.billDocuments && assignedRemarks?.billDocuments.length > 0)
 }
   
       const billMap = assignedRemarks.reduce((acc, remark) => {
-        if (remark.introducedInSenateBills) {
-          if (!acc[remark.introducedInSenateBills.id]) {
-            acc[remark.introducedInSenateBills.id] = {
-              ...remark.introducedInSenateBills.dataValues,
+        if (remark.financeMoneyBills) {
+          if (!acc[remark.financeMoneyBills.id]) {
+            acc[remark.financeMoneyBills.id] = {
+              ...remark.financeMoneyBills.dataValues,
               remarks: []
             };
           }
-          acc[remark.introducedInSenateBills.id].remarks.push(remark);
+          acc[remark.financeMoneyBills.id].remarks.push(remark);
         }
         return acc;
       }, {});
@@ -1719,6 +1720,363 @@ if (assignedRemarks?.billDocuments && assignedRemarks?.billDocuments.length > 0)
       throw new Error('Failed to fetch assigned government bills with remarks');
     }
   },
+
+  getLegislativeBillRemarksService: async ({ fkLegislativeBillId, userId, category }) => {
+    try {
+      const remarks = await TranslationRemarks.findAll({
+        where: { 
+          fkLegislativeBillId, 
+          category: category || 'LegislativeBill_FromNotice'
+        },
+        include: [
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[{
+                model: db.designations,
+                as: 'designations',
+                attributes: ['id', 'designationName', 'designationStatus']
+              }]
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName'],
+              include:[{
+                model: db.designations,
+                as: 'designations',
+                attributes: ['id', 'designationName', 'designationStatus']
+              }]
+            }]
+          },
+          {
+            model: db.legislativeBills,
+            as: 'legislativeBills'
+          }
+        ],
+        order: [['createdAt', 'ASC']]
+      });
+  
+      // Parse comments and fetch user details
+      for (const remark of remarks) {
+        if (typeof remark.comment === 'string') {
+          remark.comment = JSON.parse(remark.comment);
+        }
+  
+        if (Array.isArray(remark.comment)) {
+          for (const commentObj of remark.comment) {
+            if (!commentObj.submittedBy || !commentObj.assignedTo) continue;
+  
+            // Fetch submitted user details
+            const submittedUser = await Users.findOne({
+              where: { id: parseInt(commentObj.submittedBy) },
+              attributes: ['id', 'email'],
+              include: [{
+                model: Employees,
+                as: 'employee',
+                attributes: ['firstName', 'lastName', 'userName'],
+                include: [{
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }]
+              }]
+            });
+  
+            // Fetch assigned user details
+            const assignedUser = await Users.findOne({
+              where: { id: parseInt(commentObj.assignedTo) },
+              attributes: ['id', 'email'],
+              include: [{
+                model: Employees,
+                as: 'employee',
+                attributes: ['firstName', 'lastName', 'userName'],
+                include: [{
+                  model: db.designations,
+                  as: 'designations',
+                  attributes: ['id', 'designationName', 'designationStatus']
+                }]
+              }]
+            });
+  
+            // Attach user details to comment
+            commentObj.submittedUser = submittedUser;
+            commentObj.assignedUser = assignedUser;
+          }
+        }
+      }
+  
+      return remarks;
+    } catch (error) {
+      console.error('Error in getGovernmentBillRemarksService:', error);
+      throw error;
+    }
+  },
+
+  getAllLegislativeBillsWithRemarks: async (userId, category, currentPage = 0, pageSize = 10) => {
+    try {
+      const offset = currentPage * pageSize;
+      const limit = pageSize;
+  
+      // Build where clause conditionally
+      const whereClause = {
+        ...(userId && { assignedTo: userId }),
+        ...(category && { category })
+      };
+  
+      const { count, rows: assignedRemarks } = await TranslationRemarks.findAndCountAll({
+        where: whereClause,
+        attributes: ['id', 'fkLegislativeBillId', 'comment', 'priority', 'createdAt', 'category'],
+        include: [
+          {
+            model: db.legislativeBills,
+            as: 'legislativeBills',
+include: [
+                    {
+                        model: Users,
+                        as: 'user',
+                        include: [
+                            {
+                                model: db.employees,
+                                as: 'employee',
+                                attributes: ['id', 'firstName', 'lastName', 'userName'],
+                            }
+                        ]
+                    },
+                    {
+                        model: db.parliamentaryYears,
+                        as: 'parliamentaryYears'
+                    },
+                    // {
+                    //     model: db.parliamentaryYearsMna,
+                    //     as: 'mnaParliamentaryYears'
+                    // },
+                    {
+                        model: db.tenures,
+                        as: 'tenures'
+                    },
+                    // {
+                    //     model: db.tenuresMinister,
+                    //     as: 'tenuresMinisters'
+                    // },
+                    {
+                        model: db.terms,
+                        as: 'terms'
+                    },
+                    {
+                        model: db.sessions,
+                        as: 'session',
+                        attributes: ['sessionName']
+                    },
+                    {
+                        model: db.billStatuses,
+                        as: 'billStatuses'
+                    },
+                    {
+                        model: db.members,
+                        as: 'member',
+                        attributes: ['id','memberName'] // Include only the member name
+                    },
+                    {
+                        model: db.legislationMovers,
+                        as: 'legislationMovers',
+                        attributes: ['id', 'fkMemberId'],
+                        include: [
+                            {
+                                model: db.members,
+                                as: 'member',
+                                attributes: ['id', 'memberName']
+                            }
+                        ]
+                    },
+                    {
+                        model: db.introducedInHouses,
+                        as: 'introducedInHousesLegis',
+                        include: [
+                            { model: db.sessions, as: 'sessions' },
+                            { model: db.manageCommittees, as: 'manageCommittees' },
+                            { model: db.manageCommitteeRecomendations, as: 'manageCommitteeRecomendations' }
+                        ]
+                    },
+                    {
+                        model: db.memberPassages,
+                        as: 'memberPassagesLegis',
+                        include: [
+                            { model: db.sessions, as: 'sessions' }
+                        ]
+                    },
+                    {
+                        model: db.billDocuments,
+                        as: 'billDocumentsLegis'
+                    }
+                ],
+          },
+          {
+            model: Users,
+            as: 'submittedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          },
+          {
+            model: Users,
+            as: 'assignedUser',
+            attributes: ['id', 'email'],
+            include: [{
+              model: Employees,
+              as: 'employee',
+              attributes: ['firstName', 'lastName', 'userName']
+            }]
+          }
+        ],
+        offset,
+        limit,
+        distinct: true,
+        order: [['createdAt', 'DESC']],
+      });
+
+                  // Parse and sort the files in billDocuments
+if (assignedRemarks?.billDocumentsLegis && assignedRemarks?.billDocumentsLegis.length > 0) {
+  assignedRemarks?.billDocumentsLegis.forEach(doc => {
+      if (doc.file) {
+          doc.file = doc.file.map(file => JSON.parse(file));
+      }
+  });
+  
+  // Sort billDocumentsLegis in descending order
+  // Assuming there's a createdAt field, adjust the field name if different
+  assignedRemarks?.billDocumentsLegis.sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+}
+  
+      // Extract unique legislative bills and store directly in `data`
+    const data = assignedRemarks.reduce((acc, remark) => {
+      const bill = remark.legislativeBills;
+      if (bill && !acc.some(item => item.id === bill.id)) {
+        acc.push(bill); // Push bill object directly inside data
+      }
+      return acc;
+    }, []);
+  
+      const totalPages = Math.ceil(count / pageSize);
+  
+      return {
+        count,
+        totalPages,
+        currentPage,
+        pageSize,
+        data
+      };
+    } catch (error) {
+      console.error('Error in getAllGovernmentBillsWithRemarks:', error);
+      throw new Error('Failed to fetch assigned government bills with remarks');
+    }
+  },
+
+  getDashboardStats: async (userId) => {
+    try {
+      const whereClause = userId ? { assignedTo: userId } : {};
+  
+      const categories = [
+        "Question",
+        "Motion",
+        "Resolution",
+        "GovernmentBill_FromNA",
+        "GovernmentBill_FromSenate",
+        "PrivateBill_FromNA",
+        "PrivateBill_FromSenate",
+        "FinanceGovernmentBill_FromNA",
+        "LegislativeBill_FromNotice",
+      ];
+  
+      const countPromises = categories.map(category => 
+        TranslationRemarks.count({ where: { ...whereClause, category } })
+      );
+  
+      const counts = await Promise.all(countPromises);
+  
+      // Construct response object dynamically
+      const stats = categories.reduce((acc, category, index) => {
+        acc[category] = counts[index];
+        return acc;
+      }, {});
+  
+      return stats;
+  
+    } catch (error) {
+      console.error("Error in getDashboardStats:", error);
+      throw new Error("Failed to fetch translation stats");
+    }
+  },
+
+  sendToSpecificBranchFromTranslation: async (type, id) => {
+    try {
+      let model, updateFields, fkField;
+  
+      switch (type) {
+        case 'motion':
+          model = db.motions;
+          updateFields = { motionSentStatus: "toMotion", isTranslated: true };
+          fkField = "fkMotionId";
+          break;
+        case 'question':
+          model = db.questions;
+          updateFields = { questionSentStatus: "inQuestion", isTranslated: true };
+          fkField = "fkQuestionId";
+          break;
+        case 'resolution':
+          model = db.resolutions;
+          updateFields = { resolutionSentStatus: "inResolution", isTranslated: true };
+          fkField = "fkResolutionId";
+          break;
+        case 'legislation_introducedBill':
+          model = db.introducedInSenateBills;
+          updateFields = { introducedBillSentStatus: "inLegislation", isTranslated: true };
+          fkField = "fkIntroducedInSenateId";
+          break;
+        case 'legislation_financeBill':
+          model = db.financeMoneyBills;
+          updateFields = { financeMoneyBillSentStatus: "inLegislation", isTranslated: true };
+          fkField = "fkFinanceMoneyBillId";
+          break;
+        case 'legislation_legislativeBill':
+          model = db.legislativeBills;
+          updateFields = { legislativeSentStatus: "toLegislation", isTranslated: true };
+          fkField = "fkLegislativeBillId";
+          break;
+        default:
+          throw new Error("Invalid type provided.");
+      }
+  
+      // Update the main record
+      const updateResult = await model.update(updateFields, { where: { id } });
+      if (updateResult[0] === 0) return null; // No rows updated
+  
+      // Remove entry from TranslationRemarks if exists
+      await db.translationRemarks.destroy({
+        where: { [fkField]: id }
+      });
+  
+      return await model.findOne({ where: { id } }); // Return updated record
+    } catch (error) {
+      throw new Error(error.message || "Error Sending Data For Translation!");
+    }
+  }
+  
 };
 
 module.exports = translationServices;

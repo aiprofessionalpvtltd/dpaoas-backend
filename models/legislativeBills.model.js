@@ -182,6 +182,11 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true,
             defaultValue: 'Senators'
         },
+        isTranslated: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: false,
+            allowNull: true,
+        },
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
     });
@@ -200,6 +205,11 @@ module.exports = (sequelize, Sequelize) => {
         LegislativeBills.hasOne(models.memberPassages, { foreignKey: 'fkLegisMemberPassageId', as: 'memberPassagesLegis' });
         LegislativeBills.hasMany(models.billDocuments, { foreignKey: 'fkLegisBillDocumentId', as: 'billDocumentsLegis' });
         LegislativeBills.belongsTo(models.users, { foreignKey: 'fkUserId', as: 'user' });
+
+        LegislativeBills.hasMany(models.translationRemarks, { 
+            as: "translationRemarks", 
+            foreignKey: "fkLegislativeBillId" 
+        });
     };
 
     return LegislativeBills;

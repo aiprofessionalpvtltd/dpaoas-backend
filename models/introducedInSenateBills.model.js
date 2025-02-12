@@ -182,6 +182,11 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             allowNull: true
         },
+        isTranslated: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: false,
+            allowNull: true,
+        },
     });
 
     IntroducedInSenateBill.associate = function (models) {

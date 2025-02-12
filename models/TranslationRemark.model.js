@@ -16,6 +16,7 @@ module.exports = (sequelize, Sequelize) => {
         "PrivateBill_FromNA",
         "PrivateBill_FromSenate",
         "FinanceGovernmentBill_FromNA",
+        "LegislativeBill_FromNotice",
       ),
       // defaultValue: 'Question',
       allowNull: false,
@@ -81,6 +82,14 @@ comment: {
         key: "id",
       },
     },
+    fkLegislativeBillId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: "legislativeBills",
+        key: "id",
+      },
+    },
     priority: {
       type: Sequelize.ENUM("Confidential", "Immediate", "Routine"),
       defaultValue: "Immediate",
@@ -118,6 +127,10 @@ comment: {
     translationRemarks.belongsTo(models.financeMoneyBills, {
         foreignKey: "fkFinanceMoneyBillId",
         as: "financeMoneyBills",
+      });
+      translationRemarks.belongsTo(models.legislativeBills, {
+        foreignKey: "fkLegislativeBillId",
+        as: "legislativeBills",
       });
   };
 

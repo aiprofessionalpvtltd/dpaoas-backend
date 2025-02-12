@@ -40,7 +40,7 @@ const getBranchHierarchy = async (req, res) => {
   try {
     console.log("getBranchHierarchy", req.params);  
     
-      const branchId = req.params.branchId;
+      const branchId = 8;
       const loggedInUserId = req.params.userId; 
       logger.info(
           `translationController: getBranchHierarchy branchId ${branchId}, loggedInUserId ${loggedInUserId}`
@@ -530,6 +530,154 @@ const getAllFinanceMoneyBillRemarks = async (req, res) => {
   }
 };
 
+const getLegislativeBillRemarks = async (req, res) => {
+  try {
+    const { fkLegislativeBillId, userId } = req.params;
+    const category = 'LegislativeBill_FromNotice';
+
+    if (!fkLegislativeBillId || !userId) {
+      return res.status(400).json({
+        message: "Missing required fields: fkLegislativeBillId and userId",
+      });
+    }
+
+    const remarks = await translationServices.getLegislativeBillRemarksService({ 
+      fkLegislativeBillId, 
+      userId,
+      category
+    });
+
+    if (!remarks || remarks.length === 0) {
+      return res.status(201).json({
+        success: true,  
+        message: "No remarks found for this Legislative bill.",
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,  
+      message: "Legislative bill remarks fetched successfully.",
+      data: remarks,
+    });
+  } catch (error) {
+    console.error("Error in getLegislativeBillRemarks:", error);
+    return res.status(500).json({
+      success: false,  
+      message: error.message || "Internal server error.",
+      data: []
+    });
+  }
+};
+
+const getAllLegislativeBillRemarks = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const category = 'LegislativeBill_FromNotice';
+    const currentPage = parseInt(req.query.currentPage) || 0;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const result = await translationServices.getAllLegislativeBillsWithRemarks(
+      userId,
+      category,
+      currentPage,
+      pageSize
+    );
+
+    if (!result.data || result.data.length === 0) {
+      return res.status(201).json({
+        message: "No assigned legislative bills found.",
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,  
+      message: "Assigned legislative bills and remarks fetched successfully.",
+      ...result
+    });
+  } catch (error) {
+    console.error("Error in getAllLegislativeBillRemarks:", error);
+    return res.status(500).json({
+      success: false,  
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
+const getDashboardStats = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const result = await translationServices.getDashboardStats(userId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Translation stats fetched successfully.",
+      data: result
+    });
+
+  } catch (error) {
+    console.error("Error in getDashboardStats:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error.",
+    });
+  }
+};
+
+const sendToSpecificBranchFromTranslation = async (req, res) => {
+  try {
+    const { type, id } = req.params;
+    logger.info(`TranslationController: sendToSpecificBranchFromTranslation type=${type} id=${id}`);
+
+    const validTypes = [
+      'question',
+      'motion',
+      'resolution',
+      'legislation_introducedBill',
+      'legislation_financeBill',
+      'legislation_legislativeBill'
+    ];
+
+    if (!validTypes.includes(type)) {
+      return res.status(400).send({
+        success: false,
+        message: `Invalid type provided. Use one of: ${validTypes.join(', ')}`,
+      });
+    }
+
+    if (!id) {
+      return res.status(400).send({
+        success: false,
+        message: `Invalid or undefined id for type: ${type}`,
+      });
+    }
+
+    const result = await translationServices.sendToSpecificBranchFromTranslation(type, id);
+
+    if (result) {
+      logger.info("Sent to specific branch successfully!");
+      return res.status(200).send({
+        success: true,
+        message: `Sent to specific branch successfully!`,
+        data: result,
+      });
+    } else {
+      return res.status(400).send({
+        success: false,
+        message: "No rows were updated. Check if the record with the provided ID exists.",
+      });
+    }
+  } catch (error) {
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getTranslationRemarks,
   getBranchHierarchy,
@@ -546,5 +694,9 @@ module.exports = {
   getAllGovernmentBillRemarks,
   getFinanceMoneyBillRemarks,
   getAllFinanceMoneyBillRemarks,
+  getLegislativeBillRemarks,
+  getAllLegislativeBillRemarks,
+  getDashboardStats,
+  sendToSpecificBranchFromTranslation
 };
 
