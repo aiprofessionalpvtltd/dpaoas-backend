@@ -518,6 +518,14 @@ if (rows.billDocuments && rows.billDocuments.length > 0) {
                     filterOptions.billType = filters.billType;
                 }
 
+                if (filters.introducedBillSentStatus) {
+                    filterOptions.introducedBillSentStatus = filters.introducedBillSentStatus;
+                }
+
+                if (filters.fkTermId) {
+                    filterOptions.fkTermId = filters.fkTermId;
+                }
+
                 if (filters && filters.fkManageCommitteeId) {
                     includeOptions.push({
                         model: IntroducedInHouses,
