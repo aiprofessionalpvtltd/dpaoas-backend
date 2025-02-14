@@ -164,7 +164,7 @@ DPAOAS-Backend/
 This project is licensed under the [MIT License](LICENSE)
 
 ## Support
-For support, please contact [your-email@example.com]
+For support, Come to Senate
 
 ---
 **Note**: This README should be updated as the project evolves. For detailed technical documentation, please refer to the Swagger documentation available at `/api-docs`.
