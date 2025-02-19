@@ -5,18 +5,6 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             autoIncrement: true,
         },
-        sittingId: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
-        sittingLabel: {
-            type: Sequelize.STRING,
-            allowNull: false
-        },
-        content: {
-            type: Sequelize.STRING,
-            allowNull: false
-        },
         fkSessionId: {
             type: Sequelize.INTEGER,
             allowNull: false,
@@ -24,6 +12,26 @@ module.exports = (sequelize, Sequelize) => {
                 model: 'sessions',
                 key: 'id'
             }
+        },
+        sittingId: {
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
+        sittingDate: {
+            type: Sequelize.STRING, // Accepting as a string
+            allowNull: false
+        },
+        sittingTime: {
+            type: Sequelize.STRING, // Accepting as a string
+            allowNull: false
+        },
+        isMonday: {
+            type: Sequelize.BOOLEAN, // Accepting as a string
+            allowNull: false
+        },
+        content: {
+            type: Sequelize.JSON, // Changed from STRING to JSON
+            allowNull: false
         }
     });
 
