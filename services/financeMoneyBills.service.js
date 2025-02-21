@@ -526,6 +526,11 @@ const senateBillService = {
                     filterOptions.noticeDate = { [Sequelize.Op.lte]: new Date(filters.noticeDateTo) };
                 }
 
+
+                if (filters.financeMoneyBillSentStatus) {
+                    filterOptions.financeMoneyBillSentStatus = filters.financeMoneyBillSentStatus;
+                }
+
                 if (filters && filters.introducedInHouseDate) {
                     const introducedInHouseDate = new Date(filters.introducedInHouseDate);
 
