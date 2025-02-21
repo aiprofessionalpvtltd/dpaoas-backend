@@ -388,6 +388,8 @@ router.get("/:id", resolution.findSingleResolution);
  */
 router.put("/sendTranslation/:id", resolution.sendTranslation);
 
+router.put('/sendForLegislation/:id', resolution.sendForLegislation);
+
 //Sent To Resolution Branch From Notice Branch
 /**
  * @swagger

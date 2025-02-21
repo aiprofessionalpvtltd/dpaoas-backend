@@ -898,6 +898,36 @@ const resolutionController = {
         }
     },
 
+     // Send For sendForLegislation
+  sendForLegislation: async (req, res) => {
+    try {
+      const { body, params } = req;
+      const { id } = params;
+      logger.info(`ResolutionController: sendForLegislation id ${id}`);
+      const result = await resolutionService.sendForLegislation(id);
+      if (result) {
+        logger.info("Sent to legislation Successful!");
+        return res.status(201).send({
+          success: true,
+          message: `Sent to legislation successful!`,
+          data: { result },
+        });
+      } else {
+        return res.status(400).send({
+          success: false,
+          message:
+            "No rows were updated. Check if the record with the provided ID exists",
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
     // Send To Resolution
     sendToResolution: async (req, res) => {
         try {

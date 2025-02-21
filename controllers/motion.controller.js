@@ -625,6 +625,7 @@ const MotionController = {
     try {
       const currentPage = parseInt(req.query.currentPage);
       const pageSize = parseInt(req.query.pageSize);
+
       const { count, totalPages, motions } = await motionService.findAllBallotingMotions(currentPage, pageSize);
 
       if (motions.length === 0) {
@@ -909,6 +910,36 @@ const MotionController = {
         return res.status(201).send({
           success: true,
           message: `Send for translation successful!`,
+          data: { result },
+        });
+      } else {
+        return res.status(400).send({
+          success: false,
+          message:
+            "No rows were updated. Check if the record with the provided ID exists",
+        });
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
+  // Send For sendForLegislation
+  sendForLegislation: async (req, res) => {
+    try {
+      const { body, params } = req;
+      const { id } = params;
+      logger.info(`MotionController: sendForLegislation id ${id}`);
+      const result = await motionService.sendForLegislation(id);
+      if (result) {
+        logger.info("Sent to legislation Successful!");
+        return res.status(201).send({
+          success: true,
+          message: `Sent to legislation successful!`,
           data: { result },
         });
       } else {

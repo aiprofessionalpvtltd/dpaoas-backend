@@ -143,7 +143,7 @@ module.exports = (sequelize, Sequelize) => {
         },
 
         resolutionSentStatus: {
-            type: Sequelize.ENUM("inResolution", "toResolution", "inNotice", "toTranslation"),
+            type: Sequelize.ENUM("inResolution", "toResolution", "inNotice", "toTranslation", "toLegislation"),
             defaultValue: "inNotice",
         },
 

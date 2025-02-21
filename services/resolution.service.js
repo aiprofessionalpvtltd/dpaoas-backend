@@ -379,7 +379,8 @@ const resolutionService = {
             let whereClause = {
                 fkResolutionStatus: {
                     [Op.in]: db.sequelize.literal(`(SELECT "id" FROM "resolutionStatuses" WHERE "resolutionStatus" = 'balloting')`)
-                }
+                },
+                resolutionSentStatus: ["inResolution", "toResolution"]
             };
 
 
@@ -2125,6 +2126,23 @@ const resolutionService = {
             throw { message: error.message || "Error Sending Resolution To Translation!" };
         }
     },
+
+    // Send For sendForLegislation
+  sendForLegislation: async (id) => {
+    try {
+      const UpdateMotion = await resolution.update(
+        {
+          resolutionSentStatus: "toLegislation"
+        },
+        {
+          where: { id: id },
+        }
+      );
+      return UpdateMotion;
+    } catch (error) {
+      console.error("Error Fetching Ministries:", error.message);
+    }
+  },
 
     // Send To Resolution
     sendToResolution: async (req, resolutionId) => {

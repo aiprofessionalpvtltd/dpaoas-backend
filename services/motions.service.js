@@ -1051,7 +1051,8 @@ const motionService = {
       let whereClause = {
         fkMotionStatus: {
           [Op.in]: db.sequelize.literal(`(SELECT "id" FROM "motionStatuses" WHERE "statusName" = 'balloting')`)
-        }
+        },
+        motionSentStatus: ["inMotion", "toMotion"]
       };
 
       const { count, rows } = await motions.findAndCountAll({
@@ -1577,6 +1578,23 @@ const motionService = {
         {
           sentForTranslation: true,
           motionSentStatus: "toTranslation"
+        },
+        {
+          where: { id: id },
+        }
+      );
+      return UpdateMotion;
+    } catch (error) {
+      console.error("Error Fetching Ministries:", error.message);
+    }
+  },
+
+  // Send For sendForLegislation
+  sendForLegislation: async (id) => {
+    try {
+      const UpdateMotion = await motions.update(
+        {
+          motionSentStatus: "toLegislation"
         },
         {
           where: { id: id },

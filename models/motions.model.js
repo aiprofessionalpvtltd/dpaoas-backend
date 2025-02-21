@@ -118,7 +118,7 @@ module.exports = (sequelize, Sequelize) => {
 
 
         motionSentStatus: {
-            type: Sequelize.ENUM("inMotion", "toMotion", "inNotice", "toTranslation"),
+            type: Sequelize.ENUM("inMotion", "toMotion", "inNotice", "toTranslation", "toLegislation"),
             defaultValue: "inNotice",
         },
 

@@ -411,6 +411,9 @@ router.put('/:id', uploadFile('motion'), motionController.updateMotion);
  */
 router.put('/sendForTranslation/:id', motionController.sendForTranslation);
 
+// Send to Legislation
+router.put('/sendForLegislation/:id', motionController.sendForLegislation);
+
 /**
  * @swagger
  * /api/motion/sendToMotion/{id}:
