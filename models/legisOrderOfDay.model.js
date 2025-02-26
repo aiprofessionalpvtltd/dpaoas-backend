@@ -29,6 +29,10 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.BOOLEAN, // Accepting as a string
             allowNull: false
         },
+        sentStatus: {
+            type: Sequelize.ENUM("inLegislation", "toTranslation"),
+            defaultValue: "inLegislation",
+        },
         content: {
             type: Sequelize.JSON, // Changed from STRING to JSON
             allowNull: false

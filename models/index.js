@@ -262,6 +262,7 @@ db.tonerInstallations = require("./tonerInstallation.model")(
 // Question Management
 db.tenures = require("./tenures.model")(sequelize, SequelizeMain);
 db.tenuresMinister = require("./tenuresMinister.model.js")(sequelize, SequelizeMain);
+db.parliamentaryAffairsReports = require("./parliamentaryAffairsReports.model.js")(sequelize, SequelizeMain);
 db.years = require("./years.model")(sequelize, SequelizeMain);
 
 db.terms = require("./terms.model")(sequelize, SequelizeMain);
@@ -1761,6 +1762,20 @@ db.legislativeBills.hasOne(db.memberPassages, {
 db.financeMoneyBills.hasOne(db.memberPassages, {
   foreignKey: 'fkFinanceMemberPassageId',
   as: 'memberPassagesFinance'
+});
+
+// Parliamentary Affairs Reports
+db.parliamentaryAffairsReports.belongsTo(db.tenuresMinister, {
+  foreignKey: "ministerTenureId", as: "tenuresMinisters"
+});
+db.parliamentaryAffairsReports.belongsTo(db.parliamentaryYearsMna, {
+  foreignKey: "ministerParliamentaryYearId", as: "parliamentaryYearsMna"
+});
+db.parliamentaryAffairsReports.belongsTo(db.mnas, {
+  foreignKey: "ministerId", as: "minister"
+});
+db.parliamentaryAffairsReports.belongsTo(db.ministries, {
+  foreignKey: "ministryId", as: "ministry"
 });
 
 sequelize.sync();

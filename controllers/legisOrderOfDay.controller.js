@@ -133,3 +133,51 @@ exports.delete = async (req, res) => {
         });
     }
 };
+
+exports.sendToTranslation = async (req, res) => {
+    try {
+        const updated = await legisOrderOfDayService.sendToTranslation(req.params.id);
+        if (updated[0] === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Order not found or no changes made",
+                data: null
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Order status updated to Translation successfully"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message
+        });
+    }
+};
+
+exports.sendToLegislation = async (req, res) => {
+    try {
+        const updated = await legisOrderOfDayService.sendToLegislation(req.params.id);
+        if (updated[0] === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Order not found or no changes made",
+                data: null
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Order status updated to Legislation successfully"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message
+        });
+    }
+};

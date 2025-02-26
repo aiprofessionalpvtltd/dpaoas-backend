@@ -135,6 +135,10 @@ const ministriesRoutes = require("./routes/ministries.route");
 // Order of day (Legis)
 const legisOrderOfDayRouter = require("./routes/legisOrderOfDay.route");
 
+// parliamentaryAffairsReports
+const parliamentaryAffairsReports = require('./routes/parliamentaryAffairsReports.route')
+
+
 // app.use((err, req, res, next) => {
 //   console.log("error", err);
 //   if (err && err.error && err.error.isJoi) {
@@ -316,6 +320,9 @@ app.use("/api/approvedCaseNotifications", approvedCaseNotificationRouter);
 
 // Order of day (Legis)
 app.use("/api/legisOrderOfDay", legisOrderOfDayRouter);
+
+// parliamentaryAffairsReports
+app.use("/api/parliamentaryAffairsReports", parliamentaryAffairsReports);
 
 app.use(
   '/assets',

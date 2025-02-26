@@ -75,3 +75,17 @@ exports.delete = async (id) => {
         where: { id }
     });
 };
+
+exports.sendToTranslation = async (id) => {
+    return await LegisOrderOfDay.update(
+        { sentStatus: "toTranslation" },
+        { where: { id } }
+    );
+};
+
+exports.sendToLegislation = async (id) => {
+    return await LegisOrderOfDay.update(
+        { sentStatus: "inLegislation" },
+        { where: { id } }
+    );
+};

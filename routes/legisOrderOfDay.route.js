@@ -8,5 +8,7 @@ router.get("/:id", legisOrderOfDayController.findOne);
 router.get("/session/:sessionId", legisOrderOfDayController.findBySession);
 router.put("/update/:id", legisOrderOfDayController.update);
 router.delete("/delete/:id", legisOrderOfDayController.delete);
+router.put("/sendToTranslation/:id", legisOrderOfDayController.sendToTranslation);
+router.put("/sendToLegislation/:id", legisOrderOfDayController.sendToLegislation);
 
 module.exports = router;
