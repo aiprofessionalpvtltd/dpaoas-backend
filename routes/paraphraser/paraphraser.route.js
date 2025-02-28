@@ -37,10 +37,14 @@ const router = express.Router();
  *                   type: string
  *                   example: "This is the original text."
  *                 paraphrased:
- *                   type: array
- *                   items:
- *                     type: string
- *                   example: ["This is a paraphrased version.", "Another paraphrased option."]
+ *                   type: object
+ *                   properties:
+ *                     option1:
+ *                       type: string
+ *                     option2:
+ *                       type: string
+ *                     option3:
+ *                       type: string
  *       400:
  *         description: Bad request
  *         content:
@@ -82,10 +86,17 @@ router.post("/", async (req, res) => {
     // Generate multiple paraphrasing options
     const paraphrasedOptions = await paraphraseText(text);
     
+    // Convert array to object with keys
+    const paraphrasedObject = {
+      option1: paraphrasedOptions[0] || "",
+      option2: paraphrasedOptions[1] || "",
+      option3: paraphrasedOptions[2] || ""
+    };
+    
     return res.status(200).json({
       success: true,
       original: text,
-      paraphrased: paraphrasedOptions
+      paraphrased: paraphrasedObject
     });
     
   } catch (error) {
