@@ -138,6 +138,11 @@ const legisOrderOfDayRouter = require("./routes/legisOrderOfDay.route");
 // parliamentaryAffairsReports
 const parliamentaryAffairsReports = require('./routes/parliamentaryAffairsReports.route')
 
+// for parapharaser
+const paraphraserRouter = require("./routes/paraphraser/paraphraser.route");
+
+app.use("/api/paraphraser", paraphraserRouter);
+
 
 // app.use((err, req, res, next) => {
 //   console.log("error", err);
