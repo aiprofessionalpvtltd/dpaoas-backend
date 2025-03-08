@@ -3,6 +3,33 @@ const router = express.Router();
 const complaints = require('../controllers/complaints.controller');
 const { uploadFile } = require('../common/upload');
 
+
+// Get Complaints Count By Status and Category
+/**
+ * @swagger
+ * /api/complaints/counts:
+ *   get:
+ *     summary: Get complaints count by status and category
+ *     tags: [Complaints]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: fromDate
+ *         schema:
+ *           type: string
+ *         description: Start date for filtering (format YYYY-MM-DD)
+ *       - in: query
+ *         name: toDate
+ *         schema:
+ *           type: string
+ *         description: End date for filtering (format YYYY-MM-DD)
+ *     responses:
+ *       '200':
+ *         description: A successful response with counts
+ */
+router.get("/counts", complaints.getComplaintsCounts)
+
 // Issue Complaint
 /**
  * @swagger

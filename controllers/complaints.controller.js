@@ -256,7 +256,7 @@ const complaintsController = {
     },
 
     // Update User Complaint
-    updateComplaint: async (req,res) => {
+    updateComplaint: async (req, res) => {
         try {
             logger.info(`ComplaintController: updateComplaint id ${JSON.stringify(req.params.id)} and body ${JSON.stringify(req.body)}`)
             const complaintId = req.params.id;
@@ -494,6 +494,30 @@ const complaintsController = {
                 }
             });
 
+        } catch (error) {
+            logger.error(error.message);
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+    // Get Complaints Count By Status and Category
+    getComplaintsCounts: async (req, res) => {
+        try {
+            logger.info(`ComplaintController: getComplaintsCounts query ${JSON.stringify(req.query)}`);
+            const { fromDate, toDate } = req.query;
+
+            // Call the service method to get the counts
+            const counts = await complaintsService.getComplaintsCounts(fromDate, toDate);
+
+            logger.info("Complaint counts fetched successfully!");
+            return res.status(200).send({
+                success: true,
+                message: "Complaint counts fetched successfully!",
+                data: counts
+            });
         } catch (error) {
             logger.error(error.message);
             return res.status(400).send({
