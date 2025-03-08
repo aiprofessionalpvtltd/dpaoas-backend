@@ -586,7 +586,7 @@ const complaintsService = {
                     {
                         model: TonerModels,
                         as: 'tonerModels',
-                        attributes: ['id','tonerModel']
+                        attributes: ['id', 'tonerModel']
                     }
                 ],
             });
@@ -779,6 +779,88 @@ const complaintsService = {
             throw new Error(error.message || "Error Fetching All Employeed as IT Engineers");
         }
     },
+
+    // Get Complaints Count By Status and Category
+    getComplaintsCounts: async (fromDate, toDate) => {
+        try {
+            // Build the where clause based on date filters
+            let whereClause = {
+                status: 'active' // Only count active complaints
+            };
+
+            if (fromDate && toDate) {
+                whereClause[Op.and] = [
+                    // Convert string dates to the format stored in the database
+                    db.Sequelize.where(
+                        db.Sequelize.fn('date', db.Sequelize.col('complaintIssuedDate')),
+                        '>=',
+                        fromDate
+                    ),
+                    db.Sequelize.where(
+                        db.Sequelize.fn('date', db.Sequelize.col('complaintIssuedDate')),
+                        '<=',
+                        toDate
+                    )
+                ];
+            }
+
+            // 1. Get count by status
+            const statusCounts = await Complaints.findAll({
+                attributes: [
+                    'complaintStatus',
+                    [db.Sequelize.fn('COUNT', db.Sequelize.col('complaintStatus')), 'count']
+                ],
+                where: whereClause,
+                group: ['complaintStatus'],
+                raw: true
+            });
+
+            // 2. Get count by category
+            const categoryCounts = await Complaints.findAll({
+                attributes: [
+                    [db.Sequelize.col('complaintCategory.id'), 'categoryId'],
+                    [db.Sequelize.col('complaintCategory.complaintCategoryName'), 'categoryName'],
+                    [db.Sequelize.fn('COUNT', db.Sequelize.col('complaints.id')), 'count']
+                ],
+                include: [{
+                    model: ComplaintCategories,
+                    as: 'complaintCategory',
+                    attributes: []
+                }],
+                where: whereClause,
+                group: ['complaintCategory.id', 'complaintCategory.complaintCategoryName'],
+                raw: true
+            });
+
+            // 3. Get total count
+            const totalCount = await Complaints.count({
+                where: whereClause
+            });
+
+            // Convert the status counts to a more user-friendly format
+            const formattedStatusCounts = {};
+            statusCounts.forEach(status => {
+                formattedStatusCounts[status.complaintStatus] = parseInt(status.count);
+            });
+
+            // Ensure all status types are represented in the response
+            const allStatuses = ['pending', 'in-progress', 'resolved', 'closed'];
+            allStatuses.forEach(status => {
+                if (!formattedStatusCounts[status]) {
+                    formattedStatusCounts[status] = 0;
+                }
+            });
+
+            return {
+                total: totalCount,
+                byStatus: formattedStatusCounts,
+                byCategory: categoryCounts
+            };
+        } catch (error) {
+            console.error(error);
+            throw new Error(error.message || "Error getting complaint counts");
+        }
+    }
 
 
 }
