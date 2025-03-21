@@ -18,15 +18,19 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false
         },
         sittingDate: {
-            type: Sequelize.STRING, // Accepting as a string
+            type: Sequelize.STRING,
             allowNull: false
         },
         sittingTime: {
-            type: Sequelize.STRING, // Accepting as a string
+            type: Sequelize.STRING,
             allowNull: false
         },
         isMonday: {
-            type: Sequelize.BOOLEAN, // Accepting as a string
+            type: Sequelize.BOOLEAN,
+            allowNull: false
+        },
+        actingSecretary: {
+            type: Sequelize.STRING,
             allowNull: false
         },
         sentStatus: {

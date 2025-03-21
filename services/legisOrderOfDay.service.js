@@ -9,13 +9,14 @@ exports.create = async (legisOrderOfDayData) => {
         sittingDate: legisOrderOfDayData.sittingDate,
         content: legisOrderOfDayData.content,
         fkSessionId: legisOrderOfDayData.fkSessionId,
-        isMonday: legisOrderOfDayData?.isMonday
+        isMonday: legisOrderOfDayData?.isMonday,
+        actingSecretary: legisOrderOfDayData?.actingSecretary
     });
 };
 
 exports.findAll = async () => {
     return await LegisOrderOfDay.findAll({
-        attributes: ["id", "sittingId", "sittingTime", "sittingDate", "content", "fkSessionId", "isMonday"],
+        attributes: ["id", "sittingId", "sittingTime", "sittingDate", "content", "fkSessionId", "isMonday", "actingSecretary"],
         include: [
             {
                 model: Session,
@@ -29,7 +30,7 @@ exports.findAll = async () => {
 exports.findOne = async (id) => {
     return await LegisOrderOfDay.findOne({
         where: { id },
-        attributes: ["id", "sittingId", "sittingTime", "sittingDate", "content", "fkSessionId", "isMonday"],
+        attributes: ["id", "sittingId", "sittingTime", "sittingDate", "content", "fkSessionId", "isMonday", "actingSecretary"],
         include: [
             {
                 model: Session,
@@ -43,7 +44,7 @@ exports.findOne = async (id) => {
 exports.findBySession = async (sessionId) => {
     return await LegisOrderOfDay.findAll({
         where: { fkSessionId: sessionId },
-        attributes: ["id", "sittingId", "sittingTime", "sittingDate", "content", "fkSessionId", "isMonday"],
+        attributes: ["id", "sittingId", "sittingTime", "sittingDate", "content", "fkSessionId", "isMonday", "actingSecretary"],
         include: [
             {
                 model: Session,
@@ -62,7 +63,8 @@ exports.update = async (id, legisOrderOfDayData) => {
             sittingDate: legisOrderOfDayData.sittingDate,
             content: legisOrderOfDayData.content,
             fkSessionId: legisOrderOfDayData.fkSessionId,
-            isMonday: legisOrderOfDayData?.isMonday
+            isMonday: legisOrderOfDayData?.isMonday,
+            actingSecretary: legisOrderOfDayData?.actingSecretary
         },
         {
             where: { id }
