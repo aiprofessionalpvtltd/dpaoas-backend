@@ -2,7 +2,7 @@ const legisOrderOfDayService = require("../services/legisOrderOfDay.service");
 
 exports.create = async (req, res) => {
     try {
-        const { sittingId, sittingTime, sittingDate, content, fkSessionId, isMonday, actingSecretary } = req.body;
+        const { sittingId, sittingTime, sittingDate, content, fkSessionId, isMonday, actingSecretary, type } = req.body;
 
         if (!sittingId || !sittingDate || !sittingTime || !content || !fkSessionId || !actingSecretary) {
             return res.status(400).json({

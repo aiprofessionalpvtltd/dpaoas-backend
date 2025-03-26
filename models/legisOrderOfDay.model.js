@@ -38,7 +38,12 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: "inLegislation",
         },
         content: {
-            type: Sequelize.JSON, // Changed from STRING to JSON
+            type: Sequelize.JSON,
+            allowNull: false
+        },
+        type: {
+            type: Sequelize.ENUM("SimpleOrder", "Supplementary"),
+            defaultValue: "SimpleOrder",
             allowNull: false
         }
     });
