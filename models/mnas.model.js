@@ -33,14 +33,6 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.ENUM("active", "inactive"),
             defaultValue: 'active'
         },
-        fkTenureId: {
-            type: Sequelize.INTEGER,
-            allowNull: true,
-            references: {
-                model: 'tenures',
-                key: 'id'
-            }
-        },
         fkMinisterTenureId: {
             type: Sequelize.INTEGER,
             allowNull: true,
@@ -49,14 +41,6 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id'
             }
         },
-        fkParliamentaryYearId: {
-            type: Sequelize.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'parliamentaryYears',
-                key: 'id'
-            }
-        }, 
         fkMnaParliamentaryYearId: {
             type: Sequelize.INTEGER,
             allowNull: false,

@@ -1290,17 +1290,10 @@ db.mnas.belongsTo(db.politicalParties, {
   as: "politicalParties",
 });
 
-db.mnas.belongsTo(db.tenures, {
-  foreignKey: "fkTenureId", as: "tenures"
-});
 db.mnas.belongsTo(db.tenuresMinister, {
   foreignKey: "fkMinisterTenureId", as: "tenuresMinisters"
 });
 
-db.mnas.belongsTo(db.parliamentaryYears, {
-  foreignKey: "fkParliamentaryYearId",
-  as: "parliamentaryYears",
-});
 db.mnas.belongsTo(db.parliamentaryYearsMna, {
   foreignKey: "fkMnaParliamentaryYearId",
   as: "mnaParliamentaryYears",

@@ -59,15 +59,6 @@ const mnaService = {
                         attributes: ['id','ministryName', 'ministryStatus'],
                     },
                     {
-                        model: db.tenures, as: 'tenures',
-                        attributes: ['id','tenureName']
-                    },
-                    {
-                        model: db.parliamentaryYears,
-                        as: 'parliamentaryYears',
-                        attributes: ['id','parliamentaryTenure'],
-                    },
-                    {
                         model: db.tenuresMinister, as: 'tenuresMinisters',
                         attributes: ['id','tenureName']
                     },
@@ -130,12 +121,8 @@ const mnaService = {
                         attributes: ['id','ministryName', 'ministryStatus'],
                     },
                     {
-                        model: db.tenures, as: 'tenures',
-                        attributes: ['id','tenureName']
-                    },
-                    {
-                        model: db.parliamentaryYears,
-                        as: 'parliamentaryYears',
+                        model: db.parliamentaryYearsMna,
+                        as: 'mnaParliamentaryYears',
                         attributes: ['id','parliamentaryTenure'],
                     },
                 ]
@@ -187,15 +174,6 @@ const mnaService = {
                         as: 'ministries',
                         through: { attributes: [] }, // Exclude the join table attributes
                         attributes: ['ministryName', 'ministryStatus'],
-                    },
-                    {
-                        model: db.tenures, as: 'tenures',
-                        attributes: ['id','tenureName']
-                    },
-                    {
-                        model: db.parliamentaryYears,
-                        as: 'parliamentaryYears',
-                        attributes: ['id','parliamentaryTenure'],
                     },
                 ],
                 transaction
@@ -258,7 +236,7 @@ const mnaService = {
             );
     
             let { mnaName, constituency, address, phone,
-                politicalParty, mnaStatus, fkTenureId, fkParliamentaryYearId
+                politicalParty, mnaStatus
                  } = minister;
 
         // Get the latest ID from the ministers table
@@ -278,8 +256,8 @@ const mnaService = {
                 phone: phone,  
                 politicalParty: politicalParty,  
                 mnaStatus: mnaStatus,  
-                fkTenureId: fkTenureId,  
-                fkParliamentaryYearId: newParliamentaryYearId,  
+                fkTenuresMinisterId: ministerID,  
+                fkMnaParliamentaryYearId: newParliamentaryYearId,  
                  status: true // Set the status of the new record to active (true)
             };
 
@@ -307,11 +285,6 @@ const mnaService = {
                     fkMnaParliamentaryYearId: id
                 },
                 include: [
-                    {
-                        model: db.tenures,
-                        as: 'tenures',
-                        attributes: ['id','tenureName']
-                    },
                     {
                         model: db.parliamentaryYearsMna,
                         as: 'mnaParliamentaryYears',
