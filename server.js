@@ -354,6 +354,10 @@ app.use("/api", ministriesRoutes);
 const yearsRouter = require("./routes/years.route")
 app.use('/api/years', yearsRouter);
 
+app.get('/', (req, res) => {
+  console.log('GET / hit');
+  res.send('Backend is running!');
+});
 
 const PORT = process.env.LOCAL_PORT || 3000;
 server.listen(PORT, () => {
