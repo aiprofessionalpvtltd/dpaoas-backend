@@ -52,7 +52,7 @@ const MinistriesService = {
         try {
             const ministry = await Ministries.findOne({
                 where: { id },
-                include: [{ model: Tenures, as: "tenure" }],
+                include: [{ model: TenuresMinister, as: "tenuresMinisters" }],
             });
             if (!ministry) {
                 throw ({ message: "Ministry not found!" })
