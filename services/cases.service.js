@@ -1067,7 +1067,10 @@ const casesService = {
           "fkCorrespondenceIds",
           "createdAt",
         ],
-        order: [["id", "DESC"]],
+        order: [
+          ['createdAt', 'DESC'], // Primary sort by createdAt
+          ['id', 'DESC']         // Secondary sort by id
+        ],
       });
 
       const pendingCasesByCaseId = {};
@@ -1145,6 +1148,9 @@ const casesService = {
         (currentPage + 1) * pageSize
       );
       const totalPages = Math.ceil(aggregatedPendingCases.length / pageSize);
+
+      // Sort the final results in descending order by createdAt
+      paginatedPendingCases.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
       return {
         cases: paginatedPendingCases,
