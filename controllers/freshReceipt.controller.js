@@ -1,4 +1,3 @@
-
 const freshReceiptService = require('../services/freshReceipt.service');
 const logger = require('../common/winston');
 const { uploadFile } = require('../common/upload');
@@ -195,15 +194,34 @@ const freshReceiptController = {
         try {
             logger.info(`freshReceiptController: getAllFRsByBranch id ${JSON.stringify(req.params.id)}`);
             const branchId = req.params.id;
-            const freshReceipts = await freshReceiptService.getAllFRsByBranch(branchId);
+            const currentPage = parseInt(req.query.currentPage);
+            const pageSize = parseInt(req.query.pageSize);
+
+            if (isNaN(currentPage) || isNaN(pageSize)) {
+                throw new Error("Invalid input. currentPage and pageSize must be integers.");
+            }
+
+            const { count, totalPages, freshReceipts } = await freshReceiptService.getAllFRsByBranch(branchId, currentPage, pageSize);
+            
+            if (freshReceipts.length === 0) {
+                logger.info(`No Data Found On This Page!`);
+                return res.status(200).send({
+                    success: true,
+                    message: "No Data Found On This Page!",
+                    data: []
+                });
+            }
+            
             logger.info(`Fresh Receipts (FRs) Retrieved Successfully!`);
             return res.status(200).send({
                 success: true,
                 message: "Fresh Receipts (FRs) Retrieved Successfully!",
-                data:
+                data: {
                     freshReceipts,
+                    count,
+                    totalPages
+                }
             });
-
         } catch (error) {
             logger.error(error.message);
             return res.status(400).send({
@@ -212,6 +230,7 @@ const freshReceiptController = {
             });
         }
     },
+
     // Get FRs On The Basis of Branch
     getFRsHistory: async (req, res) => {
         try {

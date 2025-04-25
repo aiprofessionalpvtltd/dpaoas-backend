@@ -206,6 +206,77 @@ const casesController = {
     }
   },
 
+  // Get All Cases by Branch Id (not just draft/pending)
+getAllCasesByBranchId: async (req, res) => {
+  try {
+    logger.info(
+      `casesController: getAllCasesByBranchId query ${JSON.stringify(req.query)}`
+    );
+    const { branchId, userId, currentPage, pageSize } = req.query;
+    const { cases, count, totalPages } = await casesService.getAllCasesBySelectedBranchId(
+      branchId,
+      parseInt(currentPage),
+      parseInt(pageSize)
+    );
+
+    if (cases.length === 0) {
+      return res.status(200).send({
+        success: true,
+        message: "No Cases Found!",
+        data: { cases: [] },
+      });
+    }
+
+    return res.status(200).send({
+      success: true,
+      message: "All Branch Cases Fetched Successfully!",
+      data: { cases, count, totalPages },
+    });
+  } catch (error) {
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+},
+
+  // Get All Cases by Branch Id (not just draft/pending)
+  getAllCasesBySelectedFileIdForBranches: async (req, res) => {
+    try {
+      logger.info(
+        `casesController: getAllCasesByBranchId query ${JSON.stringify(req.query)}`
+      );
+      const { fileId, branchId, userId, currentPage, pageSize } = req.query;
+      const { cases, count, totalPages } = await casesService.getAllCasesBySelectedFileIdForBranches(
+        fileId,
+        branchId,
+        parseInt(currentPage),
+        parseInt(pageSize)
+      );
+  
+      if (cases.length === 0) {
+        return res.status(200).send({
+          success: true,
+          message: "No Cases Found!",
+          data: { cases: [] },
+        });
+      }
+  
+      return res.status(200).send({
+        success: true,
+        message: "All Branch Cases Fetched Successfully!",
+        data: { cases, count, totalPages },
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(400).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+
   // Get Cases On the basis of File Id
   //   getCasesByFileId: async (req, res) => {
   //     try {

@@ -53,6 +53,12 @@ router.post(
  */
 router.get("/getCasesByFileId", cases.getCasesByFileId);
 
+// Get all Cases By selected branch id
+router.get("/getCasesByBranchId", cases.getAllCasesByBranchId);
+
+// Get all Cases By selected file id for branches
+router.get("/getCasesByFileIdOfBranches", cases.getAllCasesBySelectedFileIdForBranches);
+
 /**
  * @swagger
  * /api/cases/getCasesHistory/{fileId}/{branchId}:

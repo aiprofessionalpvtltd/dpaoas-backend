@@ -532,6 +532,353 @@ const casesService = {
     }
   },
 
+  // Get all cases of selected branch
+  getAllCasesBySelectedBranchId: async (branchId, currentPage = 0, pageSize = 10) => {
+    try {
+      const allSections = await CaseNotes.findAll({
+        where: {
+          status: "active", // No caseStatus filtering here
+        },
+        include: [
+          {
+            model: Cases,
+            as: "cases",
+            required: true,
+            attributes: [
+              "id", "fkFileId", "isEditable", "createdBy", "createdAt", "updatedAt"
+            ],
+            include: [
+              {
+                model: Files,
+                as: "files",
+                where: { fkBranchId: branchId },
+              },
+              {
+                model: FreshReceipts,
+                as: "freshReceipts",
+                include: [
+                  {
+                    model: FreshReceiptAttachments,
+                    as: "freshReceiptsAttachments",
+                    attributes: ["id", "filename"],
+                  },
+                ],
+              },
+              {
+                model: Users,
+                as: "createdByUser",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: Employees,
+                    as: "employee",
+                    attributes: ["id", "firstName", "lastName"],
+                    include: [
+                      {
+                        model: Designations,
+                        as: "designations",
+                        attributes: ["id", "designationName"],
+                      },
+                      {
+                        model: Branches,
+                        as: "branches",
+                        attributes: ["id", "branchName"],
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                model: FileRemarks,
+                as: "casesRemarks",
+                separate: true,
+                attributes: [
+                  "id",
+                  "assignedTo",
+                  "submittedBy",
+                  "fkFileId",
+                  "fkCaseId",
+                  "comment",
+                  "CommentStatus",
+                  "priority",
+                  "createdAt",
+                  "updatedAt",
+                ],
+                include: [
+                  {
+                    model: Users,
+                    as: "submittedUser",
+                    attributes: ["id"],
+                    include: [
+                      {
+                        model: Employees,
+                        as: "employee",
+                        attributes: ["id", "firstName", "lastName"],
+                        include: [
+                          {
+                            model: Designations,
+                            as: "designations",
+                            attributes: ["id", "designationName"],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    model: Users,
+                    as: "assignedUser",
+                    attributes: ["id"],
+                    include: [
+                      {
+                        model: Employees,
+                        as: "employee",
+                        attributes: ["id", "firstName", "lastName"],
+                        include: [
+                          {
+                            model: Designations,
+                            as: "designations",
+                            attributes: ["id", "designationName"],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+                order: [["createdAt", "DESC"]],
+              },
+            ],
+          },
+        ],
+        attributes: [
+          "id",
+          "fkCaseId",
+          "caseStatus",
+          "notingSubject",
+          "fkCorrespondenceIds",
+          "createdAt",
+          "status"
+        ],
+      });
+  
+      const allCases = allSections.map(section => {
+        const caseData = section.cases;
+        const remarks = caseData.casesRemarks || [];
+        const createdByUser = caseData.createdByUser;
+  
+        return {
+          caseNoteId: section.id,
+          id: caseData.id,
+          status: section.status,
+          caseSubject: section.notingSubject,
+          fkCaseId: section.fkCaseId,
+          caseStatus: section.caseStatus,
+          createdAt: caseData.createdAt,
+          createdBy: caseData.createdBy,
+          createdByUser: {
+            id: createdByUser.id,
+            firstName: createdByUser.employee.firstName,
+            lastName: createdByUser.employee.lastName,
+            designation: createdByUser.employee.designations.designationName,
+          },
+          branch: {
+            id: createdByUser.employee.branches.id,
+            name: createdByUser.employee.branches.branchName,
+          },
+          isEditable: true, // Or add logic if needed
+          fileData: caseData.files,
+          freshReceiptData: caseData.freshReceipts,
+          fileRemarksData: remarks,
+        };
+      });
+  
+      const sortedCases = allCases.sort((a, b) => b.fkCaseId - a.fkCaseId);
+      const paginatedCases = sortedCases.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+      const totalPages = Math.ceil(sortedCases.length / pageSize);
+  
+      return {
+        cases: paginatedCases,
+        count: sortedCases.length,
+        totalPages,
+      };
+    } catch (error) {
+      throw new Error(error.message || "Error Fetching Cases");
+    }
+  },  
+
+  // Get all cases of selected branch
+  getAllCasesBySelectedFileIdForBranches: async (fileId, branchId, currentPage = 0, pageSize = 10) => {
+    try {
+      const allSections = await CaseNotes.findAll({
+        where: {
+          status: "active", // No caseStatus filtering here
+        },
+        include: [
+          {
+            model: Cases,
+            as: "cases",
+            required: true,
+            attributes: [
+              "id", "fkFileId", "isEditable", "createdBy", "createdAt", "updatedAt"
+            ],
+            ...(fileId ? { where: { fkFileId: fileId } } : {}),
+            include: [
+              {
+                model: Files,
+                as: "files",
+                where: { fkBranchId: branchId },
+              },
+              {
+                model: FreshReceipts,
+                as: "freshReceipts",
+                include: [
+                  {
+                    model: FreshReceiptAttachments,
+                    as: "freshReceiptsAttachments",
+                    attributes: ["id", "filename"],
+                  },
+                ],
+              },
+              {
+                model: Users,
+                as: "createdByUser",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: Employees,
+                    as: "employee",
+                    attributes: ["id", "firstName", "lastName"],
+                    include: [
+                      {
+                        model: Designations,
+                        as: "designations",
+                        attributes: ["id", "designationName"],
+                      },
+                      {
+                        model: Branches,
+                        as: "branches",
+                        attributes: ["id", "branchName"],
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                model: FileRemarks,
+                as: "casesRemarks",
+                separate: true,
+                attributes: [
+                  "id",
+                  "assignedTo",
+                  "submittedBy",
+                  "fkFileId",
+                  "fkCaseId",
+                  "comment",
+                  "CommentStatus",
+                  "priority",
+                  "createdAt",
+                  "updatedAt",
+                ],
+                include: [
+                  {
+                    model: Users,
+                    as: "submittedUser",
+                    attributes: ["id"],
+                    include: [
+                      {
+                        model: Employees,
+                        as: "employee",
+                        attributes: ["id", "firstName", "lastName"],
+                        include: [
+                          {
+                            model: Designations,
+                            as: "designations",
+                            attributes: ["id", "designationName"],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    model: Users,
+                    as: "assignedUser",
+                    attributes: ["id"],
+                    include: [
+                      {
+                        model: Employees,
+                        as: "employee",
+                        attributes: ["id", "firstName", "lastName"],
+                        include: [
+                          {
+                            model: Designations,
+                            as: "designations",
+                            attributes: ["id", "designationName"],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+                order: [["createdAt", "DESC"]],
+              },
+            ],
+          },
+        ],
+        attributes: [
+          "id",
+          "fkCaseId",
+          "caseStatus",
+          "notingSubject",
+          "fkCorrespondenceIds",
+          "createdAt",
+          "status"
+        ],
+      });
+  
+      const allCases = allSections.map(section => {
+        const caseData = section.cases;
+        const remarks = caseData.casesRemarks || [];
+        const createdByUser = caseData.createdByUser;
+  
+        return {
+          caseNoteId: section.id,
+          id: caseData.id,
+          status: section.status,
+          caseSubject: section.notingSubject,
+          fkCaseId: section.fkCaseId,
+          caseStatus: section.caseStatus,
+          createdAt: caseData.createdAt,
+          createdBy: caseData.createdBy,
+          createdByUser: {
+            id: createdByUser.id,
+            firstName: createdByUser.employee.firstName,
+            lastName: createdByUser.employee.lastName,
+            designation: createdByUser.employee.designations.designationName,
+          },
+          branch: {
+            id: createdByUser.employee.branches.id,
+            name: createdByUser.employee.branches.branchName,
+          },
+          isEditable: true, // Or add logic if needed
+          fileData: caseData.files,
+          freshReceiptData: caseData.freshReceipts,
+          fileRemarksData: remarks,
+        };
+      });
+  
+      const sortedCases = allCases.sort((a, b) => b.fkCaseId - a.fkCaseId);
+      const paginatedCases = sortedCases.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+      const totalPages = Math.ceil(sortedCases.length / pageSize);
+  
+      return {
+        cases: paginatedCases,
+        count: sortedCases.length,
+        totalPages,
+      };
+    } catch (error) {
+      throw new Error(error.message || "Error Fetching Cases");
+    }
+  },  
+
   // Get Case History On The Basis of Created User
   getCasesHistory: async (userId, branchId, currentPage, pageSize) => {
     try {

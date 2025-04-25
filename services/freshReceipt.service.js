@@ -160,207 +160,185 @@ const freshReceiptService = {
     }
   },
 
-  // Get All FRs On User Basis
-  getAllFRs: async (currentPage, pageSize, userId, branchId) => {
-    try {
-      const offset = currentPage * pageSize;
-      const limit = pageSize;
-      const currentUserPosition =
-        await freshReceiptService.getCurrentUserPosition(userId);
-      const currentUserBranch = await freshReceiptService.getCurrentUserBranch(
-        userId
-      );
+// Get All FRs On User Basis
+getAllFRs: async (currentPage, pageSize, userId, branchId) => {
+  try {
+    // Convert pageSize and currentPage to integers to avoid issues with string values
+    const limit = parseInt(pageSize);
+    const offset = parseInt(currentPage) * limit;
 
-      const { count, rows } = await FreshReceipts.findAndCountAll({
-        where: {
-          fkUserBranchId: branchId,
-          // Add the NOT EXISTS condition to check the Cases table
-          $notExists$: db.sequelize.literal(
-            `NOT EXISTS (SELECT 1 FROM "cases" WHERE "cases"."fkFreshReceiptId" = "freshReceipts"."id")`
-          ),
+    // Get the current user's position and branch
+    const currentUserPosition = await freshReceiptService.getCurrentUserPosition(userId);
+    const currentUserBranch = await freshReceiptService.getCurrentUserBranch(userId);
+
+    // Fetch all FreshReceipts based on branchId and filter out those with cases
+    const allFRs = await FreshReceipts.findAll({
+      where: {
+        fkUserBranchId: branchId,
+        $notExists$: db.sequelize.literal(
+          `NOT EXISTS (SELECT 1 FROM "cases" WHERE "cases"."fkFreshReceiptId" = "freshReceipts"."id")`
+        ),
+      },
+      include: [
+        {
+          model: FreshReceiptAttachments,
+          as: "freshReceiptsAttachments",
+          attributes: ["id", "filename"],
         },
-        include: [
-          {
-            model: FreshReceiptAttachments,
-            as: "freshReceiptsAttachments",
-            attributes: ["id", "filename"],
-          },
-          {
-            model: FreshReceiptRemarks,
-            as: "freshReceipt",
-            separate: true,
-            attributes: [
-              "id",
-              "CommentStatus",
-              "comment",
-              "submittedBy",
-              "assignedTo",
-              "priority",
-              "createdAt",
-              "updatedAt",
-            ],
+        {
+          model: FreshReceiptRemarks,
+          as: "freshReceipt",
+          separate: true,
+          attributes: [
+            "id",
+            "CommentStatus",
+            "comment",
+            "submittedBy",
+            "assignedTo",
+            "priority",
+            "createdAt",
+            "updatedAt",
+          ],
+          order: [["id", "DESC"]],
+          include: [
+            {
+              model: Users,
+              as: "submittedUser",
+              attributes: ["id"],
+              include: [
+                {
+                  model: Employee,
+                  as: "employee",
+                  attributes: ["id", "firstName", "lastName"],
+                  include: [
+                    {
+                      model: Designations,
+                      as: "designations",
+                      attributes: ["id", "designationName"],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              model: Users,
+              as: "assignedUser",
+              attributes: ["id"],
+              include: [
+                {
+                  model: Employee,
+                  as: "employee",
+                  attributes: ["id", "firstName", "lastName"],
+                  include: [
+                    {
+                      model: Designations,
+                      as: "designations",
+                      attributes: ["id", "designationName"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: FileDiaries,
+          as: "freshReceiptDiaries",
+          attributes: [
+            "id",
+            "fileNumber",
+            "diaryNumber",
+            "diaryType",
+            "diaryDate",
+            "diaryTime",
+          ],
+        },
+        {
+          model: Branches,
+          as: "userBranches",
+          attributes: ["id", "branchName"],
+        },
+        {
+          model: Branches,
+          as: "branches",
+          attributes: ["id", "branchName"],
+        },
+        {
+          model: Ministries,
+          as: "ministries",
+          attributes: ["id", "ministryName"],
+        },
+        {
+          model: ExternalMinistries,
+          as: "externalMinistry",
+          attributes: ["id", "receivedFrom"],
+        },
+        {
+          model: Users,
+          as: "createdByUser",
+          attributes: ["id"],
+          include: [
+            {
+              model: Employee,
+              as: "employee",
+              attributes: ["id", "firstName", "lastName"],
+              include: [
+                {
+                  model: Designations,
+                  as: "designations",
+                  attributes: ["id", "designationName"],
+                },
+                {
+                  model: Branches,
+                  as: "branches",
+                  attributes: ["id", "branchName"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      order: [["id", "DESC"]],
+    });
 
-            order: [["id", "DESC"]],
-            include: [
-              {
-                model: Users,
-                as: "submittedUser",
-                attributes: ["id"],
-                include: [
-                  {
-                    model: Employee,
-                    as: "employee",
-                    attributes: ["id", "firstName", "lastName"],
-                    include: [
-                      {
-                        model: Designations,
-                        as: "designations",
-                        attributes: ["id", "designationName"],
-                      },
-                    ],
-                  },
-                ],
-              },
-              {
-                model: Users,
-                as: "assignedUser",
-                attributes: ["id"],
-                include: [
-                  {
-                    model: Employee,
-                    as: "employee",
-                    attributes: ["id", "firstName", "lastName"],
-                    include: [
-                      {
-                        model: Designations,
-                        as: "designations",
-                        attributes: ["id", "designationName"],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            model: FileDiaries,
-            as: "freshReceiptDiaries",
-            attributes: [
-              "id",
-              "fileNumber",
-              "diaryNumber",
-              "diaryType",
-              "diaryDate",
-              "diaryTime",
-            ],
-          },
-          {
-            model: Branches,
-            as: "userBranches",
-            attributes: ["id", "branchName"],
-          },
-          {
-            model: Branches,
-            as: "branches",
-            attributes: ["id", "branchName"],
-          },
-          {
-            model: Ministries,
-            as: "ministries",
-            attributes: ["id", "ministryName"],
-          },
-          {
-            model: ExternalMinistries,
-            as: "externalMinistry",
-            attributes: ["id", "receivedFrom"],
-          },
-          {
-            model: Users,
-            as: "createdByUser", // Alias for createdByUser association
-            attributes: ["id"],
-            include: [
-              {
-                model: Employee,
-                as: "employee",
-                attributes: ["id", "firstName", "lastName"],
-                include: [
-                  {
-                    model: Designations,
-                    as: "designations",
-                    attributes: ["id", "designationName"],
-                  },
-                  {
-                    model: Branches,
-                    as: "branches", // Ensure this alias matches your association
-                    attributes: ["id", "branchName"], // Include branch attributes you need
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        offset,
-        limit,
-        distinct: true,
-        order: [["id", "DESC"]],
-      });
+    // Fetch branch hierarchy data
+    const branchHierarchyData = await BranchHierarchy.findOne({
+      where: { branchName: currentUserBranch.branchName },
+      attributes: [
+        "id",
+        "branchHierarchy",
+        "higherLevelHierarchy",
+        "lowerLevelHierarchy",
+      ],
+    });
 
-      const branchHierarchyData = await BranchHierarchy.findOne({
-        where: { branchName: currentUserBranch.branchName },
-        attributes: [
-          "id",
-          "branchHierarchy",
-          "higherLevelHierarchy",
-          "lowerLevelHierarchy",
-        ],
-      });
+    const lowerLevelHierarchy = branchHierarchyData?.lowerLevelHierarchy;
+    const higherLevelHierarchy = branchHierarchyData?.higherLevelHierarchy;
 
-      const lowerLevelHierarchy = branchHierarchyData.lowerLevelHierarchy;
-      const higherLevelHierarchy = branchHierarchyData.higherLevelHierarchy;
+    // Filter FRs based on user permissions and visibility
+    const filteredFRsWithStatus = await Promise.all(
+      allFRs.map(async (fr) => {
+        const remarks = fr.freshReceipt || [];
+        const createdBy = fr.createdBy || 0;
+        let isVisible = false;
+        let isEditable = true;
+        let caseStatus = "draft";
 
-      let isVisible = false;
-      let isEditable = true;
+        // Check user permissions for visibility and editability
+        if (
+          parseInt(userId) === createdBy ||
+          parseInt(remarks?.[0]?.submittedBy) === parseInt(userId)
+        ) {
+          isVisible = true;
+          isEditable = remarks.length === 0;
+        }
 
-      const filterConditions = await Promise.all(
-        rows.map(async (fr) => {
-          const remarks = fr.freshReceipt || [];
-          const createdBy = fr.createdBy || 0;
-          let caseStatus = "draft";
-          let latestRemark;
-          // let isVisible = parseInt(userId) === createdBy && remarks.length > 0;
-          // let isEditable = isVisible && remarks.length === 0;
-
-          // Initial visibility is only for the creator
-          if (
-            parseInt(userId) === createdBy ||
-            parseInt(latestRemark?.submittedBy) === parseInt(userId)
-          ) {
-            // i remove this one (=== createdBy)
-            isVisible = true;
-            isEditable = remarks.length === 0; // Creator can edit if no remarks
-          }
-
-          // Determine the latest remark
-          // if (remarks.length > 0) {
-          //     const latestRemark = remarks.reduce((latest, remark) => {
-          //         return (latest.createdAt > remark.createdAt) ? latest : remark;
-          //     }, { createdAt: new Date(0), assignedTo: null });
-
-          //     isVisible = isVisible || parseInt(latestRemark.assignedTo) === parseInt(userId);
-
-          //     if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
-          //         isEditable = true;
-          //     } else {
-          //         isEditable = false;
-          //     }
-          // }
-          if (remarks.length > 0) {
-            const latestRemark = remarks.reduce(
-              (latest, remark) => {
-                return latest.createdAt > remark.createdAt ? latest : remark;
-              },
-              { createdAt: new Date(0), assignedTo: null }
-            );
+        // Update caseStatus and visibility based on latest remark
+        if (remarks.length > 0) {
+          const latestRemark = remarks.reduce(
+            (latest, remark) => (latest.createdAt > remark.createdAt ? latest : remark),
+            { createdAt: new Date(0), assignedTo: null }
+          );
 
             // // If there is a latest remark, check if the user is the one it's assigned to
             // if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
@@ -374,63 +352,54 @@ const freshReceiptService = {
             //     isEditable = false;
             //   }
 
-            if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
-              caseStatus = "pending"; // Assigned to current user
-              isVisible = true;
-              isEditable = true;
-            } else if (
-              parseInt(latestRemark.submittedBy) !== parseInt(userId) &&
-              parseInt(latestRemark.assignedTo) !== parseInt(userId)
-            ) {
-              caseStatus = "sent";
-              // Hide case if the current user is not involved in the latest remark
-              if (parseInt(userId) !== createdBy) {
-                // But still show if the user is the creator
-                caseStatus = "sent";
-                isVisible = false;
-                isEditable = false;
-              }
-            } else {
-              caseStatus = "sent"; // Assigned to another user
-              isVisible = true;
+          if (parseInt(latestRemark.assignedTo) === parseInt(userId)) {
+            caseStatus = "pending";
+            isVisible = true;
+            isEditable = true;
+          } else if (
+            parseInt(latestRemark.submittedBy) !== parseInt(userId) &&
+            parseInt(latestRemark.assignedTo) !== parseInt(userId)
+          ) {
+            caseStatus = "sent";
+            if (parseInt(userId) !== createdBy) {
+              isVisible = false;
               isEditable = false;
             }
-
-            // else {
-            // Ensure the creator retains visibility even when not the latest assigned
-            // isVisible = isVisible || parseInt(createdBy) === parseInt(userId);
-            //   isVisible = false;
-            //   isEditable = false; // Creator cannot edit once assigned to someone else
-            // }
+          } else {
+            caseStatus = "sent";
+            isVisible = true;
+            isEditable = false;
           }
+        }
 
-          return { isVisible, isEditable, caseStatus };
-        })
-      );
+        // Add editable and caseStatus fields
+        fr.isEditable = isEditable;
+        fr.caseStatus = caseStatus;
 
-      // Filter the FRs based on visibility and update with editability
-      const filteredFRs = rows.filter((fr, index) => {
-        const condition = filterConditions[index];
-        fr.isEditable = condition.isEditable;
-        fr.caseStatus = condition.caseStatus;
-        return condition.isVisible;
-      });
+        return isVisible ? fr : null;
+      })
+    );
 
-      const paginatedFRs = filteredFRs.slice(
-        currentPage * pageSize,
-        (currentPage + 1) * pageSize
-      );
-      const totalPages = Math.ceil(filteredFRs.length / pageSize);
+    // Filter out any null FRs
+    const visibleFRs = filteredFRsWithStatus.filter((fr) => fr !== null);
 
-      return {
-        count: paginatedFRs.length,
-        totalPages,
-        freshReceipts: paginatedFRs,
-      };
-    } catch (error) {
-      throw new Error(error.message || "Error Fetching All FRs");
-    }
-  },
+    // Paginate the visible FRs
+    const paginatedFRs = visibleFRs.slice(offset, offset + limit);
+
+    // Calculate total pages based on visible FRs
+    const totalPages = Math.ceil(visibleFRs.length / limit);
+
+    // Return the paginated data along with the total count and total pages
+    return {
+      count: visibleFRs.length,
+      totalPages,
+      freshReceipts: paginatedFRs,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Error Fetching All FRs");
+  }
+},
+
 
   // Get All FRs On User Basis
   getAllPendingFRs: async (currentPage, pageSize, branchId, branches, userId) => {
@@ -743,9 +712,12 @@ const freshReceiptService = {
     }
   },
 
-  getAllFRsByBranch: async (branchId) => {
+  getAllFRsByBranch: async (branchId, currentPage, pageSize) => {
     try {
-      const freshReceipts = await FreshReceipts.findAll({
+      const offset = currentPage * pageSize;
+      const limit = pageSize;
+  
+      const { count, rows } = await FreshReceipts.findAndCountAll({
         where: {
           fkUserBranchId: branchId,
         },
@@ -758,15 +730,18 @@ const freshReceiptService = {
           {
             model: FreshReceiptRemarks,
             as: "freshReceipt",
+            separate: true,
             attributes: [
               "id",
               "CommentStatus",
               "comment",
               "submittedBy",
               "assignedTo",
+              "priority",
               "createdAt",
               "updatedAt",
             ],
+            order: [["id", "DESC"]],
             include: [
               {
                 model: Users,
@@ -840,17 +815,75 @@ const freshReceiptService = {
             as: "externalMinistry",
             attributes: ["id", "receivedFrom"],
           },
+          {
+            model: Users,
+            as: "createdByUser",
+            attributes: ["id"],
+            include: [
+              {
+                model: Employee,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+                include: [
+                  {
+                    model: Designations,
+                    as: "designations",
+                    attributes: ["id", "designationName"],
+                  },
+                  {
+                    model: Branches,
+                    as: "branches",
+                    attributes: ["id", "branchName"],
+                  },
+                ],
+              },
+            ],
+          },
         ],
+        offset,
+        limit,
         distinct: true,
         order: [["id", "DESC"]],
       });
-
-      return freshReceipts;
+  
+      const freshReceiptsWithStatus = rows.map((fr) => {
+        const remarks = fr.freshReceipt || [];
+        let caseStatus = "draft";
+        let isEditable = true;
+  
+        if (remarks.length > 0) {
+          const latestRemark = remarks.reduce(
+            (latest, remark) =>
+              latest.createdAt > remark.createdAt ? latest : remark,
+            { createdAt: new Date(0), assignedTo: null }
+          );
+  
+          if (latestRemark.assignedTo) {
+            caseStatus = "pending";
+            isEditable = true;
+          } else {
+            caseStatus = "sent";
+            isEditable = false;
+          }
+        }
+  
+        fr.caseStatus = caseStatus;
+        fr.isEditable = isEditable;
+        return fr;
+      });
+  
+      const totalPages = Math.ceil(count / pageSize);
+  
+      return {
+        count,
+        totalPages,
+        freshReceipts: freshReceiptsWithStatus,
+      };
     } catch (error) {
-      throw new Error(error.message || "Error Fetching All FRs");
+      throw new Error(error.message || "Error Fetching FRs by Branch");
     }
   },
-
+  
   //Get Frs History On The Basis of Branch
   getFRsHistory: async (branchId, userId, currentPage, pageSize) => {
     try {

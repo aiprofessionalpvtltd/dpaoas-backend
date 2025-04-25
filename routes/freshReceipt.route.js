@@ -130,6 +130,26 @@ router.post("/createFR/:id", uploadFile('freshReceipt'), freshReceipts.createFR)
  */
 router.post('/uploadMultipleFRs/:id', uploadFile('freshReceipt') ,freshReceipts.uploadMultipleFRs)
 
+// Get All FRs on Branch Basis
+/**
+ * @swagger
+ * /api/freshReceipt/ByBranch/{id}:
+ *   get:
+ *     summary: Retrieve All FRs On Branch Basis
+ *     tags: [Fresh Receipts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Branch Id
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
+router.get('/ByBranch/:id', freshReceipts.getAllFRsByBranch)
+
 // Get All FRs On User Basis
 /**
  * @swagger
@@ -161,31 +181,6 @@ router.post('/uploadMultipleFRs/:id', uploadFile('freshReceipt') ,freshReceipts.
  *         description: A successful response
  */
 router.get('/:id/:branchId', freshReceipts.getAllFRs)
-
-
-
-
-
-// Get All FRs on Branch Basis
-/**
- * @swagger
- * /api/freshReceipt/ByBranch/{id}:
- *   get:
- *     summary: Retrieve All FRs On Branch Basis
- *     tags: [Fresh Receipts]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: Branch Id
- *         schema:
- *           type: integer
- *     responses:
- *       '200':
- *         description: A successful response
- */
-router.get('/ByBranch/:id', freshReceipts.getAllFRsByBranch)
-
 
 // Get All FRs
 /**
