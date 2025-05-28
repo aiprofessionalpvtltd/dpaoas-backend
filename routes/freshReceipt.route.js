@@ -150,6 +150,8 @@ router.post('/uploadMultipleFRs/:id', uploadFile('freshReceipt') ,freshReceipts.
  */
 router.get('/ByBranch/:id', freshReceipts.getAllFRsByBranch)
 
+router.get('/getFRsByUserAndStatus/:userId', freshReceipts.getFRsByUserAndStatus)
+
 // Get All FRs On User Basis
 /**
  * @swagger
@@ -181,6 +183,8 @@ router.get('/ByBranch/:id', freshReceipts.getAllFRsByBranch)
  *         description: A successful response
  */
 router.get('/:id/:branchId', freshReceipts.getAllFRs)
+
+// external-demo
 
 // Get All FRs
 /**

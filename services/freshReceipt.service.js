@@ -174,7 +174,7 @@ getAllFRs: async (currentPage, pageSize, userId, branchId) => {
     // Fetch all FreshReceipts based on branchId and filter out those with cases
     const allFRs = await FreshReceipts.findAll({
       where: {
-        fkUserBranchId: branchId,
+        fkUserBranchId: branchId, // external-demo
         $notExists$: db.sequelize.literal(
           `NOT EXISTS (SELECT 1 FROM "cases" WHERE "cases"."fkFreshReceiptId" = "freshReceipts"."id")`
         ),
@@ -400,6 +400,179 @@ getAllFRs: async (currentPage, pageSize, userId, branchId) => {
   }
 },
 
+getFRsByUserAndStatus: async (userId, branchId, caseStatus, currentPage, pageSize) => {
+  try {
+    const limit = parseInt(pageSize);
+    const offset = parseInt(currentPage) * limit;
+
+    const priorities = ['Confidential', 'Immediate', 'Routine'];
+    const priorityCounts = priorities.reduce((acc, key) => {
+      acc[key] = 0;
+      return acc;
+    }, {});
+
+    const allFRs = await FreshReceipts.findAll({
+      where: {
+        $notExists$: db.sequelize.literal(
+          `NOT EXISTS (SELECT 1 FROM "cases" WHERE "cases"."fkFreshReceiptId" = "freshReceipts"."id")`
+        ),
+      },
+      include: [
+        {
+          model: FreshReceiptAttachments,
+          as: "freshReceiptsAttachments",
+          attributes: ["id", "filename"],
+        },
+        {
+          model: FreshReceiptRemarks,
+          as: "freshReceipt",
+          separate: true,
+          attributes: [
+            "id", "CommentStatus", "comment", "submittedBy", "assignedTo", "priority", "createdAt", "updatedAt"
+          ],
+          order: [["id", "DESC"]],
+          include: [
+            {
+              model: Users,
+              as: "submittedUser",
+              attributes: ["id"],
+              include: [{
+                model: Employee,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+                include: [{
+                  model: Designations,
+                  as: "designations",
+                  attributes: ["id", "designationName"],
+                }],
+              }],
+            },
+            {
+              model: Users,
+              as: "assignedUser",
+              attributes: ["id"],
+              include: [{
+                model: Employee,
+                as: "employee",
+                attributes: ["id", "firstName", "lastName"],
+                include: [{
+                  model: Designations,
+                  as: "designations",
+                  attributes: ["id", "designationName"],
+                }],
+              }],
+            },
+          ],
+        },
+        {
+          model: FileDiaries,
+          as: "freshReceiptDiaries",
+          attributes: ["id", "fileNumber", "diaryNumber", "diaryType", "diaryDate", "diaryTime"],
+        },
+        {
+          model: Branches,
+          as: "userBranches",
+          attributes: ["id", "branchName"],
+        },
+        {
+          model: Branches,
+          as: "branches",
+          attributes: ["id", "branchName"],
+        },
+        {
+          model: Ministries,
+          as: "ministries",
+          attributes: ["id", "ministryName"],
+        },
+        {
+          model: ExternalMinistries,
+          as: "externalMinistry",
+          attributes: ["id", "receivedFrom"],
+        },
+        {
+          model: Users,
+          as: "createdByUser",
+          attributes: ["id"],
+          include: [{
+            model: Employee,
+            as: "employee",
+            attributes: ["id", "firstName", "lastName"],
+            include: [
+              {
+                model: Designations,
+                as: "designations",
+                attributes: ["id", "designationName"],
+              },
+              {
+                model: Branches,
+                as: "branches",
+                attributes: ["id", "branchName"],
+              },
+            ],
+          }],
+        },
+      ],
+      order: [["id", "DESC"]],
+    });
+
+    const filteredFRs = [];
+
+    for (const fr of allFRs) {
+      const remarks = fr.freshReceipt || [];
+      if (remarks.length === 0) continue;
+
+      // Find the latest remark by createdAt
+      const latestRemark = remarks.reduce((latest, current) => {
+        return new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest;
+      }, remarks[0]);
+
+      const assignedTo = parseInt(latestRemark.assignedTo);
+      const submittedBy = parseInt(latestRemark.submittedBy);
+
+      let isVisible = false;
+      let editable = false;
+      let derivedStatus = fr.caseStatus; // fallback
+
+      if (caseStatus === 'pending' && assignedTo === parseInt(userId)) {
+        isVisible = true;
+        editable = true;
+        derivedStatus = 'pending';
+      } else if (caseStatus === 'sent' && submittedBy === parseInt(userId)) {
+        isVisible = true;
+        editable = false;
+        derivedStatus = 'sent';
+      }
+
+      if (isVisible) {
+        if (latestRemark.priority && priorityCounts.hasOwnProperty(latestRemark.priority)) {
+          priorityCounts[latestRemark.priority]++;
+        }
+
+        const frWithDerivedStatus = {
+          ...fr.toJSON(),
+          caseStatus: derivedStatus,
+          isEditable: editable,
+        };
+
+        filteredFRs.push(frWithDerivedStatus);
+      }
+    }
+
+    const paginatedFRs = filteredFRs.slice(offset, offset + limit);
+    const totalPages = Math.ceil(filteredFRs.length / limit);
+
+    return {
+      freshReceipts: paginatedFRs,
+      count: filteredFRs.length,
+      totalPages,
+      priorityCounts,
+    };
+
+  } catch (error) {
+    throw new Error(error.message || 'Error fetching FRs by user and status');
+  }
+},
+
 
   // Get All FRs On User Basis
   getAllPendingFRs: async (currentPage, pageSize, branchId, branches, userId) => {
@@ -410,9 +583,9 @@ getAllFRs: async (currentPage, pageSize, userId, branchId) => {
 
       const { count, rows } = await FreshReceipts.findAndCountAll({
         where: {
-            fkUserBranchId: {
-                    [Op.in]: Array.isArray(branches) ? branches : [branches], // Use the array of branch IDs
-                  },
+            // fkUserBranchId: {
+            //         [Op.in]: Array.isArray(branches) ? branches : [branches], // Use the array of branch IDs
+            //       }, external-demo
           // Add the NOT EXISTS condition to check the Cases table
           // '$notExists$': db.sequelize.literal(`NOT EXISTS (SELECT 1 FROM "cases" WHERE "cases"."fkFreshReceiptId" = "freshReceipts"."id")`)
         },

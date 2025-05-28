@@ -314,7 +314,7 @@ const casesService = {
               {
                 model: Files,
                 as: "files",
-                where: { fkBranchId: branchId },
+                // where: { fkBranchId: branchId }, external-demo
               },
               {
                 model: FreshReceipts,
@@ -1081,6 +1081,195 @@ const casesService = {
     }
   },
 
+  // external-demo
+getCasesByUserAndStatus: async (userId, branchId, caseStatus, currentPage, pageSize) => {
+  try {
+    const priorities = ['Confidential', 'Immediate', 'Routine'];
+    const priorityCounts = priorities.reduce((acc, key) => {
+      acc[key] = 0;
+      return acc;
+    }, {});
+
+    const allSections = await CaseNotes.findAll({
+      where: {
+        caseStatus: { [Op.ne]: 'approved' }
+      },
+      include: [
+        {
+          model: Cases,
+          as: 'cases',
+          required: true,
+          attributes: ['id', 'fkFileId', 'isEditable', 'createdBy', 'createdAt', 'updatedAt'],
+          include: [
+            {
+              model: Files,
+              as: 'files',
+              // where: { fkBranchId: branchId }
+            },
+            {
+              model: FreshReceipts,
+              as: 'freshReceipts',
+              include: [
+                {
+                  model: FreshReceiptAttachments,
+                  as: 'freshReceiptsAttachments',
+                  attributes: ['id', 'filename']
+                }
+              ]
+            },
+            {
+              model: Users,
+              as: 'createdByUser',
+              attributes: ['id'],
+              include: [
+                {
+                  model: Employees,
+                  as: 'employee',
+                  attributes: ['id', 'firstName', 'lastName'],
+                  include: [
+                    {
+                      model: Designations,
+                      as: 'designations',
+                      attributes: ['id', 'designationName']
+                    },
+                    {
+                        model: Branches,
+                        as: "branches", // Ensure this alias matches your association
+                        attributes: ["id", "branchName"], // Include branch attributes you need
+                    },
+                  ]
+                }
+              ]
+            },
+            {
+              model: FileRemarks,
+              as: 'casesRemarks',
+              separate: true,
+              attributes: ['id', 'assignedTo', 'submittedBy', 'fkFileId', 'fkCaseId', 'comment', 'CommentStatus', 'priority', 'createdAt', 'updatedAt'],
+              include: [
+                {
+                  model: Users,
+                  as: 'submittedUser',
+                  attributes: ['id'],
+                  include: [
+                    {
+                      model: Employees,
+                      as: 'employee',
+                      attributes: ['id', 'firstName', 'lastName'],
+                      include: [
+                        {
+                          model: Designations,
+                          as: 'designations',
+                          attributes: ['id', 'designationName']
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  model: Users,
+                  as: 'assignedUser',
+                  attributes: ['id'],
+                  include: [
+                    {
+                      model: Employees,
+                      as: 'employee',
+                      attributes: ['id', 'firstName', 'lastName'],
+                      include: [
+                        {
+                          model: Designations,
+                          as: 'designations',
+                          attributes: ['id', 'designationName']
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              order: [['createdAt', 'DESC']],
+            }
+          ]
+        }
+      ],
+      attributes: ['id', 'fkCaseId', 'caseStatus', 'notingSubject', 'fkCorrespondenceIds', 'createdAt'],
+      order: [['id', 'DESC']]
+    });
+
+    const resultCases = [];
+
+    for (const section of allSections) {
+      const caseData = section.cases;
+      const remarks = caseData?.casesRemarks || [];
+      const createdBy = parseInt(caseData.createdBy);
+      const createdByUser = caseData.createdByUser;
+
+      if (!remarks.length) continue;
+
+      const latestRemark = remarks[0];
+      const assignedTo = parseInt(latestRemark.assignedTo);
+      const submittedBy = parseInt(latestRemark.submittedBy);
+
+      let isVisible = false;
+      let editable = false;
+      let derivedStatus = section.caseStatus;
+
+      if (caseStatus === 'pending' && assignedTo === parseInt(userId)) {
+        isVisible = true;
+        editable = true;
+        derivedStatus = 'pending';
+      } else if (caseStatus === 'sent' && submittedBy === parseInt(userId)) {
+        isVisible = true;
+        editable = false;
+        derivedStatus = 'sent';
+      }
+
+      if (isVisible) {
+        if (latestRemark.priority && priorityCounts[latestRemark.priority] !== undefined) {
+          priorityCounts[latestRemark.priority]++;
+        }
+
+        resultCases.push({
+          id: caseData.id,
+          fkCaseId: section.fkCaseId,
+          caseStatus: derivedStatus,
+          createdAt: caseData.createdAt,
+          createdBy: caseData.createdBy,
+          createdByUser: {
+            id: createdByUser.id,
+            firstName: createdByUser.employee.firstName,
+            lastName: createdByUser.employee.lastName,
+            designation: createdByUser.employee.designations.designationName
+          },
+                        branch: {
+                id: createdByUser.employee.branches.id,
+                name: createdByUser.employee.branches.branchName,
+              },
+          isEditable: editable,
+          fileData: caseData.files,
+          freshReceiptData: caseData.freshReceipts,
+          fileRemarksData: remarks
+        });
+      }
+    }
+
+    const paginatedCases = resultCases.slice(
+      currentPage * pageSize,
+      (currentPage + 1) * pageSize
+    );
+
+    return {
+      cases: paginatedCases,
+      count: resultCases.length,
+      totalPages: Math.ceil(resultCases.length / pageSize),
+      priorityCounts
+    };
+  } catch (error) {
+    throw new Error(error.message || 'Error fetching cases by user and status');
+  }
+},
+
+
+
 
   getAllCasesHistory: async (
     // fileId,
@@ -1281,9 +1470,6 @@ const casesService = {
   // getPendingCases API
   getPendingCases: async (userId, branchId, branches, currentPage, pageSize, fileId = null) => {
     try {
-      console.log('====================================');
-      console.log(branches);
-      console.log('====================================');
       const allPendingSections = await CaseNotes.findAll({
         include: [
           {
@@ -1305,9 +1491,9 @@ const casesService = {
                 model: Files,
                 as: "files",
                 where: {
-                  fkBranchId: {
-                    [Op.in]: branches, // Use the array of branch IDs
-                  },
+                  // fkBranchId: {
+                  //   [Op.in]: branches, // Use the array of branch IDs
+                  // }, external-demo
                 },
               },
               {

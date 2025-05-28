@@ -101,6 +101,8 @@ router.get("/getCasesHistory/:branchId/:userId", cases.getCasesHistory);
 //   cases.getAllCasesHistory
 // );
 
+router.get("/getCasesByUserAndStatus/:userId", cases.getCasesByUserAndStatus); // external-demo
+
 router.get(
   "/getAllCasesHistory/:branchId/:userId",
   cases.getAllCasesHistory

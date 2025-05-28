@@ -351,6 +351,39 @@ getAllCasesByBranchId: async (req, res) => {
     }
   },
 
+  // external-demo
+  getCasesByUserAndStatus: async (req, res) => {
+  try {
+    logger.info(`casesController: getCasesByUserAndStatus params ${JSON.stringify(req.params)} | query ${JSON.stringify(req.query)}`);
+
+    const userId = req.params.userId;
+    const caseStatus = req.query.caseStatus;
+    const branchId = req.query.branchId;
+    const currentPage = parseInt(req.query.currentPage || 0);
+    const pageSize = parseInt(req.query.pageSize || 10);
+
+    const { cases, count, totalPages, priorityCounts } = await casesService.getCasesByUserAndStatus(
+      userId,
+      branchId,
+      caseStatus,
+      currentPage,
+      pageSize
+    );
+
+    return res.status(200).send({
+      success: true,
+      message: cases.length > 0 ? "Cases fetched successfully!" : "No data found!",
+      data: { cases, count, totalPages, priorityCounts },
+    });
+  } catch (error) {
+    logger.error(error.message);
+    return res.status(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+},
+
   getAllCasesHistory: async (req, res) => {
     try {
       const fileId = req.params.fileId;
